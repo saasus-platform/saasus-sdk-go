@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Anti-Pattern-Inc/saasus-sdk-go/generated/authapi"
-	"github.com/Anti-Pattern-Inc/saasus-sdk-go/modules/auth"
+	"github.com/saasus-platform/saasus-sdk-go/generated/authapi"
+	"github.com/saasus-platform/saasus-sdk-go/modules/auth"
 )
 
 // CallbackRouteFunction is a function for callback route

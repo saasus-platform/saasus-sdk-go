@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Anti-Pattern-Inc/saasus-sdk-go/generated/authapi"
-	"github.com/Anti-Pattern-Inc/saasus-sdk-go/modules/auth"
 	"github.com/gin-gonic/gin"
 	"github.com/labstack/echo/v4"
+	"github.com/saasus-platform/saasus-sdk-go/generated/authapi"
+	"github.com/saasus-platform/saasus-sdk-go/modules/auth"
 )
 
 type IDTokenGetter interface {

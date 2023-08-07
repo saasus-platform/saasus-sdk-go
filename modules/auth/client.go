@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"github.com/Anti-Pattern-Inc/saasus-sdk-go/client"
-	"github.com/Anti-Pattern-Inc/saasus-sdk-go/generated/authapi"
+	"github.com/saasus-platform/saasus-sdk-go/client"
+	"github.com/saasus-platform/saasus-sdk-go/generated/authapi"
 )
 
 var (

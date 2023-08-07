@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Anti-Pattern-Inc/saasus-sdk-go/generated/authapi"
+	"github.com/saasus-platform/saasus-sdk-go/generated/authapi"
 )
 
 func WithSaasusSigV1() authapi.RequestEditorFn {

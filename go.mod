@@ -1,4 +1,4 @@
-module github.com/Anti-Pattern-Inc/saasus-sdk-go
+module github.com/saasus-platform/saasus-sdk-go
 
 go 1.20
 
