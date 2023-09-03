@@ -8,5 +8,5 @@ fi
 PACKAGE_NAME=$1
 FILE_NAME=$2
 
-oapi-codegen -generate types -package "${PACKAGE_NAME}api" "$FILE_NAME" > "generated/${PACKAGE_NAME}/types.gen.go"
-oapi-codegen -generate client -package "${PACKAGE_NAME}api" "$FILE_NAME" > "generated/${PACKAGE_NAME}/client.gen.go"
+oapi-codegen -generate types -package "${PACKAGE_NAME}api" "$FILE_NAME" > "generated/${PACKAGE_NAME}api/types.gen.go"
+oapi-codegen -generate client -package "${PACKAGE_NAME}api" "$FILE_NAME" > "generated/${PACKAGE_NAME}api/client.gen.go"
