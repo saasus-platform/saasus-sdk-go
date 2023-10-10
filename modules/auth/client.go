@@ -1,6 +1,9 @@
 package auth
 
 import (
+	"context"
+	"net/http"
+
 	"github.com/saasus-platform/saasus-sdk-go/client"
 	"github.com/saasus-platform/saasus-sdk-go/generated/authapi"
 )
@@ -11,12 +14,16 @@ var (
 
 func withRequestEditorFns(c *authapi.Client) error {
 	c.RequestEditors = []authapi.RequestEditorFn{
-		client.WithSaasusSigV1(),
+		func(ctx context.Context, req *http.Request) error {
+			client.SetReferer(ctx, req)
+			return client.SetSigV1(req)
+		},
 	}
 
 	return nil
 }
 
+// AuthWithResponse returns a ClientWithResponses with RequestEditorFn that generates signatures.
 func AuthWithResponse() (*authapi.ClientWithResponses, error) {
 	authClientWithResponse, err := authapi.NewClientWithResponses(server, withRequestEditorFns)
 	if err != nil {
