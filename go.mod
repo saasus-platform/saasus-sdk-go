@@ -2,7 +2,10 @@ module github.com/saasus-platform/saasus-sdk-go
 
 go 1.20
 
-require github.com/deepmap/oapi-codegen v1.13.0
+require (
+	github.com/deepmap/oapi-codegen v1.13.0
+	github.com/go-playground/assert/v2 v2.2.0
+)
 
 require (
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
