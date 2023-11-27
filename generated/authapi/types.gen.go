@@ -123,12 +123,6 @@ type AccountVerificationSendingTo string
 // ※ 未提供の機能のため、変更・保存はできません(This function is not yet provided, so it cannot be changed or saved.)
 type AccountVerificationVerificationMethod string
 
-// ApiKeys defines model for ApiKeys.
-type ApiKeys struct {
-	// ApiKeys APIキー(API Key)
-	ApiKeys []string `json:"api_keys"`
-}
-
 // Attribute defines model for Attribute.
 type Attribute struct {
 	// AttributeName 属性名(attribute name)
@@ -230,12 +224,6 @@ type BillingInfo struct {
 	//
 	// Tenant name for billing
 	Name string `json:"name"`
-}
-
-// ClientSecret defines model for ClientSecret.
-type ClientSecret struct {
-	// ClientSecret クライアントシークレット(client secret)
-	ClientSecret string `json:"client_secret"`
 }
 
 // ConfirmEmailUpdateParam defines model for ConfirmEmailUpdateParam.
@@ -726,15 +714,6 @@ type Roles struct {
 	Roles []Role `json:"roles"`
 }
 
-// SaasId defines model for SaasId.
-type SaasId struct {
-	EnvId Id `json:"env_id"`
-
-	// SaasId saas id
-	SaasId   string `json:"saas_id"`
-	TenantId Uuid   `json:"tenant_id"`
-}
-
 // SaasUser defines model for SaasUser.
 type SaasUser struct {
 	// Email メールアドレス(E-mail)
@@ -1162,9 +1141,6 @@ type ValidateInvitationParam struct {
 	// Password 招待されたユーザーのパスワード(password of the invited user)
 	Password *string `json:"password,omitempty"`
 }
-
-// ApiKey defines model for ApiKey.
-type ApiKey = string
 
 // AuthFlow defines model for AuthFlow.
 type AuthFlow string

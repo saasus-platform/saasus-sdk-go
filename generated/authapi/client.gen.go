@@ -89,15 +89,6 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
-	// GetApiKeys request
-	GetApiKeys(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreateApiKey request
-	CreateApiKey(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteApiKey request
-	DeleteApiKey(ctx context.Context, apiKey ApiKey, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// GetAuthInfo request
 	GetAuthInfo(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -128,12 +119,6 @@ type ClientInterface interface {
 	UpdateBasicInfoWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	UpdateBasicInfo(ctx context.Context, body UpdateBasicInfoJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetClientSecret request
-	GetClientSecret(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpdateClientSecret request
-	UpdateClientSecret(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetAuthCredentials request
 	GetAuthCredentials(ctx context.Context, params *GetAuthCredentialsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -228,12 +213,6 @@ type ClientInterface interface {
 
 	// DeleteRole request
 	DeleteRole(ctx context.Context, roleName RoleName, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetSaasId request
-	GetSaasId(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpdateSaasId request
-	UpdateSaasId(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetSignInSettings request
 	GetSignInSettings(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -424,42 +403,6 @@ type ClientInterface interface {
 	UnlinkProvider(ctx context.Context, userId UserId, providerName string, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
-func (c *Client) GetApiKeys(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiKeysRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateApiKey(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateApiKeyRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) DeleteApiKey(ctx context.Context, apiKey ApiKey, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteApiKeyRequest(c.Server, apiKey)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 func (c *Client) GetAuthInfo(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetAuthInfoRequest(c.Server)
 	if err != nil {
@@ -594,30 +537,6 @@ func (c *Client) UpdateBasicInfoWithBody(ctx context.Context, contentType string
 
 func (c *Client) UpdateBasicInfo(ctx context.Context, body UpdateBasicInfoJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateBasicInfoRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetClientSecret(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetClientSecretRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateClientSecret(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateClientSecretRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -1038,30 +957,6 @@ func (c *Client) CreateRole(ctx context.Context, body CreateRoleJSONRequestBody,
 
 func (c *Client) DeleteRole(ctx context.Context, roleName RoleName, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteRoleRequest(c.Server, roleName)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetSaasId(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetSaasIdRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateSaasId(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateSaasIdRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -1912,94 +1807,6 @@ func (c *Client) UnlinkProvider(ctx context.Context, userId UserId, providerName
 	return c.Client.Do(req)
 }
 
-// NewGetApiKeysRequest generates requests for GetApiKeys
-func NewGetApiKeysRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/apikeys")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewCreateApiKeyRequest generates requests for CreateApiKey
-func NewCreateApiKeyRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/apikeys")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewDeleteApiKeyRequest generates requests for DeleteApiKey
-func NewDeleteApiKeyRequest(server string, apiKey ApiKey) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "api_key", runtime.ParamLocationPath, apiKey)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/apikeys/%s", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
 // NewGetAuthInfoRequest generates requests for GetAuthInfo
 func NewGetAuthInfoRequest(server string) (*http.Request, error) {
 	var err error
@@ -2250,60 +2057,6 @@ func NewUpdateBasicInfoRequestWithBody(server string, contentType string, body i
 	}
 
 	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
-// NewGetClientSecretRequest generates requests for GetClientSecret
-func NewGetClientSecretRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/client-secret")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewUpdateClientSecretRequest generates requests for UpdateClientSecret
-func NewUpdateClientSecretRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/client-secret")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("PATCH", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
 
 	return req, nil
 }
@@ -3186,60 +2939,6 @@ func NewDeleteRoleRequest(server string, roleName RoleName) (*http.Request, erro
 	}
 
 	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewGetSaasIdRequest generates requests for GetSaasId
-func NewGetSaasIdRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/saasid")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewUpdateSaasIdRequest generates requests for UpdateSaasId
-func NewUpdateSaasIdRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/saasid")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("PATCH", queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -5189,15 +4888,6 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
-	// GetApiKeys request
-	GetApiKeysWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiKeysResponse, error)
-
-	// CreateApiKey request
-	CreateApiKeyWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*CreateApiKeyResponse, error)
-
-	// DeleteApiKey request
-	DeleteApiKeyWithResponse(ctx context.Context, apiKey ApiKey, reqEditors ...RequestEditorFn) (*DeleteApiKeyResponse, error)
-
 	// GetAuthInfo request
 	GetAuthInfoWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetAuthInfoResponse, error)
 
@@ -5228,12 +4918,6 @@ type ClientWithResponsesInterface interface {
 	UpdateBasicInfoWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateBasicInfoResponse, error)
 
 	UpdateBasicInfoWithResponse(ctx context.Context, body UpdateBasicInfoJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateBasicInfoResponse, error)
-
-	// GetClientSecret request
-	GetClientSecretWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetClientSecretResponse, error)
-
-	// UpdateClientSecret request
-	UpdateClientSecretWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*UpdateClientSecretResponse, error)
 
 	// GetAuthCredentials request
 	GetAuthCredentialsWithResponse(ctx context.Context, params *GetAuthCredentialsParams, reqEditors ...RequestEditorFn) (*GetAuthCredentialsResponse, error)
@@ -5328,12 +5012,6 @@ type ClientWithResponsesInterface interface {
 
 	// DeleteRole request
 	DeleteRoleWithResponse(ctx context.Context, roleName RoleName, reqEditors ...RequestEditorFn) (*DeleteRoleResponse, error)
-
-	// GetSaasId request
-	GetSaasIdWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSaasIdResponse, error)
-
-	// UpdateSaasId request
-	UpdateSaasIdWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*UpdateSaasIdResponse, error)
 
 	// GetSignInSettings request
 	GetSignInSettingsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSignInSettingsResponse, error)
@@ -5524,73 +5202,6 @@ type ClientWithResponsesInterface interface {
 	UnlinkProviderWithResponse(ctx context.Context, userId UserId, providerName string, reqEditors ...RequestEditorFn) (*UnlinkProviderResponse, error)
 }
 
-type GetApiKeysResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *ApiKeys
-	JSON500      *Error
-}
-
-// Status returns HTTPResponse.Status
-func (r GetApiKeysResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetApiKeysResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type CreateApiKeyResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON500      *Error
-}
-
-// Status returns HTTPResponse.Status
-func (r CreateApiKeyResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r CreateApiKeyResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type DeleteApiKeyResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON500      *Error
-}
-
-// Status returns HTTPResponse.Status
-func (r DeleteApiKeyResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r DeleteApiKeyResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type GetAuthInfoResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -5743,51 +5354,6 @@ func (r UpdateBasicInfoResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdateBasicInfoResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type GetClientSecretResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *ClientSecret
-	JSON500      *Error
-}
-
-// Status returns HTTPResponse.Status
-func (r GetClientSecretResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetClientSecretResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type UpdateClientSecretResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON500      *Error
-}
-
-// Status returns HTTPResponse.Status
-func (r UpdateClientSecretResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r UpdateClientSecretResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -6341,51 +5907,6 @@ func (r DeleteRoleResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r DeleteRoleResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type GetSaasIdResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *SaasId
-	JSON500      *Error
-}
-
-// Status returns HTTPResponse.Status
-func (r GetSaasIdResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetSaasIdResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type UpdateSaasIdResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON500      *Error
-}
-
-// Status returns HTTPResponse.Status
-func (r UpdateSaasIdResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r UpdateSaasIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -7491,33 +7012,6 @@ func (r UnlinkProviderResponse) StatusCode() int {
 	return 0
 }
 
-// GetApiKeysWithResponse request returning *GetApiKeysResponse
-func (c *ClientWithResponses) GetApiKeysWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiKeysResponse, error) {
-	rsp, err := c.GetApiKeys(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetApiKeysResponse(rsp)
-}
-
-// CreateApiKeyWithResponse request returning *CreateApiKeyResponse
-func (c *ClientWithResponses) CreateApiKeyWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*CreateApiKeyResponse, error) {
-	rsp, err := c.CreateApiKey(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateApiKeyResponse(rsp)
-}
-
-// DeleteApiKeyWithResponse request returning *DeleteApiKeyResponse
-func (c *ClientWithResponses) DeleteApiKeyWithResponse(ctx context.Context, apiKey ApiKey, reqEditors ...RequestEditorFn) (*DeleteApiKeyResponse, error) {
-	rsp, err := c.DeleteApiKey(ctx, apiKey, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteApiKeyResponse(rsp)
-}
-
 // GetAuthInfoWithResponse request returning *GetAuthInfoResponse
 func (c *ClientWithResponses) GetAuthInfoWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetAuthInfoResponse, error) {
 	rsp, err := c.GetAuthInfo(ctx, reqEditors...)
@@ -7619,24 +7113,6 @@ func (c *ClientWithResponses) UpdateBasicInfoWithResponse(ctx context.Context, b
 		return nil, err
 	}
 	return ParseUpdateBasicInfoResponse(rsp)
-}
-
-// GetClientSecretWithResponse request returning *GetClientSecretResponse
-func (c *ClientWithResponses) GetClientSecretWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetClientSecretResponse, error) {
-	rsp, err := c.GetClientSecret(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetClientSecretResponse(rsp)
-}
-
-// UpdateClientSecretWithResponse request returning *UpdateClientSecretResponse
-func (c *ClientWithResponses) UpdateClientSecretWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*UpdateClientSecretResponse, error) {
-	rsp, err := c.UpdateClientSecret(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateClientSecretResponse(rsp)
 }
 
 // GetAuthCredentialsWithResponse request returning *GetAuthCredentialsResponse
@@ -7941,24 +7417,6 @@ func (c *ClientWithResponses) DeleteRoleWithResponse(ctx context.Context, roleNa
 		return nil, err
 	}
 	return ParseDeleteRoleResponse(rsp)
-}
-
-// GetSaasIdWithResponse request returning *GetSaasIdResponse
-func (c *ClientWithResponses) GetSaasIdWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSaasIdResponse, error) {
-	rsp, err := c.GetSaasId(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetSaasIdResponse(rsp)
-}
-
-// UpdateSaasIdWithResponse request returning *UpdateSaasIdResponse
-func (c *ClientWithResponses) UpdateSaasIdWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*UpdateSaasIdResponse, error) {
-	rsp, err := c.UpdateSaasId(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateSaasIdResponse(rsp)
 }
 
 // GetSignInSettingsWithResponse request returning *GetSignInSettingsResponse
@@ -8569,91 +8027,6 @@ func (c *ClientWithResponses) UnlinkProviderWithResponse(ctx context.Context, us
 	return ParseUnlinkProviderResponse(rsp)
 }
 
-// ParseGetApiKeysResponse parses an HTTP response from a GetApiKeysWithResponse call
-func ParseGetApiKeysResponse(rsp *http.Response) (*GetApiKeysResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetApiKeysResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ApiKeys
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseCreateApiKeyResponse parses an HTTP response from a CreateApiKeyWithResponse call
-func ParseCreateApiKeyResponse(rsp *http.Response) (*CreateApiKeyResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &CreateApiKeyResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseDeleteApiKeyResponse parses an HTTP response from a DeleteApiKeyWithResponse call
-func ParseDeleteApiKeyResponse(rsp *http.Response) (*DeleteApiKeyResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &DeleteApiKeyResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	}
-
-	return response, nil
-}
-
 // ParseGetAuthInfoResponse parses an HTTP response from a GetAuthInfoWithResponse call
 func ParseGetAuthInfoResponse(rsp *http.Response) (*GetAuthInfoResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -8847,65 +8220,6 @@ func ParseUpdateBasicInfoResponse(rsp *http.Response) (*UpdateBasicInfoResponse,
 	}
 
 	response := &UpdateBasicInfoResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseGetClientSecretResponse parses an HTTP response from a GetClientSecretWithResponse call
-func ParseGetClientSecretResponse(rsp *http.Response) (*GetClientSecretResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetClientSecretResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ClientSecret
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseUpdateClientSecretResponse parses an HTTP response from a UpdateClientSecretWithResponse call
-func ParseUpdateClientSecretResponse(rsp *http.Response) (*UpdateClientSecretResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &UpdateClientSecretResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -9710,65 +9024,6 @@ func ParseDeleteRoleResponse(rsp *http.Response) (*DeleteRoleResponse, error) {
 		}
 		response.JSON404 = &dest
 
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseGetSaasIdResponse parses an HTTP response from a GetSaasIdWithResponse call
-func ParseGetSaasIdResponse(rsp *http.Response) (*GetSaasIdResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetSaasIdResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest SaasId
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseUpdateSaasIdResponse parses an HTTP response from a UpdateSaasIdWithResponse call
-func ParseUpdateSaasIdResponse(rsp *http.Response) (*UpdateSaasIdResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &UpdateSaasIdResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
