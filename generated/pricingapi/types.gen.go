@@ -51,6 +51,9 @@ const (
 // max: 期間内の使用量の最大値(maximum usage during the period)
 type AggregateUsage string
 
+// CreateMeteringUnitParam defines model for CreateMeteringUnitParam.
+type CreateMeteringUnitParam = MeteringUnitProps
+
 // CreatePricingMenuParam defines model for CreatePricingMenuParam.
 type CreatePricingMenuParam = SavePricingMenuParam
 
@@ -73,6 +76,27 @@ type Error struct {
 
 	// Type permission_denied
 	Type string `json:"type"`
+}
+
+// MeteringUnit defines model for MeteringUnit.
+type MeteringUnit struct {
+	// AggregateUsage 使用量の集計方法(aggregate usage)
+	// sum: 期間内の使用量の合計(total usage during the period)
+	// max: 期間内の使用量の最大値(maximum usage during the period)
+	AggregateUsage *AggregateUsage `json:"aggregate_usage,omitempty"`
+
+	// Description 説明(description)
+	Description string `json:"description"`
+
+	// DisplayName 表示名(display name)
+	DisplayName string `json:"display_name"`
+	Id          Uuid   `json:"id"`
+
+	// UnitName 計測ユニット名(metering unit name)
+	UnitName string `json:"unit_name"`
+
+	// Used メータリングユニットの使用済み設定(metering unit used settings)
+	Used bool `json:"used"`
 }
 
 // MeteringUnitCount defines model for MeteringUnitCount.
@@ -126,6 +150,23 @@ type MeteringUnitMonthCounts struct {
 	Counts []MeteringUnitMonthCount `json:"counts"`
 }
 
+// MeteringUnitProps defines model for MeteringUnitProps.
+type MeteringUnitProps struct {
+	// AggregateUsage 使用量の集計方法(aggregate usage)
+	// sum: 期間内の使用量の合計(total usage during the period)
+	// max: 期間内の使用量の最大値(maximum usage during the period)
+	AggregateUsage *AggregateUsage `json:"aggregate_usage,omitempty"`
+
+	// Description 説明(description)
+	Description string `json:"description"`
+
+	// DisplayName 表示名(display name)
+	DisplayName string `json:"display_name"`
+
+	// UnitName 計測ユニット名(metering unit name)
+	UnitName string `json:"unit_name"`
+}
+
 // MeteringUnitTimestampCount defines model for MeteringUnitTimestampCount.
 type MeteringUnitTimestampCount struct {
 	// Count 件数(count)
@@ -136,6 +177,11 @@ type MeteringUnitTimestampCount struct {
 
 	// Timestamp タイムスタンプ(timestamp)
 	Timestamp int `json:"timestamp"`
+}
+
+// MeteringUnits defines model for MeteringUnits.
+type MeteringUnits struct {
+	Units []MeteringUnit `json:"units"`
 }
 
 // PricingFixedUnit defines model for PricingFixedUnit.
@@ -648,6 +694,9 @@ type TaxRates struct {
 // tiered_usage: 段階的使用量ユニット(tiered usage unit)
 type UnitType string
 
+// UpdateMeteringUnitParam defines model for UpdateMeteringUnitParam.
+type UpdateMeteringUnitParam = MeteringUnitProps
+
 // UpdateMeteringUnitTimestampCountMethod 更新方法(update method)
 // add: 加算(addition)
 // sub: 減算(subtraction)
@@ -713,6 +762,9 @@ type EndTimestamp = int
 // MenuId defines model for MenuId.
 type MenuId = Uuid
 
+// MeteringUnitId defines model for MeteringUnitId.
+type MeteringUnitId = string
+
 // MeteringUnitName defines model for MeteringUnitName.
 type MeteringUnitName = string
 
@@ -757,6 +809,12 @@ type UpdateMeteringUnitTimestampCountNowJSONRequestBody = UpdateMeteringUnitTime
 
 // UpdateMeteringUnitTimestampCountJSONRequestBody defines body for UpdateMeteringUnitTimestampCount for application/json ContentType.
 type UpdateMeteringUnitTimestampCountJSONRequestBody = UpdateMeteringUnitTimestampCountParam
+
+// CreateMeteringUnitJSONRequestBody defines body for CreateMeteringUnit for application/json ContentType.
+type CreateMeteringUnitJSONRequestBody = CreateMeteringUnitParam
+
+// UpdateMeteringUnitByIDJSONRequestBody defines body for UpdateMeteringUnitByID for application/json ContentType.
+type UpdateMeteringUnitByIDJSONRequestBody = UpdateMeteringUnitParam
 
 // CreatePricingPlanJSONRequestBody defines body for CreatePricingPlan for application/json ContentType.
 type CreatePricingPlanJSONRequestBody = CreatePricingPlanParam
