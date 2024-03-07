@@ -46,10 +46,13 @@ const (
 	Sub    UpdateMeteringUnitTimestampCountMethod = "sub"
 )
 
-// AggregateUsage 使用量の集計方法(aggregate usage)
-// sum: 期間内の使用量の合計(total usage during the period)
-// max: 期間内の使用量の最大値(maximum usage during the period)
+// AggregateUsage Aggregate usage
+// sum: Total usage during the period
+// max: Maximum usage during the period
 type AggregateUsage string
+
+// CreateMeteringUnitParam defines model for CreateMeteringUnitParam.
+type CreateMeteringUnitParam = MeteringUnitProps
 
 // CreatePricingMenuParam defines model for CreatePricingMenuParam.
 type CreatePricingMenuParam = SavePricingMenuParam
@@ -63,7 +66,7 @@ type CreatePricingUnitParam = PricingUnitForSave
 // CreateTaxRateParam defines model for CreateTaxRateParam.
 type CreateTaxRateParam = TaxRateProps
 
-// Currency 計測単位の通貨(unit of currency)
+// Currency Unit of currency
 type Currency string
 
 // Error defines model for Error.
@@ -71,28 +74,51 @@ type Error struct {
 	// Message Error message
 	Message string `json:"message"`
 
-	// Type permission_denied
+	// Type Error type
 	Type string `json:"type"`
+}
+
+// MeteringUnit defines model for MeteringUnit.
+type MeteringUnit struct {
+	// AggregateUsage Aggregate usage
+	// sum: Total usage during the period
+	// max: Maximum usage during the period
+	AggregateUsage *AggregateUsage `json:"aggregate_usage,omitempty"`
+
+	// Description Description
+	Description string `json:"description"`
+
+	// DisplayName Display name
+	DisplayName string `json:"display_name"`
+
+	// Id Universally Unique Identifier
+	Id Uuid `json:"id"`
+
+	// UnitName Metering unit name
+	UnitName string `json:"unit_name"`
+
+	// Used Metering unit used settings
+	Used bool `json:"used"`
 }
 
 // MeteringUnitCount defines model for MeteringUnitCount.
 type MeteringUnitCount struct {
-	// Count 件数(count)
+	// Count Count
 	Count int `json:"count"`
 
-	// Timestamp 日時(timestamp)
+	// Timestamp Timestamp
 	Timestamp int `json:"timestamp"`
 }
 
 // MeteringUnitDateCount defines model for MeteringUnitDateCount.
 type MeteringUnitDateCount struct {
-	// Count 件数(count)
+	// Count Count
 	Count int `json:"count"`
 
-	// Date 日(date)
+	// Date Date
 	Date string `json:"date"`
 
-	// MeteringUnitName 計測ユニット名(metering unit name)
+	// MeteringUnitName Metering unit name
 	MeteringUnitName string `json:"metering_unit_name"`
 }
 
@@ -105,19 +131,19 @@ type MeteringUnitDateCounts struct {
 type MeteringUnitDatePeriodCounts struct {
 	Counts []MeteringUnitCount `json:"counts"`
 
-	// MeteringUnitName 計測ユニット名(metering unit name)
+	// MeteringUnitName Metering unit name
 	MeteringUnitName string `json:"metering_unit_name"`
 }
 
 // MeteringUnitMonthCount defines model for MeteringUnitMonthCount.
 type MeteringUnitMonthCount struct {
-	// Count 件数(count)
+	// Count Count
 	Count int `json:"count"`
 
-	// MeteringUnitName 計測ユニット名(metering unit name)
+	// MeteringUnitName Metering unit name
 	MeteringUnitName string `json:"metering_unit_name"`
 
-	// Month 月(month)
+	// Month Month
 	Month string `json:"month"`
 }
 
@@ -126,110 +152,136 @@ type MeteringUnitMonthCounts struct {
 	Counts []MeteringUnitMonthCount `json:"counts"`
 }
 
+// MeteringUnitProps defines model for MeteringUnitProps.
+type MeteringUnitProps struct {
+	// AggregateUsage Aggregate usage
+	// sum: Total usage during the period
+	// max: Maximum usage during the period
+	AggregateUsage *AggregateUsage `json:"aggregate_usage,omitempty"`
+
+	// Description Description
+	Description string `json:"description"`
+
+	// DisplayName Display name
+	DisplayName string `json:"display_name"`
+
+	// UnitName Metering unit name
+	UnitName string `json:"unit_name"`
+}
+
 // MeteringUnitTimestampCount defines model for MeteringUnitTimestampCount.
 type MeteringUnitTimestampCount struct {
-	// Count 件数(count)
+	// Count Count
 	Count int `json:"count"`
 
-	// MeteringUnitName 計測ユニット名(metering unit name)
+	// MeteringUnitName Metering unit name
 	MeteringUnitName string `json:"metering_unit_name"`
 
-	// Timestamp タイムスタンプ(timestamp)
+	// Timestamp Timestamp
 	Timestamp int `json:"timestamp"`
+}
+
+// MeteringUnits defines model for MeteringUnits.
+type MeteringUnits struct {
+	Units []MeteringUnit `json:"units"`
 }
 
 // PricingFixedUnit defines model for PricingFixedUnit.
 type PricingFixedUnit struct {
-	// Currency 計測単位の通貨(unit of currency)
+	// Currency Unit of currency
 	Currency Currency `json:"currency"`
 
-	// Description 説明(description)
+	// Description Description
 	Description string `json:"description"`
 
-	// DisplayName 表示名(display name)
+	// DisplayName Display Name
 	DisplayName string `json:"display_name"`
-	Id          Uuid   `json:"id"`
 
-	// Name 名前(name)
+	// Id Universally Unique Identifier
+	Id Uuid `json:"id"`
+
+	// Name Name
 	Name string `json:"name"`
 
-	// RecurringInterval 繰り返し期間(cycle)
-	// month: 月単位(monthly)
-	// year: 年単位(yearly)
+	// RecurringInterval Cycle
+	// month: Monthly
+	// year: Yearly
 	RecurringInterval RecurringInterval `json:"recurring_interval"`
 
-	// Type 計測単位の種別(unit of measurement type)
-	// fixed: 固定ユニット(fixed unit)
-	// usage: 使用量ユニット(usage unit)
-	// tiered: 段階ユニット(tiered unit)
-	// tiered_usage: 段階的使用量ユニット(tiered usage unit)
+	// Type Unit of measurement type
+	// fixed: Fixed unit
+	// usage: Usage unit
+	// tiered: Tiered unit
+	// tiered_usage: Tiered usage unit
 	Type UnitType `json:"type"`
 
-	// UnitAmount 料金(price)
+	// UnitAmount Price
 	UnitAmount uint64 `json:"unit_amount"`
 	Used       bool   `json:"used"`
 }
 
 // PricingFixedUnitForSave defines model for PricingFixedUnitForSave.
 type PricingFixedUnitForSave struct {
-	// Currency 計測単位の通貨(unit of currency)
+	// Currency Unit of currency
 	Currency Currency `json:"currency"`
 
-	// Description 説明(description)
+	// Description Description
 	Description string `json:"description"`
 
-	// DisplayName 表示名(display name)
+	// DisplayName Display Name
 	DisplayName string `json:"display_name"`
 
-	// Name 名前(name)
+	// Name Name
 	Name string `json:"name"`
 
-	// RecurringInterval 繰り返し期間(cycle)
-	// month: 月単位(monthly)
-	// year: 年単位(yearly)
+	// RecurringInterval Cycle
+	// month: Monthly
+	// year: Yearly
 	RecurringInterval RecurringInterval `json:"recurring_interval"`
 
-	// Type 計測単位の種別(unit of measurement type)
-	// fixed: 固定ユニット(fixed unit)
-	// usage: 使用量ユニット(usage unit)
-	// tiered: 段階ユニット(tiered unit)
-	// tiered_usage: 段階的使用量ユニット(tiered usage unit)
+	// Type Unit of measurement type
+	// fixed: Fixed unit
+	// usage: Usage unit
+	// tiered: Tiered unit
+	// tiered_usage: Tiered usage unit
 	Type UnitType `json:"type"`
 
-	// UnitAmount 料金(price)
+	// UnitAmount Price
 	UnitAmount uint64 `json:"unit_amount"`
 }
 
 // PricingMenu defines model for PricingMenu.
 type PricingMenu struct {
-	// Description メニュー説明(menu description)
+	// Description Menu description
 	Description string `json:"description"`
 
-	// DisplayName メニュー表示名(menu display name)
+	// DisplayName Menu display name
 	DisplayName string `json:"display_name"`
-	Id          Uuid   `json:"id"`
 
-	// Name メニュー名(menu name)
+	// Id Universally Unique Identifier
+	Id Uuid `json:"id"`
+
+	// Name Menu name
 	Name  string        `json:"name"`
 	Units []PricingUnit `json:"units"`
 
-	// Used メニューの使用済み設定(menu used settings)
+	// Used Menu used settings
 	Used bool `json:"used"`
 }
 
 // PricingMenuProps defines model for PricingMenuProps.
 type PricingMenuProps struct {
-	// Description メニュー説明(menu description)
+	// Description Menu description
 	Description string `json:"description"`
 
-	// DisplayName メニュー表示名(menu display name)
+	// DisplayName Menu display name
 	DisplayName string `json:"display_name"`
 
-	// Name メニュー名(menu name)
+	// Name Menu name
 	Name  string        `json:"name"`
 	Units []PricingUnit `json:"units"`
 
-	// Used メニューの使用済み設定(menu used settings)
+	// Used Menu used settings
 	Used bool `json:"used"`
 }
 
@@ -240,34 +292,36 @@ type PricingMenus struct {
 
 // PricingPlan defines model for PricingPlan.
 type PricingPlan struct {
-	// Description 料金プラン説明(pricing plan description)
+	// Description Pricing plan description
 	Description string `json:"description"`
 
-	// DisplayName 料金プラン表示名(pricing plan display name)
+	// DisplayName Pricing plan display name
 	DisplayName string `json:"display_name"`
-	Id          Uuid   `json:"id"`
 
-	// Name 料金プラン名(pricing plan name)
+	// Id Universally Unique Identifier
+	Id Uuid `json:"id"`
+
+	// Name Pricing plan name
 	Name         string        `json:"name"`
 	PricingMenus []PricingMenu `json:"pricing_menus"`
 
-	// Used 料金プランの使用済み設定(pricing plan used settings)
+	// Used Pricing plan used settings
 	Used bool `json:"used"`
 }
 
 // PricingPlanProps defines model for PricingPlanProps.
 type PricingPlanProps struct {
-	// Description 料金プラン説明(pricing plan description)
+	// Description Pricing plan description
 	Description string `json:"description"`
 
-	// DisplayName 料金プラン表示名(pricing plan display name)
+	// DisplayName Pricing plan display name
 	DisplayName string `json:"display_name"`
 
-	// Name 料金プラン名(pricing plan name)
+	// Name Pricing plan name
 	Name         string        `json:"name"`
 	PricingMenus []PricingMenu `json:"pricing_menus"`
 
-	// Used 料金プランの使用済み設定(pricing plan used settings)
+	// Used Pricing plan used settings
 	Used bool `json:"used"`
 }
 
@@ -278,164 +332,180 @@ type PricingPlans struct {
 
 // PricingTier defines model for PricingTier.
 type PricingTier struct {
-	// FlatAmount 固定金額(fixed Amount)
+	// FlatAmount Fixed amount
 	FlatAmount uint64 `json:"flat_amount"`
 
-	// Inf inf
+	// Inf Indefinite
 	Inf bool `json:"inf"`
 
-	// UnitAmount 単位金額(amount per unit)
+	// UnitAmount Amount per unit
 	UnitAmount uint64 `json:"unit_amount"`
 
-	// UpTo 上限(upper limit)
+	// UpTo Upper limit
 	UpTo uint64 `json:"up_to"`
 }
 
 // PricingTieredUnit defines model for PricingTieredUnit.
 type PricingTieredUnit struct {
-	// AggregateUsage 使用量の集計方法(aggregate usage)
-	// sum: 期間内の使用量の合計(total usage during the period)
-	// max: 期間内の使用量の最大値(maximum usage during the period)
+	// AggregateUsage Aggregate usage
+	// sum: Total usage during the period
+	// max: Maximum usage during the period
 	AggregateUsage *AggregateUsage `json:"aggregate_usage,omitempty"`
 
-	// Currency 計測単位の通貨(unit of currency)
+	// Currency Unit of currency
 	Currency Currency `json:"currency"`
 
-	// Description 説明(description)
+	// Description Description
 	Description string `json:"description"`
 
-	// DisplayName 表示名(display name)
-	DisplayName      string `json:"display_name"`
-	Id               Uuid   `json:"id"`
-	MeteringUnitId   Uuid   `json:"metering_unit_id"`
+	// DisplayName Display Name
+	DisplayName string `json:"display_name"`
+
+	// Id Universally Unique Identifier
+	Id Uuid `json:"id"`
+
+	// MeteringUnitId Universally Unique Identifier
+	MeteringUnitId Uuid `json:"metering_unit_id"`
+
+	// MeteringUnitName Metering unit name
 	MeteringUnitName string `json:"metering_unit_name"`
 
-	// Name 名前(name)
+	// Name Name
 	Name string `json:"name"`
 
-	// RecurringInterval 繰り返し期間(cycle)
-	// month: 月単位(monthly)
-	// year: 年単位(yearly)
+	// RecurringInterval Cycle
+	// month: Monthly
+	// year: Yearly
 	RecurringInterval RecurringInterval `json:"recurring_interval"`
 	Tiers             []PricingTier     `json:"tiers"`
 
-	// Type 計測単位の種別(unit of measurement type)
-	// fixed: 固定ユニット(fixed unit)
-	// usage: 使用量ユニット(usage unit)
-	// tiered: 段階ユニット(tiered unit)
-	// tiered_usage: 段階的使用量ユニット(tiered usage unit)
+	// Type Unit of measurement type
+	// fixed: Fixed unit
+	// usage: Usage unit
+	// tiered: Tiered unit
+	// tiered_usage: Tiered usage unit
 	Type UnitType `json:"type"`
 
-	// UpperCount 上限値(upper limit)
+	// UpperCount Upper limit
 	UpperCount uint64 `json:"upper_count"`
-	Used       bool   `json:"used"`
+
+	// Used Indicates if the unit is used
+	Used bool `json:"used"`
 }
 
 // PricingTieredUnitForSave defines model for PricingTieredUnitForSave.
 type PricingTieredUnitForSave struct {
-	// AggregateUsage 使用量の集計方法(aggregate usage)
-	// sum: 期間内の使用量の合計(total usage during the period)
-	// max: 期間内の使用量の最大値(maximum usage during the period)
+	// AggregateUsage Aggregate usage
+	// sum: Total usage during the period
+	// max: Maximum usage during the period
 	AggregateUsage *AggregateUsage `json:"aggregate_usage,omitempty"`
 
-	// Currency 計測単位の通貨(unit of currency)
+	// Currency Unit of currency
 	Currency Currency `json:"currency"`
 
-	// Description 説明(description)
+	// Description Description
 	Description string `json:"description"`
 
-	// DisplayName 表示名(display name)
-	DisplayName      string `json:"display_name"`
+	// DisplayName Display Name
+	DisplayName string `json:"display_name"`
+
+	// MeteringUnitName Metering unit name
 	MeteringUnitName string `json:"metering_unit_name"`
 
-	// Name 名前(name)
+	// Name Name
 	Name  string        `json:"name"`
 	Tiers []PricingTier `json:"tiers"`
 
-	// Type 計測単位の種別(unit of measurement type)
-	// fixed: 固定ユニット(fixed unit)
-	// usage: 使用量ユニット(usage unit)
-	// tiered: 段階ユニット(tiered unit)
-	// tiered_usage: 段階的使用量ユニット(tiered usage unit)
+	// Type Unit of measurement type
+	// fixed: Fixed unit
+	// usage: Usage unit
+	// tiered: Tiered unit
+	// tiered_usage: Tiered usage unit
 	Type UnitType `json:"type"`
 
-	// UpperCount 上限値(upper limit)
+	// UpperCount Upper limit
 	UpperCount uint64 `json:"upper_count"`
 }
 
 // PricingTieredUsageUnit defines model for PricingTieredUsageUnit.
 type PricingTieredUsageUnit struct {
-	// AggregateUsage 使用量の集計方法(aggregate usage)
-	// sum: 期間内の使用量の合計(total usage during the period)
-	// max: 期間内の使用量の最大値(maximum usage during the period)
+	// AggregateUsage Aggregate usage
+	// sum: Total usage during the period
+	// max: Maximum usage during the period
 	AggregateUsage *AggregateUsage `json:"aggregate_usage,omitempty"`
 
-	// Currency 計測単位の通貨(unit of currency)
+	// Currency Unit of currency
 	Currency Currency `json:"currency"`
 
-	// Description 説明(description)
+	// Description Description
 	Description string `json:"description"`
 
-	// DisplayName 表示名(display name)
-	DisplayName    string `json:"display_name"`
-	Id             Uuid   `json:"id"`
-	MeteringUnitId Uuid   `json:"metering_unit_id"`
+	// DisplayName Display Name
+	DisplayName string `json:"display_name"`
 
-	// MeteringUnitName 計測ユニット名(metering unit name)
+	// Id Universally Unique Identifier
+	Id Uuid `json:"id"`
+
+	// MeteringUnitId Universally Unique Identifier
+	MeteringUnitId Uuid `json:"metering_unit_id"`
+
+	// MeteringUnitName Metering unit name
 	MeteringUnitName string `json:"metering_unit_name"`
 
-	// Name 名前(name)
+	// Name Name
 	Name string `json:"name"`
 
-	// RecurringInterval 繰り返し期間(cycle)
-	// month: 月単位(monthly)
-	// year: 年単位(yearly)
+	// RecurringInterval Cycle
+	// month: Monthly
+	// year: Yearly
 	RecurringInterval RecurringInterval `json:"recurring_interval"`
 	Tiers             []PricingTier     `json:"tiers"`
 
-	// Type 計測単位の種別(unit of measurement type)
-	// fixed: 固定ユニット(fixed unit)
-	// usage: 使用量ユニット(usage unit)
-	// tiered: 段階ユニット(tiered unit)
-	// tiered_usage: 段階的使用量ユニット(tiered usage unit)
+	// Type Unit of measurement type
+	// fixed: Fixed unit
+	// usage: Usage unit
+	// tiered: Tiered unit
+	// tiered_usage: Tiered usage unit
 	Type UnitType `json:"type"`
 
-	// UpperCount 上限値(upper limit)
+	// UpperCount Upper limit
 	UpperCount uint64 `json:"upper_count"`
-	Used       bool   `json:"used"`
+
+	// Used Indicates if the unit is used
+	Used bool `json:"used"`
 }
 
 // PricingTieredUsageUnitForSave defines model for PricingTieredUsageUnitForSave.
 type PricingTieredUsageUnitForSave struct {
-	// AggregateUsage 使用量の集計方法(aggregate usage)
-	// sum: 期間内の使用量の合計(total usage during the period)
-	// max: 期間内の使用量の最大値(maximum usage during the period)
+	// AggregateUsage Aggregate usage
+	// sum: Total usage during the period
+	// max: Maximum usage during the period
 	AggregateUsage *AggregateUsage `json:"aggregate_usage,omitempty"`
 
-	// Currency 計測単位の通貨(unit of currency)
+	// Currency Unit of currency
 	Currency Currency `json:"currency"`
 
-	// Description 説明(description)
+	// Description Description
 	Description string `json:"description"`
 
-	// DisplayName 表示名(display name)
+	// DisplayName Display Name
 	DisplayName string `json:"display_name"`
 
-	// MeteringUnitName 計測ユニット名(metering unit name)
+	// MeteringUnitName Metering unit name
 	MeteringUnitName string `json:"metering_unit_name"`
 
-	// Name 名前(name)
+	// Name Name
 	Name  string        `json:"name"`
 	Tiers []PricingTier `json:"tiers"`
 
-	// Type 計測単位の種別(unit of measurement type)
-	// fixed: 固定ユニット(fixed unit)
-	// usage: 使用量ユニット(usage unit)
-	// tiered: 段階ユニット(tiered unit)
-	// tiered_usage: 段階的使用量ユニット(tiered usage unit)
+	// Type Unit of measurement type
+	// fixed: Fixed unit
+	// usage: Usage unit
+	// tiered: Tiered unit
+	// tiered_usage: Tiered usage unit
 	Type UnitType `json:"type"`
 
-	// UpperCount 上限値(upper limit)
+	// UpperCount Upper limit
 	UpperCount uint64 `json:"upper_count"`
 }
 
@@ -451,23 +521,23 @@ type PricingUnit struct {
 
 // PricingUnitBaseProps defines model for PricingUnitBaseProps.
 type PricingUnitBaseProps struct {
-	// Currency 計測単位の通貨(unit of currency)
+	// Currency Unit of currency
 	Currency Currency `json:"currency"`
 
-	// Description 説明(description)
+	// Description Description
 	Description string `json:"description"`
 
-	// DisplayName 表示名(display name)
+	// DisplayName Display Name
 	DisplayName string `json:"display_name"`
 
-	// Name 名前(name)
+	// Name Name
 	Name string `json:"name"`
 
-	// Type 計測単位の種別(unit of measurement type)
-	// fixed: 固定ユニット(fixed unit)
-	// usage: 使用量ユニット(usage unit)
-	// tiered: 段階ユニット(tiered unit)
-	// tiered_usage: 段階的使用量ユニット(tiered usage unit)
+	// Type Unit of measurement type
+	// fixed: Fixed unit
+	// usage: Usage unit
+	// tiered: Tiered unit
+	// tiered_usage: Tiered usage unit
 	Type UnitType `json:"type"`
 }
 
@@ -483,156 +553,165 @@ type PricingUnits struct {
 
 // PricingUsageUnit defines model for PricingUsageUnit.
 type PricingUsageUnit struct {
-	// AggregateUsage 使用量の集計方法(aggregate usage)
-	// sum: 期間内の使用量の合計(total usage during the period)
-	// max: 期間内の使用量の最大値(maximum usage during the period)
+	// AggregateUsage Aggregate usage
+	// sum: Total usage during the period
+	// max: Maximum usage during the period
 	AggregateUsage *AggregateUsage `json:"aggregate_usage,omitempty"`
 
-	// Currency 計測単位の通貨(unit of currency)
+	// Currency Unit of currency
 	Currency Currency `json:"currency"`
 
-	// Description 説明(description)
+	// Description Description
 	Description string `json:"description"`
 
-	// DisplayName 表示名(display name)
-	DisplayName      string `json:"display_name"`
-	Id               Uuid   `json:"id"`
-	MeteringUnitId   Uuid   `json:"metering_unit_id"`
+	// DisplayName Display Name
+	DisplayName string `json:"display_name"`
+
+	// Id Universally Unique Identifier
+	Id Uuid `json:"id"`
+
+	// MeteringUnitId Universally Unique Identifier
+	MeteringUnitId Uuid `json:"metering_unit_id"`
+
+	// MeteringUnitName Metering unit name
 	MeteringUnitName string `json:"metering_unit_name"`
 
-	// Name 名前(name)
+	// Name Name
 	Name string `json:"name"`
 
-	// RecurringInterval 繰り返し期間(cycle)
-	// month: 月単位(monthly)
-	// year: 年単位(yearly)
+	// RecurringInterval Cycle
+	// month: Monthly
+	// year: Yearly
 	RecurringInterval RecurringInterval `json:"recurring_interval"`
 
-	// Type 計測単位の種別(unit of measurement type)
-	// fixed: 固定ユニット(fixed unit)
-	// usage: 使用量ユニット(usage unit)
-	// tiered: 段階ユニット(tiered unit)
-	// tiered_usage: 段階的使用量ユニット(tiered usage unit)
+	// Type Unit of measurement type
+	// fixed: Fixed unit
+	// usage: Usage unit
+	// tiered: Tiered unit
+	// tiered_usage: Tiered usage unit
 	Type UnitType `json:"type"`
 
-	// UnitAmount 使用量あたりの金額(amount per usage)
+	// UnitAmount Amount per usage
 	UnitAmount uint64 `json:"unit_amount"`
 
-	// UpperCount 上限値(upper limit)
+	// UpperCount Upper limit
 	UpperCount uint64 `json:"upper_count"`
 	Used       bool   `json:"used"`
 }
 
 // PricingUsageUnitForSave defines model for PricingUsageUnitForSave.
 type PricingUsageUnitForSave struct {
-	// AggregateUsage 使用量の集計方法(aggregate usage)
-	// sum: 期間内の使用量の合計(total usage during the period)
-	// max: 期間内の使用量の最大値(maximum usage during the period)
+	// AggregateUsage Aggregate usage
+	// sum: Total usage during the period
+	// max: Maximum usage during the period
 	AggregateUsage *AggregateUsage `json:"aggregate_usage,omitempty"`
 
-	// Currency 計測単位の通貨(unit of currency)
+	// Currency Unit of currency
 	Currency Currency `json:"currency"`
 
-	// Description 説明(description)
+	// Description Description
 	Description string `json:"description"`
 
-	// DisplayName 表示名(display name)
-	DisplayName      string `json:"display_name"`
+	// DisplayName Display Name
+	DisplayName string `json:"display_name"`
+
+	// MeteringUnitName Metering unit name
 	MeteringUnitName string `json:"metering_unit_name"`
 
-	// Name 名前(name)
+	// Name Name
 	Name string `json:"name"`
 
-	// Type 計測単位の種別(unit of measurement type)
-	// fixed: 固定ユニット(fixed unit)
-	// usage: 使用量ユニット(usage unit)
-	// tiered: 段階ユニット(tiered unit)
-	// tiered_usage: 段階的使用量ユニット(tiered usage unit)
+	// Type Unit of measurement type
+	// fixed: Fixed unit
+	// usage: Usage unit
+	// tiered: Tiered unit
+	// tiered_usage: Tiered usage unit
 	Type UnitType `json:"type"`
 
-	// UnitAmount 使用量あたりの金額(amount per usage)
+	// UnitAmount Amount per usage
 	UnitAmount uint64 `json:"unit_amount"`
 
-	// UpperCount 上限値(upper limit)
+	// UpperCount Upper limit
 	UpperCount uint64 `json:"upper_count"`
 }
 
-// RecurringInterval 繰り返し期間(cycle)
-// month: 月単位(monthly)
-// year: 年単位(yearly)
+// RecurringInterval Cycle
+// month: Monthly
+// year: Yearly
 type RecurringInterval string
 
 // SavePricingMenuParam defines model for SavePricingMenuParam.
 type SavePricingMenuParam struct {
-	// Description メニュー説明(menu description)
+	// Description Menu description
 	Description string `json:"description"`
 
-	// DisplayName メニュー表示名(menu display name)
+	// DisplayName Menu display name
 	DisplayName string `json:"display_name"`
 
-	// Name メニュー名(menu name)
+	// Name Menu name
 	Name string `json:"name"`
 
-	// UnitIds 追加するユニットID(unit id to add)
+	// UnitIds Unit IDs to add
 	UnitIds []Uuid `json:"unit_ids"`
 }
 
 // SavePricingPlanParam defines model for SavePricingPlanParam.
 type SavePricingPlanParam struct {
-	// Description 料金プラン説明(pricing plan description)
+	// Description Pricing plan description
 	Description string `json:"description"`
 
-	// DisplayName 料金プラン表示名(pricing plan display name)
+	// DisplayName Pricing plan display name
 	DisplayName string `json:"display_name"`
 
-	// MenuIds メニューID（料金プランに追加するメニューIDを設定）
-	// Menu ID (menu ID to be added to the pricing plan)
+	// MenuIds Menu ID to be added to the pricing plan
 	MenuIds []Uuid `json:"menu_ids"`
 
-	// Name 料金プラン名(pricing plan name)
+	// Name Pricing plan name
 	Name string `json:"name"`
 }
 
 // TaxRate defines model for TaxRate.
 type TaxRate struct {
-	// Country ISO 3166-1 alpha-2 の国コード(Country code of ISO 3166-1 alpha-2)
+	// Country Country code of ISO 3166-1 alpha-2
 	Country string `json:"country"`
 
-	// Description 説明(description)
+	// Description Description
 	Description string `json:"description"`
 
-	// DisplayName 表示名(display name)
+	// DisplayName Display name
 	DisplayName string `json:"display_name"`
-	Id          Uuid   `json:"id"`
 
-	// Inclusive 内税かどうか(inclusive or not)
+	// Id Universally Unique Identifier
+	Id Uuid `json:"id"`
+
+	// Inclusive Inclusive or not
 	Inclusive bool `json:"inclusive"`
 
-	// Name 税率の名前(name of tax rate)
+	// Name Name of tax rate
 	Name string `json:"name"`
 
-	// Percentage 税率(percentage)
+	// Percentage Percentage
 	Percentage float64 `json:"percentage"`
 }
 
 // TaxRateProps defines model for TaxRateProps.
 type TaxRateProps struct {
-	// Country ISO 3166-1 alpha-2 の国コード(Country code of ISO 3166-1 alpha-2)
+	// Country Country code of ISO 3166-1 alpha-2
 	Country string `json:"country"`
 
-	// Description 説明(description)
+	// Description Description
 	Description string `json:"description"`
 
-	// DisplayName 表示名(display name)
+	// DisplayName Display name
 	DisplayName string `json:"display_name"`
 
-	// Inclusive 内税かどうか(inclusive or not)
+	// Inclusive Inclusive or not
 	Inclusive bool `json:"inclusive"`
 
-	// Name 税率の名前(name of tax rate)
+	// Name Name of tax rate
 	Name string `json:"name"`
 
-	// Percentage 税率(percentage)
+	// Percentage Percentage
 	Percentage float64 `json:"percentage"`
 }
 
@@ -641,40 +720,43 @@ type TaxRates struct {
 	TaxRates []TaxRate `json:"tax_rates"`
 }
 
-// UnitType 計測単位の種別(unit of measurement type)
-// fixed: 固定ユニット(fixed unit)
-// usage: 使用量ユニット(usage unit)
-// tiered: 段階ユニット(tiered unit)
-// tiered_usage: 段階的使用量ユニット(tiered usage unit)
+// UnitType Unit of measurement type
+// fixed: Fixed unit
+// usage: Usage unit
+// tiered: Tiered unit
+// tiered_usage: Tiered usage unit
 type UnitType string
 
-// UpdateMeteringUnitTimestampCountMethod 更新方法(update method)
-// add: 加算(addition)
-// sub: 減算(subtraction)
-// direct: 上書き(overwrite)
+// UpdateMeteringUnitParam defines model for UpdateMeteringUnitParam.
+type UpdateMeteringUnitParam = MeteringUnitProps
+
+// UpdateMeteringUnitTimestampCountMethod Update method
+// add: Addition
+// sub: Subtraction
+// direct: Overwrite
 type UpdateMeteringUnitTimestampCountMethod string
 
 // UpdateMeteringUnitTimestampCountNowParam defines model for UpdateMeteringUnitTimestampCountNowParam.
 type UpdateMeteringUnitTimestampCountNowParam struct {
-	// Count 件数(count)
+	// Count Count
 	Count int `json:"count"`
 
-	// Method 更新方法(update method)
-	// add: 加算(addition)
-	// sub: 減算(subtraction)
-	// direct: 上書き(overwrite)
+	// Method Update method
+	// add: Addition
+	// sub: Subtraction
+	// direct: Overwrite
 	Method UpdateMeteringUnitTimestampCountMethod `json:"method"`
 }
 
 // UpdateMeteringUnitTimestampCountParam defines model for UpdateMeteringUnitTimestampCountParam.
 type UpdateMeteringUnitTimestampCountParam struct {
-	// Count 件数(count)
+	// Count Count
 	Count int `json:"count"`
 
-	// Method 更新方法(update method)
-	// add: 加算(addition)
-	// sub: 減算(subtraction)
-	// direct: 上書き(overwrite)
+	// Method Update method
+	// add: Addition
+	// sub: Subtraction
+	// direct: Overwrite
 	Method UpdateMeteringUnitTimestampCountMethod `json:"method"`
 }
 
@@ -694,14 +776,14 @@ type UpdatePricingUnitParam = PricingUnitForSave
 
 // UpdateTaxRateParam defines model for UpdateTaxRateParam.
 type UpdateTaxRateParam struct {
-	// Description 説明(description)
+	// Description Description
 	Description string `json:"description"`
 
-	// DisplayName 表示名(display name)
+	// DisplayName Display name
 	DisplayName string `json:"display_name"`
 }
 
-// Uuid defines model for Uuid.
+// Uuid Universally Unique Identifier
 type Uuid = string
 
 // DateString defines model for DateString.
@@ -710,8 +792,11 @@ type DateString = string
 // EndTimestamp defines model for EndTimestamp.
 type EndTimestamp = int
 
-// MenuId defines model for MenuId.
+// MenuId Universally Unique Identifier
 type MenuId = Uuid
+
+// MeteringUnitId defines model for MeteringUnitId.
+type MeteringUnitId = string
 
 // MeteringUnitName defines model for MeteringUnitName.
 type MeteringUnitName = string
@@ -719,16 +804,16 @@ type MeteringUnitName = string
 // MonthString defines model for MonthString.
 type MonthString = string
 
-// PlanId defines model for PlanId.
+// PlanId Universally Unique Identifier
 type PlanId = Uuid
 
-// PricingUnitId defines model for PricingUnitId.
+// PricingUnitId Universally Unique Identifier
 type PricingUnitId = Uuid
 
 // StartTimestamp defines model for StartTimestamp.
 type StartTimestamp = int
 
-// TaxRateId defines model for TaxRateId.
+// TaxRateId Universally Unique Identifier
 type TaxRateId = Uuid
 
 // TenantId defines model for TenantId.
@@ -739,10 +824,10 @@ type Timestamp = int
 
 // GetMeteringUnitDateCountByTenantIdAndUnitNameAndDatePeriodParams defines parameters for GetMeteringUnitDateCountByTenantIdAndUnitNameAndDatePeriod.
 type GetMeteringUnitDateCountByTenantIdAndUnitNameAndDatePeriodParams struct {
-	// StartTimestamp 開始日時(timestamp)
+	// StartTimestamp Start Date-Time
 	StartTimestamp *StartTimestamp `form:"start_timestamp,omitempty" json:"start_timestamp,omitempty"`
 
-	// EndTimestamp 終了日時(timestamp)
+	// EndTimestamp End Date-Time
 	EndTimestamp *EndTimestamp `form:"end_timestamp,omitempty" json:"end_timestamp,omitempty"`
 }
 
@@ -757,6 +842,12 @@ type UpdateMeteringUnitTimestampCountNowJSONRequestBody = UpdateMeteringUnitTime
 
 // UpdateMeteringUnitTimestampCountJSONRequestBody defines body for UpdateMeteringUnitTimestampCount for application/json ContentType.
 type UpdateMeteringUnitTimestampCountJSONRequestBody = UpdateMeteringUnitTimestampCountParam
+
+// CreateMeteringUnitJSONRequestBody defines body for CreateMeteringUnit for application/json ContentType.
+type CreateMeteringUnitJSONRequestBody = CreateMeteringUnitParam
+
+// UpdateMeteringUnitByIDJSONRequestBody defines body for UpdateMeteringUnitByID for application/json ContentType.
+type UpdateMeteringUnitByIDJSONRequestBody = UpdateMeteringUnitParam
 
 // CreatePricingPlanJSONRequestBody defines body for CreatePricingPlan for application/json ContentType.
 type CreatePricingPlanJSONRequestBody = CreatePricingPlanParam
