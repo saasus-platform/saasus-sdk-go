@@ -6994,6 +6994,7 @@ func (r UpdateSaasUserPasswordResponse) StatusCode() int {
 type UnlinkProviderResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON500      *Error
 }
 
 // Status returns HTTPResponse.Status
@@ -10577,6 +10578,16 @@ func ParseUnlinkProviderResponse(rsp *http.Response) (*UnlinkProviderResponse, e
 	response := &UnlinkProviderResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
 	}
 
 	return response, nil
