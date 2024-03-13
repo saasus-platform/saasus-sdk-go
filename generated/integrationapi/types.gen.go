@@ -33,14 +33,12 @@ const (
 	UsWest2      AwsRegion = "us-west-2"
 )
 
-// AwsRegion 中国の寧夏、北京を除く全てのAWSリージョンが選択可能です。
-//
-// All AWS regions except Ningxia and Beijing in China can be selected.
+// AwsRegion All AWS regions except Ningxia and Beijing in China can be selected.
 type AwsRegion string
 
 // CreateEventBridgeEventParam defines model for CreateEventBridgeEventParam.
 type CreateEventBridgeEventParam struct {
-	// EventMessages イベントメッセージ(event message)
+	// EventMessages event message
 	EventMessages []EventMessage `json:"event_messages"`
 }
 
@@ -55,24 +53,22 @@ type Error struct {
 
 // EventBridgeSettings defines model for EventBridgeSettings.
 type EventBridgeSettings struct {
-	// AwsAccountId AWSアカウントID(AWS Account ID)
+	// AwsAccountId AWS Account ID
 	AwsAccountId string `json:"aws_account_id"`
 
-	// AwsRegion 中国の寧夏、北京を除く全てのAWSリージョンが選択可能です。
-	//
-	// All AWS regions except Ningxia and Beijing in China can be selected.
+	// AwsRegion All AWS regions except Ningxia and Beijing in China can be selected.
 	AwsRegion AwsRegion `json:"aws_region"`
 }
 
 // EventMessage defines model for EventMessage.
 type EventMessage struct {
-	// EventDetailType 詳細イベントタイプ(detailed event type)
+	// EventDetailType detailed event type
 	EventDetailType string `json:"event_detail_type"`
 
-	// EventType イベントタイプ(event type)
+	// EventType event type
 	EventType string `json:"event_type"`
 
-	// Message イベントメッセージ(event message)
+	// Message event message
 	Message string `json:"message"`
 }
 
