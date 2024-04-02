@@ -92,7 +92,7 @@ type ClientInterface interface {
 	ReturnInternalServerError(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetLogs request
-	GetLogs(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetLogs(ctx context.Context, params *GetLogsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetLog request
 	GetLog(ctx context.Context, apiLogId ApiLogId, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -110,8 +110,8 @@ func (c *Client) ReturnInternalServerError(ctx context.Context, reqEditors ...Re
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetLogs(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetLogsRequest(c.Server)
+func (c *Client) GetLogs(ctx context.Context, params *GetLogsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetLogsRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +162,7 @@ func NewReturnInternalServerErrorRequest(server string) (*http.Request, error) {
 }
 
 // NewGetLogsRequest generates requests for GetLogs
-func NewGetLogsRequest(server string) (*http.Request, error) {
+func NewGetLogsRequest(server string, params *GetLogsParams) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -179,6 +179,74 @@ func NewGetLogsRequest(server string) (*http.Request, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	queryValues := queryURL.Query()
+
+	if params.CreatedDate != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "created_date", runtime.ParamLocationQuery, *params.CreatedDate); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.CreatedAt != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "created_at", runtime.ParamLocationQuery, *params.CreatedAt); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.Limit != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.Cursor != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "cursor", runtime.ParamLocationQuery, *params.Cursor); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
 
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
 	if err != nil {
@@ -269,7 +337,7 @@ type ClientWithResponsesInterface interface {
 	ReturnInternalServerErrorWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ReturnInternalServerErrorResponse, error)
 
 	// GetLogs request
-	GetLogsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetLogsResponse, error)
+	GetLogsWithResponse(ctx context.Context, params *GetLogsParams, reqEditors ...RequestEditorFn) (*GetLogsResponse, error)
 
 	// GetLog request
 	GetLogWithResponse(ctx context.Context, apiLogId ApiLogId, reqEditors ...RequestEditorFn) (*GetLogResponse, error)
@@ -353,8 +421,8 @@ func (c *ClientWithResponses) ReturnInternalServerErrorWithResponse(ctx context.
 }
 
 // GetLogsWithResponse request returning *GetLogsResponse
-func (c *ClientWithResponses) GetLogsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetLogsResponse, error) {
-	rsp, err := c.GetLogs(ctx, reqEditors...)
+func (c *ClientWithResponses) GetLogsWithResponse(ctx context.Context, params *GetLogsParams, reqEditors ...RequestEditorFn) (*GetLogsResponse, error) {
+	rsp, err := c.GetLogs(ctx, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
