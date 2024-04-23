@@ -12,7 +12,6 @@ type Comment struct {
 	Body      string `json:"body"`
 	CreatedAt int    `json:"created_at"`
 	Id        Uuid   `json:"id"`
-	UserId    Uuid   `json:"user_id"`
 }
 
 // Comments defines model for Comments.
@@ -22,8 +21,7 @@ type Comments struct {
 
 // CreateFeedbackCommentParam defines model for CreateFeedbackCommentParam.
 type CreateFeedbackCommentParam struct {
-	Body   string `json:"body"`
-	UserId Uuid   `json:"user_id"`
+	Body string `json:"body"`
 }
 
 // CreateFeedbackParam defines model for CreateFeedbackParam.

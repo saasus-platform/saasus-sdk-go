@@ -99,50 +99,48 @@ const (
 	GetAuthCredentialsParamsAuthFlowTempCodeAuth     GetAuthCredentialsParamsAuthFlow = "tempCodeAuth"
 )
 
-// AccountVerification アカウント認証設定(account authentication settings)
-// ※ 未提供の機能のため、変更・保存はできません(This function is not yet provided, so it cannot be changed or saved.)
+// AccountVerification Account authentication settings
+// ※ This function is not yet provided, so it cannot be changed or saved.
 type AccountVerification struct {
-	// SendingTo email: Eメール(e-mail)
+	// SendingTo email: e-mail
 	// sms: SMS
-	// smsOrEmail: SMS不可の場合にEメール(email if SMS is not possible)
+	// smsOrEmail: email if SMS is not possible
 	SendingTo AccountVerificationSendingTo `json:"sending_to"`
 
-	// VerificationMethod code: 検証コード(verification code)
-	// link: 検証リンク(verification link)
-	// ※ 未提供の機能のため、変更・保存はできません(This function is not yet provided, so it cannot be changed or saved.)
+	// VerificationMethod code: verification code
+	// link: verification link
+	// ※ This function is not yet provided, so it cannot be changed or saved.
 	VerificationMethod AccountVerificationVerificationMethod `json:"verification_method"`
 }
 
-// AccountVerificationSendingTo email: Eメール(e-mail)
+// AccountVerificationSendingTo email: e-mail
 // sms: SMS
-// smsOrEmail: SMS不可の場合にEメール(email if SMS is not possible)
+// smsOrEmail: email if SMS is not possible
 type AccountVerificationSendingTo string
 
-// AccountVerificationVerificationMethod code: 検証コード(verification code)
-// link: 検証リンク(verification link)
-// ※ 未提供の機能のため、変更・保存はできません(This function is not yet provided, so it cannot be changed or saved.)
+// AccountVerificationVerificationMethod code: verification code
+// link: verification link
+// ※ This function is not yet provided, so it cannot be changed or saved.
 type AccountVerificationVerificationMethod string
 
 // Attribute defines model for Attribute.
 type Attribute struct {
-	// AttributeName 属性名(attribute name)
+	// AttributeName Attribute Name
 	AttributeName string `json:"attribute_name"`
 
-	// AttributeType 型（dateはYYYY-MM-DDの形式で使用する事ができます。）
-	// (Type (date can be set to YYYY-MM-DD format.))
+	// AttributeType Type (date can be set to YYYY-MM-DD format.)
 	AttributeType AttributeType `json:"attribute_type"`
 
-	// DisplayName 表示名(display name)
+	// DisplayName Display Name
 	DisplayName string `json:"display_name"`
 }
 
-// AttributeType 型（dateはYYYY-MM-DDの形式で使用する事ができます。）
-// (Type (date can be set to YYYY-MM-DD format.))
+// AttributeType Type (date can be set to YYYY-MM-DD format.)
 type AttributeType string
 
 // AuthInfo defines model for AuthInfo.
 type AuthInfo struct {
-	// CallbackUrl 認証後遷移先(Redirect After Authentication)
+	// CallbackUrl Redirect After Authentication
 	CallbackUrl string `json:"callback_url"`
 }
 
@@ -156,58 +154,46 @@ type BasicInfo struct {
 	CertificateDnsRecord DnsRecord `json:"certificate_dns_record"`
 	CloudFrontDnsRecord  DnsRecord `json:"cloud_front_dns_record"`
 
-	// DefaultDomainName デフォルトドメイン名(Default Domain Name)
+	// DefaultDomainName Default Domain Name
 	DefaultDomainName string `json:"default_domain_name"`
 
-	// DkimDnsRecords DKIM DNS レコード(DKIM DNS Records)
+	// DkimDnsRecords DKIM DNS Records
 	DkimDnsRecords []DnsRecord `json:"dkim_dns_records"`
 
-	// DomainName ドメイン名(Domain Name)
+	// DomainName Domain Name
 	DomainName string `json:"domain_name"`
 
-	// FromEmailAddress 認証メールの送信元メールアドレス(Sender Email for Authentication Email)
+	// FromEmailAddress Sender Email for Authentication Email
 	FromEmailAddress string `json:"from_email_address"`
 
-	// IsDnsValidated DNSレコードの検証結果(DNS Record Verification Results)
+	// IsDnsValidated DNS Record Verification Results
 	IsDnsValidated bool `json:"is_dns_validated"`
 
-	// IsSesSandboxGranted SESのサンドボックス解除及びCognitoのSES設定結果(SES sandbox release and Cognito SES configuration results)
+	// IsSesSandboxGranted SES sandbox release and Cognito SES configuration results
 	IsSesSandboxGranted bool `json:"is_ses_sandbox_granted"`
 
-	// ReplyEmailAddress 認証メールの返信元メールアドレス(Reply-from email address of authentication email)
+	// ReplyEmailAddress Reply-from email address of authentication email
 	ReplyEmailAddress string `json:"reply_email_address"`
 }
 
 // BillingAddress defines model for BillingAddress.
 type BillingAddress struct {
-	// AdditionalAddressInfo 建物名・部屋番号などの住所に関する追加情報
-	//
-	// Additional information about the address, such as a building name, floor, or department name.
+	// AdditionalAddressInfo Additional information about the address, such as a building name, floor, or department name.
 	AdditionalAddressInfo *string `json:"additional_address_info,omitempty"`
 
-	// City 住所の市区町村
-	//
-	// City, district, suburb, town, or village.
+	// City City, district, suburb, town, or village.
 	City string `json:"city"`
 
-	// Country 住所の国を ISO 3166-1 alpha-2 コードで指定します。
-	//
-	// Country of the address using ISO 3166-1 alpha-2 code.
+	// Country Country of the address using ISO 3166-1 alpha-2 code.
 	Country string `json:"country"`
 
-	// PostalCode 郵便番号
-	//
-	// ZIP or postal code.
+	// PostalCode ZIP or postal code.
 	PostalCode string `json:"postal_code"`
 
-	// State 住所の都道府県または州
-	//
-	// State name or abbreviation.
+	// State State name or abbreviation.
 	State string `json:"state"`
 
-	// Street 住所の通りの名前や番地を含めた部分
-	//
-	// Street address, apartment or suite number.
+	// Street Street address, apartment or suite number.
 	Street string `json:"street"`
 }
 
@@ -215,15 +201,16 @@ type BillingAddress struct {
 type BillingInfo struct {
 	Address BillingAddress `json:"address"`
 
-	// InvoiceLanguage 請求書の言語
-	//
-	// Language of invoice
+	// InvoiceLanguage Language of invoice
 	InvoiceLanguage InvoiceLanguage `json:"invoice_language"`
 
-	// Name 請求用のテナント名
-	//
-	// Tenant name for billing
+	// Name Tenant name for billing
 	Name string `json:"name"`
+}
+
+// CloudFormationLaunchStackLink defines model for CloudFormationLaunchStackLink.
+type CloudFormationLaunchStackLink struct {
+	Link string `json:"link"`
 }
 
 // ConfirmEmailUpdateParam defines model for ConfirmEmailUpdateParam.
@@ -240,37 +227,37 @@ type ConfirmExternalUserLinkParam struct {
 
 // ConfirmSignUpWithAwsMarketplaceParam defines model for ConfirmSignUpWithAwsMarketplaceParam.
 type ConfirmSignUpWithAwsMarketplaceParam struct {
-	// AccessToken アクセストークン(access token)
+	// AccessToken Access token
 	AccessToken string `json:"access_token"`
 
 	// RegistrationToken Registration Token
 	RegistrationToken string `json:"registration_token"`
 
-	// TenantName テナント名(tenant name)
+	// TenantName Tenant name
 	TenantName *string `json:"tenant_name,omitempty"`
 }
 
 // CreateAuthCredentialsParam defines model for CreateAuthCredentialsParam.
 type CreateAuthCredentialsParam = Credentials
 
-// CreateEnvParam 環境情報(env info)
+// CreateEnvParam env info
 type CreateEnvParam = Env
 
-// CreateRoleParam 役割(ロール)情報(role info)
+// CreateRoleParam role info
 type CreateRoleParam = Role
 
 // CreateSaasUserParam defines model for CreateSaasUserParam.
 type CreateSaasUserParam struct {
-	// Email メールアドレス(E-mail)
+	// Email E-mail
 	Email string `json:"email"`
 
-	// Password パスワード(Password)
+	// Password Password
 	Password string `json:"password"`
 }
 
 // CreateSecretCodeParam defines model for CreateSecretCodeParam.
 type CreateSecretCodeParam struct {
-	// AccessToken アクセストークン(access token)
+	// AccessToken access token
 	AccessToken string `json:"access_token"`
 }
 
@@ -279,15 +266,15 @@ type CreateTenantAttributeParam = Attribute
 
 // CreateTenantInvitationParam defines model for CreateTenantInvitationParam.
 type CreateTenantInvitationParam struct {
-	// AccessToken 招待を作成するユーザーのアクセストークン(access token of the user who creates an invitation)
+	// AccessToken Access token of the user who creates an invitation
 	AccessToken string `json:"access_token"`
 
-	// Email 招待するユーザーのメールアドレス(email address of the user to be invited)
+	// Email Email address of the user to be invited
 	Email string `json:"email"`
 	Envs  []struct {
 		Id Id `json:"id"`
 
-		// RoleNames 役割名(role name)
+		// RoleNames Role name
 		RoleNames []string `json:"role_names"`
 	} `json:"envs"`
 }
@@ -297,18 +284,16 @@ type CreateTenantParam = TenantProps
 
 // CreateTenantUserParam defines model for CreateTenantUserParam.
 type CreateTenantUserParam struct {
-	// Attributes 属性情報（SaaS 開発コンソールでユーザー属性定義を行い設定された情報を取得します）
-	//
-	// Attribute information (Get information set by defining user attributes in the SaaS development console)
+	// Attributes Attribute information (Get information set by defining user attributes in the SaaS development console)
 	Attributes map[string]interface{} `json:"attributes"`
 
-	// Email メールアドレス(e-mail)
+	// Email E-mail
 	Email string `json:"email"`
 }
 
 // CreateTenantUserRolesParam defines model for CreateTenantUserRolesParam.
 type CreateTenantUserRolesParam struct {
-	// RoleNames 役割(ロール)情報(Role Info)
+	// RoleNames Role Info
 	RoleNames []string `json:"role_names"`
 }
 
@@ -317,65 +302,62 @@ type CreateUserAttributeParam = Attribute
 
 // Credentials defines model for Credentials.
 type Credentials struct {
-	// AccessToken アクセストークン(access token)
+	// AccessToken Access token
 	AccessToken string `json:"access_token"`
 
-	// IdToken IDトークン(ID token)
+	// IdToken ID token
 	IdToken string `json:"id_token"`
 
-	// RefreshToken リフレッシュトークン(refresh token)
+	// RefreshToken Refresh token
 	RefreshToken *string `json:"refresh_token,omitempty"`
 }
 
 // CustomizePageProps defines model for CustomizePageProps.
 type CustomizePageProps struct {
-	// HtmlContents 画面のHTMLを編集できます
-	// ※ 未提供の機能のため、変更・保存はできません
-	//
-	// Edit page HTML
+	// HtmlContents Edit page HTML
 	// ※ This function is not yet provided, so it cannot be changed or saved.
 	HtmlContents string `json:"html_contents"`
 
-	// IsPrivacyPolicy プライバシーポリシーチェックボックスを表示するが設定されているか(show the privacy policy checkbox)
+	// IsPrivacyPolicy show the privacy policy checkbox
 	IsPrivacyPolicy bool `json:"is_privacy_policy"`
 
-	// IsTermsOfService 利用規約の同意チェックボックスを表示するが設定されているか(display the terms of use agreement check box)
+	// IsTermsOfService display the terms of use agreement check box
 	IsTermsOfService bool `json:"is_terms_of_service"`
 }
 
 // CustomizePageSettings defines model for CustomizePageSettings.
 type CustomizePageSettings struct {
-	// Favicon ファビコン(favicon)
+	// Favicon favicon
 	Favicon string `json:"favicon"`
 
-	// GoogleTagManagerContainerId Google Tag Manager コンテナ ID(Google Tag Manager container ID)
+	// GoogleTagManagerContainerId Google Tag Manager container ID
 	GoogleTagManagerContainerId string `json:"google_tag_manager_container_id"`
 
-	// Icon サービスアイコン(service icon)
+	// Icon service icon
 	Icon string `json:"icon"`
 
-	// PrivacyPolicyUrl プライバシーポリシーURL(privacy policy URL)
+	// PrivacyPolicyUrl privacy policy URL
 	PrivacyPolicyUrl string `json:"privacy_policy_url"`
 
-	// TermsOfServiceUrl 利用規約URL(terms of service URL)
+	// TermsOfServiceUrl terms of service URL
 	TermsOfServiceUrl string `json:"terms_of_service_url"`
 
-	// Title サービス名(service name)
+	// Title service name
 	Title string `json:"title"`
 }
 
 // CustomizePageSettingsProps defines model for CustomizePageSettingsProps.
 type CustomizePageSettingsProps struct {
-	// GoogleTagManagerContainerId Google Tag Manager コンテナ ID(Google Tag Manager container ID)
+	// GoogleTagManagerContainerId Google Tag Manager container ID
 	GoogleTagManagerContainerId string `json:"google_tag_manager_container_id"`
 
-	// PrivacyPolicyUrl プライバシーポリシーURL(privacy policy URL)
+	// PrivacyPolicyUrl privacy policy URL
 	PrivacyPolicyUrl string `json:"privacy_policy_url"`
 
-	// TermsOfServiceUrl 利用規約URL(terms of service URL)
+	// TermsOfServiceUrl terms of service URL
 	TermsOfServiceUrl string `json:"terms_of_service_url"`
 
-	// Title サービス名(service name)
+	// Title service name
 	Title string `json:"title"`
 }
 
@@ -386,54 +368,50 @@ type CustomizePages struct {
 	SignUpPage        CustomizePageProps `json:"sign_up_page"`
 }
 
-// DeleteUsage stripe連携している場合で、プラン変更時に従量課金アイテムを削除するか設定できます。
-// プラン変更した場合に、現在のサブスクリプションに含まれる従量課金アイテムを全て削除して、従量課金アイテムに基づく請求の発生を止めることができます。
-// 即時に記録している使用量がクリアされます。それらは復元できないため、delete_usageをtrueにしたプラン変更予約は取り消しできません。
-//
-// If you have a stripe linkage,  you can set whether to delete pay-as-you-go items when changing plans.
+// DeleteUsage If you have a stripe linkage,  you can set whether to delete pay-as-you-go items when changing plans.
 // When you change plan, you can remove all pay-as-you-go items included in your current subscription to stop being billed based on pay-as-you-go items.
 // The recorded usage is cleared immediately. Since it cannot be restored, please note that plan change reservations with delete_usage set to true cannot be canceled.
 type DeleteUsage = bool
 
-// DeviceConfiguration 信頼済みデバイスの記憶の設定(settings for remembering trusted devices)
+// DeviceConfiguration Settings for remembering trusted devices
 type DeviceConfiguration struct {
-	// DeviceRemembering always: 常に記憶する(always remember)
-	// userOptIn: ユーザーオプトイン(user opt-in)
-	// no: (don't save)
+	// DeviceRemembering always: always remember
+	// userOptIn: user opt-in
+	// no: don't save
 	DeviceRemembering DeviceConfigurationDeviceRemembering `json:"device_remembering"`
 }
 
-// DeviceConfigurationDeviceRemembering always: 常に記憶する(always remember)
-// userOptIn: ユーザーオプトイン(user opt-in)
-// no: (don't save)
+// DeviceConfigurationDeviceRemembering always: always remember
+// userOptIn: user opt-in
+// no: don't save
 type DeviceConfigurationDeviceRemembering string
 
 // DnsRecord defines model for DnsRecord.
 type DnsRecord struct {
-	// Name レコード名(Record Name)
+	// Name Record Name
 	Name string `json:"name"`
 
-	// Type CNAMEリソースレコード(CNAME Resource Record)
+	// Type CNAME Resource Record
 	Type DnsRecordType `json:"type"`
 
-	// Value 値(Value)
+	// Value Value
 	Value string `json:"value"`
 }
 
-// DnsRecordType CNAMEリソースレコード(CNAME Resource Record)
+// DnsRecordType CNAME Resource Record
 type DnsRecordType string
 
-// Env 環境情報(env info)
+// Env env info
 type Env struct {
-	// DisplayName 環境表示名(env display name)
+	// DisplayName env display name
 	DisplayName *string `json:"display_name,omitempty"`
 	Id          Id      `json:"id"`
 
-	// Name 環境名(env name)
+	// Name env name
 	Name string `json:"name"`
 }
 
-// Envs env一覧(env list)
+// Envs env list
 type Envs struct {
 	Envs []Env `json:"envs"`
 }
@@ -452,19 +430,19 @@ type Error struct {
 // Id defines model for Id.
 type Id = uint64
 
-// IdentityProviderConfiguration 外部IDプロバイダを利用したサインインの設定をするために必要な情報です。(This information is required to set up sign-in using an external identity provider.)
-// 変更はできません。(It cannot be changed.)
+// IdentityProviderConfiguration This information is required to set up sign-in using an external identity provider.
+// It cannot be changed.
 type IdentityProviderConfiguration struct {
-	// Domain ドメイン(domain)
+	// Domain domain
 	Domain string `json:"domain"`
 
-	// EntityId 識別子(entity ID)
+	// EntityId entity ID
 	EntityId string `json:"entity_id"`
 
-	// RedirectUrl リダイレクトURL(redirect URL)
+	// RedirectUrl redirect URL
 	RedirectUrl string `json:"redirect_url"`
 
-	// ReplyUrl 応答URL(reply URL)
+	// ReplyUrl reply URL
 	ReplyUrl string `json:"reply_url"`
 }
 
@@ -489,15 +467,15 @@ type IdentityProviders struct {
 
 // Invitation defines model for Invitation.
 type Invitation struct {
-	// Email 招待されたユーザーのメールアドレス(email address of the invited user)
+	// Email Email address of the invited user
 	Email string    `json:"email"`
 	Envs  []UserEnv `json:"envs"`
 
-	// ExpiredAt 招待の有効期限(expiration date of the invitation)
+	// ExpiredAt Expiration date of the invitation
 	ExpiredAt int  `json:"expired_at"`
 	Id        Uuid `json:"id"`
 
-	// InvitationUrl 招待URL(invitation URL)
+	// InvitationUrl Invitation URL
 	InvitationUrl string           `json:"invitation_url"`
 	Status        InvitationStatus `json:"status"`
 }
@@ -505,68 +483,66 @@ type Invitation struct {
 // InvitationStatus defines model for InvitationStatus.
 type InvitationStatus string
 
-// InvitationValidity 招待の有効性(invitation validity)
+// InvitationValidity Invitation validity
 type InvitationValidity struct {
-	// IsValid 招待が有効か否か(Whether the validation is valid or not)
+	// IsValid Whether the validation is valid or not
 	IsValid bool `json:"is_valid"`
 }
 
 // Invitations defines model for Invitations.
 type Invitations struct {
-	// Invitations 招待一覧(invitation list)
+	// Invitations Invitation list
 	Invitations []Invitation `json:"invitations"`
 }
 
-// InvoiceLanguage 請求書の言語
-//
-// Language of invoice
+// InvoiceLanguage Language of invoice
 type InvoiceLanguage string
 
 // LinkAwsMarketplaceParam defines model for LinkAwsMarketplaceParam.
 type LinkAwsMarketplaceParam struct {
-	// AccessToken アクセストークン(access token)
+	// AccessToken Access token
 	AccessToken string `json:"access_token"`
 
 	// RegistrationToken Registration Token
 	RegistrationToken string `json:"registration_token"`
 
-	// TenantId テナントID(tenant ID)
+	// TenantId Tenant ID
 	TenantId string `json:"tenant_id"`
 }
 
 // MessageTemplate defines model for MessageTemplate.
 type MessageTemplate struct {
-	// Message メッセージ(message)
+	// Message Message
 	Message string `json:"message"`
 
-	// Subject タイトル(title)
+	// Subject Title
 	Subject string `json:"subject"`
 }
 
-// MfaConfiguration MFAデバイス認証設定(MFA device authentication settings)
-// ※ 未提供の機能のため、変更・保存はできません(This function is not yet provided, so it cannot be changed or saved.)
+// MfaConfiguration MFA device authentication settings
+// ※ This function is not yet provided, so it cannot be changed or saved.
 type MfaConfiguration struct {
-	// MfaConfiguration on: 全ユーザーがログイン時に適用(apply when all users log in)
-	// optional: MFA要素が有効になっている個別ユーザーに適用(apply to individual users with MFA factor enabled)
-	// ※ パラメータは現在optionalで固定となります。(The parameter is currently optional and fixed.)
+	// MfaConfiguration on: apply when all users log in
+	// optional: apply to individual users with MFA factor enabled
+	// ※ The parameter is currently optional and fixed.
 	MfaConfiguration MfaConfigurationMfaConfiguration `json:"mfa_configuration"`
 }
 
-// MfaConfigurationMfaConfiguration on: 全ユーザーがログイン時に適用(apply when all users log in)
-// optional: MFA要素が有効になっている個別ユーザーに適用(apply to individual users with MFA factor enabled)
-// ※ パラメータは現在optionalで固定となります。(The parameter is currently optional and fixed.)
+// MfaConfigurationMfaConfiguration on: apply when all users log in
+// optional: apply to individual users with MFA factor enabled
+// ※ The parameter is currently optional and fixed.
 type MfaConfigurationMfaConfiguration string
 
 // MfaPreference defines model for MfaPreference.
 type MfaPreference struct {
-	// Enabled MFAを有効にするか否か(enable MFA)
+	// Enabled enable MFA
 	Enabled bool `json:"enabled"`
 
-	// Method MFAの方法(enabledがtrueの場合は必須)(MFA method (required if enabled is true))
+	// Method MFA method (required if enabled is true)
 	Method *MfaPreferenceMethod `json:"method,omitempty"`
 }
 
-// MfaPreferenceMethod MFAの方法(enabledがtrueの場合は必須)(MFA method (required if enabled is true))
+// MfaPreferenceMethod MFA method (required if enabled is true)
 type MfaPreferenceMethod string
 
 // NotificationMessages defines model for NotificationMessages.
@@ -582,52 +558,45 @@ type NotificationMessages struct {
 	VerifyUserAttribute MessageTemplate `json:"verify_user_attribute"`
 }
 
-// PasswordPolicy パスワードポリシー(password policy)
+// PasswordPolicy Password Policy
 type PasswordPolicy struct {
-	// IsRequireLowercase 一文字以上の小文字を含むが設定されているか(contains one or more lowercase characters)
+	// IsRequireLowercase Contains one or more lowercase characters
 	IsRequireLowercase bool `json:"is_require_lowercase"`
 
-	// IsRequireNumbers 一文字以上の数字を含むが設定されているか(contains one or more numeric characters)
+	// IsRequireNumbers Contains one or more numeric characters
 	IsRequireNumbers bool `json:"is_require_numbers"`
 
-	// IsRequireSymbols 一文字以上の特殊文字を含むが設定されているか(contains one or more special characters)
+	// IsRequireSymbols Contains one or more special characters
 	IsRequireSymbols bool `json:"is_require_symbols"`
 
-	// IsRequireUppercase 一文字以上の大文字を含むが設定されているか(contains one or more uppercase letters)
+	// IsRequireUppercase Contains one or more uppercase letters
 	IsRequireUppercase bool `json:"is_require_uppercase"`
 
-	// MinimumLength 最小文字数(minimum number of characters)
+	// MinimumLength Minimum number of characters
 	MinimumLength uint64 `json:"minimum_length"`
 
-	// TemporaryPasswordValidityDays 仮パスワードの有効期限(temporary password expiration date)
+	// TemporaryPasswordValidityDays Temporary password expiration date
 	TemporaryPasswordValidityDays uint64 `json:"temporary_password_validity_days"`
 }
 
 // PlanHistories defines model for PlanHistories.
 type PlanHistories struct {
-	// PlanHistories 料金プラン履歴
+	// PlanHistories Plan History
 	PlanHistories []PlanHistory `json:"plan_histories"`
 }
 
 // PlanHistory defines model for PlanHistory.
 type PlanHistory struct {
-	// DeleteUsage stripe連携している場合で、プラン変更時に従量課金アイテムを削除するか設定できます。
-	// プラン変更した場合に、現在のサブスクリプションに含まれる従量課金アイテムを全て削除して、従量課金アイテムに基づく請求の発生を止めることができます。
-	// 即時に記録している使用量がクリアされます。それらは復元できないため、delete_usageをtrueにしたプラン変更予約は取り消しできません。
-	//
-	// If you have a stripe linkage,  you can set whether to delete pay-as-you-go items when changing plans.
+	// DeleteUsage If you have a stripe linkage,  you can set whether to delete pay-as-you-go items when changing plans.
 	// When you change plan, you can remove all pay-as-you-go items included in your current subscription to stop being billed based on pay-as-you-go items.
 	// The recorded usage is cleared immediately. Since it cannot be restored, please note that plan change reservations with delete_usage set to true cannot be canceled.
 	DeleteUsage *DeleteUsage `json:"delete_usage,omitempty"`
 
-	// PlanAppliedAt 登録日時
+	// PlanAppliedAt Registration date
 	PlanAppliedAt int  `json:"plan_applied_at"`
 	PlanId        Uuid `json:"plan_id"`
 
-	// ProrationBehavior stripe連携している場合で、プラン変更時の比例配分の挙動を設定できます。
-	// プラン変更した場合に、請求金額を日割り計算し次回請求書に反映させるか、日割り計算した請求を即時に発行する、日割り計算をしないを設定できます。
-	//
-	// If you have a strine linkage, you can set the behavior of the proportional allocation when changing plans.
+	// ProrationBehavior If you have a strine linkage, you can set the behavior of the proportional allocation when changing plans.
 	// When a plan is changed, you can set whether to prorate the billing amount and reflect it on the next invoice, to issue a prorated invoice immediately, or not to prorate at all.
 	ProrationBehavior *ProrationBehavior `json:"proration_behavior,omitempty"`
 	TaxRateId         *Uuid              `json:"tax_rate_id,omitempty"`
@@ -635,33 +604,22 @@ type PlanHistory struct {
 
 // PlanReservation defines model for PlanReservation.
 type PlanReservation struct {
-	// DeleteUsage stripe連携している場合で、プラン変更時に従量課金アイテムを削除するか設定できます。
-	// プラン変更した場合に、現在のサブスクリプションに含まれる従量課金アイテムを全て削除して、従量課金アイテムに基づく請求の発生を止めることができます。
-	// 即時に記録している使用量がクリアされます。それらは復元できないため、delete_usageをtrueにしたプラン変更予約は取り消しできません。
-	//
-	// If you have a stripe linkage,  you can set whether to delete pay-as-you-go items when changing plans.
+	// DeleteUsage If you have a stripe linkage,  you can set whether to delete pay-as-you-go items when changing plans.
 	// When you change plan, you can remove all pay-as-you-go items included in your current subscription to stop being billed based on pay-as-you-go items.
 	// The recorded usage is cleared immediately. Since it cannot be restored, please note that plan change reservations with delete_usage set to true cannot be canceled.
 	DeleteUsage       *DeleteUsage `json:"delete_usage,omitempty"`
 	NextPlanId        *Uuid        `json:"next_plan_id,omitempty"`
 	NextPlanTaxRateId *Uuid        `json:"next_plan_tax_rate_id,omitempty"`
 
-	// ProrationBehavior stripe連携している場合で、プラン変更時の比例配分の挙動を設定できます。
-	// プラン変更した場合に、請求金額を日割り計算し次回請求書に反映させるか、日割り計算した請求を即時に発行する、日割り計算をしないを設定できます。
-	//
-	// If you have a strine linkage, you can set the behavior of the proportional allocation when changing plans.
+	// ProrationBehavior If you have a strine linkage, you can set the behavior of the proportional allocation when changing plans.
 	// When a plan is changed, you can set whether to prorate the billing amount and reflect it on the next invoice, to issue a prorated invoice immediately, or not to prorate at all.
 	ProrationBehavior *ProrationBehavior `json:"proration_behavior,omitempty"`
 
-	// UsingNextPlanFrom 次回料金プラン開始日時（stripe連携時、当月月初の0時（UTC）を指定すると当月月初開始のサブスクリプションを作成できます。ex. 2023年1月の場合は、1672531200 ）
-	// (Next billing plan start time (When using stripe, you can create a subscription that starts at the beginning of the current month by specifying 00:00 (UTC) at the beginning of the current month. Ex. 1672531200 for January 2023.))
+	// UsingNextPlanFrom Next billing plan start time (When using stripe, you can create a subscription that starts at the beginning of the current month by specifying 00:00 (UTC) at the beginning of the current month. Ex. 1672531200 for January 2023.)
 	UsingNextPlanFrom *int `json:"using_next_plan_from,omitempty"`
 }
 
-// ProrationBehavior stripe連携している場合で、プラン変更時の比例配分の挙動を設定できます。
-// プラン変更した場合に、請求金額を日割り計算し次回請求書に反映させるか、日割り計算した請求を即時に発行する、日割り計算をしないを設定できます。
-//
-// If you have a strine linkage, you can set the behavior of the proportional allocation when changing plans.
+// ProrationBehavior If you have a strine linkage, you can set the behavior of the proportional allocation when changing plans.
 // When a plan is changed, you can set whether to prorate the billing amount and reflect it on the next invoice, to issue a prorated invoice immediately, or not to prorate at all.
 type ProrationBehavior string
 
@@ -671,13 +629,13 @@ type ProviderName string
 // ProviderType defines model for ProviderType.
 type ProviderType string
 
-// RecaptchaProps reCAPTCHA認証設定(reCAPTCHA authentication settings)
-// ※ 未提供の機能のため、変更・保存はできません(This function is not yet provided, so it cannot be changed or saved.)
+// RecaptchaProps reCAPTCHA authentication settings
+// ※ This function is not yet provided, so it cannot be changed or saved.
 type RecaptchaProps struct {
-	// SecretKey シークレットキー(secret key)
+	// SecretKey secret key
 	SecretKey string `json:"secret_key"`
 
-	// SiteKey サイトキー(site key)
+	// SiteKey site key
 	SiteKey string `json:"site_key"`
 }
 
@@ -685,7 +643,7 @@ type RecaptchaProps struct {
 type RequestEmailUpdateParam struct {
 	AccessToken string `json:"access_token"`
 
-	// Email メールアドレス(Email Address)
+	// Email Email Address
 	Email string `json:"email"`
 }
 
@@ -696,16 +654,16 @@ type RequestExternalUserLinkParam struct {
 
 // ResendSignUpConfirmationEmailParam defines model for ResendSignUpConfirmationEmailParam.
 type ResendSignUpConfirmationEmailParam struct {
-	// Email メールアドレス(Email Address)
+	// Email Email Address
 	Email string `json:"email"`
 }
 
-// Role 役割(ロール)情報(role info)
+// Role role info
 type Role struct {
-	// DisplayName 役割(ロール)表示名(role display name)
+	// DisplayName role display name
 	DisplayName string `json:"display_name"`
 
-	// RoleName 役割(ロール)名(role name)
+	// RoleName role name
 	RoleName string `json:"role_name"`
 }
 
@@ -716,7 +674,7 @@ type Roles struct {
 
 // SaasUser defines model for SaasUser.
 type SaasUser struct {
-	// Email メールアドレス(E-mail)
+	// Email E-mail
 	Email string `json:"email"`
 	Id    Uuid   `json:"id"`
 }
@@ -726,149 +684,148 @@ type SaasUsers struct {
 	Users []SaasUser `json:"users"`
 }
 
-// SelfRegist セルフサインアップを許可設定(self sign-up permission)
+// SelfRegist self sign-up permission
 type SelfRegist struct {
 	Enable bool `json:"enable"`
 }
 
 // SignInSettings defines model for SignInSettings.
 type SignInSettings struct {
-	// AccountVerification アカウント認証設定(account authentication settings)
-	// ※ 未提供の機能のため、変更・保存はできません(This function is not yet provided, so it cannot be changed or saved.)
+	// AccountVerification Account authentication settings
+	// ※ This function is not yet provided, so it cannot be changed or saved.
 	AccountVerification AccountVerification `json:"account_verification"`
 
-	// DeviceConfiguration 信頼済みデバイスの記憶の設定(settings for remembering trusted devices)
+	// DeviceConfiguration Settings for remembering trusted devices
 	DeviceConfiguration DeviceConfiguration `json:"device_configuration"`
 
-	// IdentityProviderConfiguration 外部IDプロバイダを利用したサインインの設定をするために必要な情報です。(This information is required to set up sign-in using an external identity provider.)
-	// 変更はできません。(It cannot be changed.)
+	// IdentityProviderConfiguration This information is required to set up sign-in using an external identity provider.
+	// It cannot be changed.
 	IdentityProviderConfiguration IdentityProviderConfiguration `json:"identity_provider_configuration"`
 
-	// MfaConfiguration MFAデバイス認証設定(MFA device authentication settings)
-	// ※ 未提供の機能のため、変更・保存はできません(This function is not yet provided, so it cannot be changed or saved.)
+	// MfaConfiguration MFA device authentication settings
+	// ※ This function is not yet provided, so it cannot be changed or saved.
 	MfaConfiguration MfaConfiguration `json:"mfa_configuration"`
 
-	// PasswordPolicy パスワードポリシー(password policy)
+	// PasswordPolicy Password Policy
 	PasswordPolicy PasswordPolicy `json:"password_policy"`
 
-	// RecaptchaProps reCAPTCHA認証設定(reCAPTCHA authentication settings)
-	// ※ 未提供の機能のため、変更・保存はできません(This function is not yet provided, so it cannot be changed or saved.)
+	// RecaptchaProps reCAPTCHA authentication settings
+	// ※ This function is not yet provided, so it cannot be changed or saved.
 	RecaptchaProps RecaptchaProps `json:"recaptcha_props"`
 
-	// SelfRegist セルフサインアップを許可設定(self sign-up permission)
+	// SelfRegist self sign-up permission
 	SelfRegist SelfRegist `json:"self_regist"`
 }
 
 // SignUpParam defines model for SignUpParam.
 type SignUpParam struct {
-	// Email メールアドレス(Email Address)
+	// Email Email Address
 	Email string `json:"email"`
 }
 
 // SignUpWithAwsMarketplaceParam defines model for SignUpWithAwsMarketplaceParam.
 type SignUpWithAwsMarketplaceParam struct {
-	// Email メールアドレス(Email Address)
+	// Email Email Address
 	Email string `json:"email"`
 
 	// RegistrationToken Registration Token
 	RegistrationToken string `json:"registration_token"`
 }
 
+// SingleTenantSettings defines model for SingleTenantSettings.
+type SingleTenantSettings struct {
+	// CloudformationTemplateUrl S3 URL where the CloudFormationTemplate to be executed in the SaaS environment is stored
+	CloudformationTemplateUrl string `json:"cloudformation_template_url"`
+
+	// DdlTemplateUrl S3 URL where the CloudFormationTemplate to be executed in the SaaS environment is stored
+	DdlTemplateUrl string `json:"ddl_template_url"`
+
+	// Enabled enable Single Tenant settings or not
+	Enabled bool `json:"enabled"`
+
+	// RoleArn ARN of the role for SaaS Platform to AssumeRole
+	RoleArn string `json:"role_arn"`
+}
+
 // SoftwareTokenSecretCode defines model for SoftwareTokenSecretCode.
 type SoftwareTokenSecretCode struct {
-	// SecretCode シークレットコード(secret code)
+	// SecretCode secret code
 	SecretCode string `json:"secret_code"`
 }
 
 // Tenant defines model for Tenant.
 type Tenant struct {
-	// Attributes 属性情報(attribute info)
+	// Attributes attribute info
 	Attributes map[string]interface{} `json:"attributes"`
 
-	// BackOfficeStaffEmail 事務管理部門スタッフメールアドレス(administrative staff email address)
+	// BackOfficeStaffEmail administrative staff email address
 	BackOfficeStaffEmail string       `json:"back_office_staff_email"`
 	BillingInfo          *BillingInfo `json:"billing_info,omitempty"`
 
-	// DeleteUsage stripe連携している場合で、プラン変更時に従量課金アイテムを削除するか設定できます。
-	// プラン変更した場合に、現在のサブスクリプションに含まれる従量課金アイテムを全て削除して、従量課金アイテムに基づく請求の発生を止めることができます。
-	// 即時に記録している使用量がクリアされます。それらは復元できないため、delete_usageをtrueにしたプラン変更予約は取り消しできません。
-	//
-	// If you have a stripe linkage,  you can set whether to delete pay-as-you-go items when changing plans.
+	// DeleteUsage If you have a stripe linkage,  you can set whether to delete pay-as-you-go items when changing plans.
 	// When you change plan, you can remove all pay-as-you-go items included in your current subscription to stop being billed based on pay-as-you-go items.
 	// The recorded usage is cleared immediately. Since it cannot be restored, please note that plan change reservations with delete_usage set to true cannot be canceled.
 	DeleteUsage *DeleteUsage `json:"delete_usage,omitempty"`
 	Id          Uuid         `json:"id"`
 
-	// Name テナント名(tenant name)
+	// Name tenant name
 	Name              string `json:"name"`
 	NextPlanId        *Uuid  `json:"next_plan_id,omitempty"`
 	NextPlanTaxRateId *Uuid  `json:"next_plan_tax_rate_id,omitempty"`
 
-	// PlanHistories 料金プラン履歴
+	// PlanHistories Plan History
 	PlanHistories []PlanHistory `json:"plan_histories"`
 	PlanId        *Uuid         `json:"plan_id,omitempty"`
 
-	// ProrationBehavior stripe連携している場合で、プラン変更時の比例配分の挙動を設定できます。
-	// プラン変更した場合に、請求金額を日割り計算し次回請求書に反映させるか、日割り計算した請求を即時に発行する、日割り計算をしないを設定できます。
-	//
-	// If you have a strine linkage, you can set the behavior of the proportional allocation when changing plans.
+	// ProrationBehavior If you have a strine linkage, you can set the behavior of the proportional allocation when changing plans.
 	// When a plan is changed, you can set whether to prorate the billing amount and reflect it on the next invoice, to issue a prorated invoice immediately, or not to prorate at all.
 	ProrationBehavior *ProrationBehavior `json:"proration_behavior,omitempty"`
 
-	// UsingNextPlanFrom 次回料金プラン開始日時（stripe連携時、当月月初の0時（UTC）を指定すると当月月初開始のサブスクリプションを作成できます。ex. 2023年1月の場合は、1672531200 ）
-	// (Next billing plan start time (When using stripe, you can create a subscription that starts at the beginning of the current month by specifying 00:00 (UTC) at the beginning of the current month. Ex. 1672531200 for January 2023.))
+	// UsingNextPlanFrom Next billing plan start time (When using stripe, you can create a subscription that starts at the beginning of the current month by specifying 00:00 (UTC) at the beginning of the current month. Ex. 1672531200 for January 2023.)
 	UsingNextPlanFrom *int `json:"using_next_plan_from,omitempty"`
 }
 
 // TenantAttributes defines model for TenantAttributes.
 type TenantAttributes struct {
-	// TenantAttributes テナント属性定義(Tenant Attribute Definition)
+	// TenantAttributes Tenant Attribute Definition
 	TenantAttributes []Attribute `json:"tenant_attributes"`
 }
 
 // TenantDetail defines model for TenantDetail.
 type TenantDetail struct {
-	// Attributes 属性情報(attribute info)
+	// Attributes attribute info
 	Attributes map[string]interface{} `json:"attributes"`
 
-	// BackOfficeStaffEmail 事務管理部門スタッフメールアドレス(administrative staff email address)
+	// BackOfficeStaffEmail administrative staff email address
 	BackOfficeStaffEmail string       `json:"back_office_staff_email"`
 	BillingInfo          *BillingInfo `json:"billing_info,omitempty"`
 
-	// CurrentPlanPeriodEnd 現在のプランの終了日時(current plan period end)
+	// CurrentPlanPeriodEnd current plan period end
 	CurrentPlanPeriodEnd *int `json:"current_plan_period_end,omitempty"`
 
-	// CurrentPlanPeriodStart 現在のプランの開始日時(current plan period start)
+	// CurrentPlanPeriodStart current plan period start
 	CurrentPlanPeriodStart *int `json:"current_plan_period_start,omitempty"`
 
-	// DeleteUsage stripe連携している場合で、プラン変更時に従量課金アイテムを削除するか設定できます。
-	// プラン変更した場合に、現在のサブスクリプションに含まれる従量課金アイテムを全て削除して、従量課金アイテムに基づく請求の発生を止めることができます。
-	// 即時に記録している使用量がクリアされます。それらは復元できないため、delete_usageをtrueにしたプラン変更予約は取り消しできません。
-	//
-	// If you have a stripe linkage,  you can set whether to delete pay-as-you-go items when changing plans.
+	// DeleteUsage If you have a stripe linkage,  you can set whether to delete pay-as-you-go items when changing plans.
 	// When you change plan, you can remove all pay-as-you-go items included in your current subscription to stop being billed based on pay-as-you-go items.
 	// The recorded usage is cleared immediately. Since it cannot be restored, please note that plan change reservations with delete_usage set to true cannot be canceled.
 	DeleteUsage *DeleteUsage `json:"delete_usage,omitempty"`
 	Id          Uuid         `json:"id"`
 
-	// Name テナント名(tenant name)
+	// Name tenant name
 	Name              string `json:"name"`
 	NextPlanId        *Uuid  `json:"next_plan_id,omitempty"`
 	NextPlanTaxRateId *Uuid  `json:"next_plan_tax_rate_id,omitempty"`
 
-	// PlanHistories 料金プラン履歴
+	// PlanHistories Plan History
 	PlanHistories []PlanHistory `json:"plan_histories"`
 	PlanId        *Uuid         `json:"plan_id,omitempty"`
 
-	// ProrationBehavior stripe連携している場合で、プラン変更時の比例配分の挙動を設定できます。
-	// プラン変更した場合に、請求金額を日割り計算し次回請求書に反映させるか、日割り計算した請求を即時に発行する、日割り計算をしないを設定できます。
-	//
-	// If you have a strine linkage, you can set the behavior of the proportional allocation when changing plans.
+	// ProrationBehavior If you have a strine linkage, you can set the behavior of the proportional allocation when changing plans.
 	// When a plan is changed, you can set whether to prorate the billing amount and reflect it on the next invoice, to issue a prorated invoice immediately, or not to prorate at all.
 	ProrationBehavior *ProrationBehavior `json:"proration_behavior,omitempty"`
 
-	// UsingNextPlanFrom 次回料金プラン開始日時（stripe連携時、当月月初の0時（UTC）を指定すると当月月初開始のサブスクリプションを作成できます。ex. 2023年1月の場合は、1672531200 ）
-	// (Next billing plan start time (When using stripe, you can create a subscription that starts at the beginning of the current month by specifying 00:00 (UTC) at the beginning of the current month. Ex. 1672531200 for January 2023.))
+	// UsingNextPlanFrom Next billing plan start time (When using stripe, you can create a subscription that starts at the beginning of the current month by specifying 00:00 (UTC) at the beginning of the current month. Ex. 1672531200 for January 2023.)
 	UsingNextPlanFrom *int `json:"using_next_plan_from,omitempty"`
 }
 
@@ -888,17 +845,17 @@ type TenantIdentityProviders struct {
 
 // TenantProps defines model for TenantProps.
 type TenantProps struct {
-	// Attributes 属性情報(attribute info)
+	// Attributes attribute info
 	Attributes map[string]interface{} `json:"attributes"`
 
-	// BackOfficeStaffEmail 事務管理部門スタッフメールアドレス(administrative staff email address)
+	// BackOfficeStaffEmail administrative staff email address
 	BackOfficeStaffEmail string `json:"back_office_staff_email"`
 
-	// Name テナント名(tenant name)
+	// Name tenant name
 	Name string `json:"name"`
 }
 
-// Tenants テナント情報(Tenant Info)
+// Tenants Tenant Info
 type Tenants struct {
 	Tenants []Tenant `json:"tenants"`
 }
@@ -908,34 +865,34 @@ type UpdateAuthInfoParam = AuthInfo
 
 // UpdateBasicInfoParam defines model for UpdateBasicInfoParam.
 type UpdateBasicInfoParam struct {
-	// DomainName ドメイン名(Domain Name)
+	// DomainName Domain Name
 	DomainName string `json:"domain_name"`
 
-	// FromEmailAddress 認証メールの送信元メールアドレス(Sender email of authentication email)
+	// FromEmailAddress Sender email of authentication email
 	FromEmailAddress string `json:"from_email_address"`
 
-	// ReplyEmailAddress 認証メールの返信元メールアドレス(Reply-from email address of authentication email)
+	// ReplyEmailAddress Reply-from email address of authentication email
 	ReplyEmailAddress *string `json:"reply_email_address,omitempty"`
 }
 
 // UpdateCustomizePageSettingsParam defines model for UpdateCustomizePageSettingsParam.
 type UpdateCustomizePageSettingsParam struct {
-	// Favicon ファビコン(favicon)
+	// Favicon favicon
 	Favicon string `json:"favicon"`
 
-	// GoogleTagManagerContainerId Google Tag Manager コンテナ ID(Google Tag Manager container ID)
+	// GoogleTagManagerContainerId Google Tag Manager container ID
 	GoogleTagManagerContainerId string `json:"google_tag_manager_container_id"`
 
-	// Icon サービスアイコン(service icon)
+	// Icon service icon
 	Icon string `json:"icon"`
 
-	// PrivacyPolicyUrl プライバシーポリシーURL(privacy policy URL)
+	// PrivacyPolicyUrl privacy policy URL
 	PrivacyPolicyUrl string `json:"privacy_policy_url"`
 
-	// TermsOfServiceUrl 利用規約URL(terms of service URL)
+	// TermsOfServiceUrl terms of service URL
 	TermsOfServiceUrl string `json:"terms_of_service_url"`
 
-	// Title サービス名(service name)
+	// Title service name
 	Title string `json:"title"`
 }
 
@@ -948,10 +905,10 @@ type UpdateCustomizePagesParam struct {
 
 // UpdateEnvParam defines model for UpdateEnvParam.
 type UpdateEnvParam struct {
-	// DisplayName 環境表示名(env display name)
+	// DisplayName env display name
 	DisplayName *string `json:"display_name,omitempty"`
 
-	// Name 環境名(env name)
+	// Name env name
 	Name string `json:"name"`
 }
 
@@ -976,55 +933,68 @@ type UpdateNotificationMessagesParam struct {
 
 // UpdateSaasUserEmailParam defines model for UpdateSaasUserEmailParam.
 type UpdateSaasUserEmailParam struct {
-	// Email メールアドレス(e-mail)
+	// Email E-mail
 	Email string `json:"email"`
 }
 
 // UpdateSaasUserPasswordParam defines model for UpdateSaasUserPasswordParam.
 type UpdateSaasUserPasswordParam struct {
-	// Password パスワード(password)
+	// Password Password
 	Password string `json:"password"`
 }
 
 // UpdateSignInSettingsParam defines model for UpdateSignInSettingsParam.
 type UpdateSignInSettingsParam struct {
-	// AccountVerification アカウント認証設定(account authentication settings)
-	// ※ 未提供の機能のため、変更・保存はできません(This function is not yet provided, so it cannot be changed or saved.)
+	// AccountVerification Account authentication settings
+	// ※ This function is not yet provided, so it cannot be changed or saved.
 	AccountVerification *AccountVerification `json:"account_verification,omitempty"`
 
-	// DeviceConfiguration 信頼済みデバイスの記憶の設定(settings for remembering trusted devices)
+	// DeviceConfiguration Settings for remembering trusted devices
 	DeviceConfiguration *DeviceConfiguration `json:"device_configuration,omitempty"`
 
-	// MfaConfiguration MFAデバイス認証設定(MFA device authentication settings)
-	// ※ 未提供の機能のため、変更・保存はできません(This function is not yet provided, so it cannot be changed or saved.)
+	// MfaConfiguration MFA device authentication settings
+	// ※ This function is not yet provided, so it cannot be changed or saved.
 	MfaConfiguration *MfaConfiguration `json:"mfa_configuration,omitempty"`
 
-	// PasswordPolicy パスワードポリシー(password policy)
+	// PasswordPolicy Password Policy
 	PasswordPolicy *PasswordPolicy `json:"password_policy,omitempty"`
 
-	// RecaptchaProps reCAPTCHA認証設定(reCAPTCHA authentication settings)
-	// ※ 未提供の機能のため、変更・保存はできません(This function is not yet provided, so it cannot be changed or saved.)
+	// RecaptchaProps reCAPTCHA authentication settings
+	// ※ This function is not yet provided, so it cannot be changed or saved.
 	RecaptchaProps *RecaptchaProps `json:"recaptcha_props,omitempty"`
 
-	// SelfRegist セルフサインアップを許可設定(self sign-up permission)
+	// SelfRegist self sign-up permission
 	SelfRegist *SelfRegist `json:"self_regist,omitempty"`
+}
+
+// UpdateSingleTenantSettingsParam defines model for UpdateSingleTenantSettingsParam.
+type UpdateSingleTenantSettingsParam struct {
+	// CloudformationTemplate CloudFormation template file
+	CloudformationTemplate *string `json:"cloudformation_template,omitempty"`
+
+	// DdlTemplate ddl file to run in SaaS environment
+	DdlTemplate *string `json:"ddl_template,omitempty"`
+
+	// Enabled enable Single Tenant settings or not
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// RoleArn ARN of the role for SaaS Platform to AssumeRole
+	RoleArn *string `json:"role_arn,omitempty"`
 }
 
 // UpdateSoftwareTokenParam defines model for UpdateSoftwareTokenParam.
 type UpdateSoftwareTokenParam struct {
-	// AccessToken アクセストークン(access token)
+	// AccessToken access token
 	AccessToken string `json:"access_token"`
 
-	// VerificationCode 検証コード(verification code)
+	// VerificationCode verification code
 	VerificationCode string `json:"verification_code"`
 }
 
 // UpdateTenantBillingInfoParam defines model for UpdateTenantBillingInfoParam.
 type UpdateTenantBillingInfoParam = BillingInfo
 
-// UpdateTenantIdentityProviderParam identity_provider_propsがnullの場合は、provider_typeで指定された外部IDプロバイダのサインイン情報を無効化します。
-//
-// If identity_provider_props is null, the sign-in information for the external identity provider specified in provider_type is disabled.
+// UpdateTenantIdentityProviderParam If identity_provider_props is null, the sign-in information for the external identity provider specified in provider_type is disabled.
 type UpdateTenantIdentityProviderParam struct {
 	IdentityProviderProps *TenantIdentityProviderProps `json:"identity_provider_props,omitempty"`
 	ProviderType          ProviderType                 `json:"provider_type"`
@@ -1038,9 +1008,7 @@ type UpdateTenantPlanParam = PlanReservation
 
 // UpdateTenantUserParam defines model for UpdateTenantUserParam.
 type UpdateTenantUserParam struct {
-	// Attributes 属性情報（SaaS 開発コンソールでユーザー属性定義を行い設定された情報を取得します）
-	//
-	// Attribute information (Get information set by defining user attributes in the SaaS development console)
+	// Attributes Attribute information (Get information set by defining user attributes in the SaaS development console)
 	Attributes map[string]interface{} `json:"attributes"`
 }
 
@@ -1049,61 +1017,59 @@ type UpdateUserMfaPreferenceParam = MfaPreference
 
 // User defines model for User.
 type User struct {
-	// Attributes 属性情報（SaaS 開発コンソールでユーザー属性定義を行い設定された情報を取得します）
-	//
-	// Attribute information (Get information set by defining user attributes in the SaaS development console)
+	// Attributes Attribute information (Get information set by defining user attributes in the SaaS development console)
 	Attributes map[string]interface{} `json:"attributes"`
 
-	// Email メールアドレス(E-mail)
+	// Email E-mail
 	Email string    `json:"email"`
 	Envs  []UserEnv `json:"envs"`
 
-	// Id ユーザーID(User ID)
+	// Id User ID
 	Id       string `json:"id"`
 	TenantId Uuid   `json:"tenant_id"`
 
-	// TenantName テナント名(Tenant Name)
+	// TenantName Tenant Name
 	TenantName string `json:"tenant_name"`
 }
 
 // UserAttributes defines model for UserAttributes.
 type UserAttributes struct {
-	// UserAttributes ユーザー属性定義(User attribute definition)
+	// UserAttributes User Attribute Definition
 	UserAttributes []Attribute `json:"user_attributes"`
 }
 
 // UserAvailableEnv defines model for UserAvailableEnv.
 type UserAvailableEnv struct {
-	// DisplayName 環境表示名(env display name)
+	// DisplayName env display name
 	DisplayName *string `json:"display_name,omitempty"`
 	Id          Id      `json:"id"`
 
-	// Name 環境名(env name)
+	// Name env name
 	Name string `json:"name"`
 
-	// Roles 役割(ロール)情報(role info)
+	// Roles role info
 	Roles []Role `json:"roles"`
 }
 
 // UserAvailableTenant defines model for UserAvailableTenant.
 type UserAvailableTenant struct {
-	// BackOfficeStaffEmail バックオフィス担当者のメール(back office contact email)
+	// BackOfficeStaffEmail back office contact email
 	BackOfficeStaffEmail string `json:"back_office_staff_email"`
 	CompletedSignUp      bool   `json:"completed_sign_up"`
 
-	// Envs 環境情報、役割(ロール)情報(environmental info, role info)
+	// Envs environmental info, role info
 	Envs []UserAvailableEnv `json:"envs"`
 	Id   Uuid               `json:"id"`
 
-	// IsPaid テナントの支払い状況(tenant payment status)
-	//  ※ 現在はストライプ連携時のみ返却されます。Currently, it is returned only when stripe is linked.
+	// IsPaid tenant payment status
+	// ※ Currently, it is returned only when stripe is linked.
 	IsPaid *bool `json:"is_paid,omitempty"`
 
-	// Name テナント名(tenant name)
+	// Name Tenant Name
 	Name   string `json:"name"`
 	PlanId *Uuid  `json:"plan_id,omitempty"`
 
-	// UserAttribute ユーザー追加属性(user additional attributes)
+	// UserAttribute user additional attributes
 	UserAttribute map[string]interface{} `json:"user_attribute"`
 }
 
@@ -1112,11 +1078,11 @@ type UserEnv = UserAvailableEnv
 
 // UserInfo defines model for UserInfo.
 type UserInfo struct {
-	// Email メールアドレス(E-mail)
+	// Email E-mail
 	Email string `json:"email"`
 	Id    Uuid   `json:"id"`
 
-	// Tenants テナント情報(Tenant Info)
+	// Tenants Tenant Info
 	Tenants []UserAvailableTenant `json:"tenants"`
 }
 
@@ -1128,17 +1094,15 @@ type Users struct {
 // Uuid defines model for Uuid.
 type Uuid = string
 
-// ValidateInvitationParam 既存ユーザーの場合はアクセストークン、新規ユーザーの場合はメールアドレスとパスワードが必須です。
-//
-// Access token is required for existing users, and email and password is required for new users.
+// ValidateInvitationParam Access token is required for existing users, and email and password is required for new users.
 type ValidateInvitationParam struct {
-	// AccessToken 招待されたユーザーのアクセストークン(access token of the invited user)
+	// AccessToken Access token of the invited user
 	AccessToken *string `json:"access_token,omitempty"`
 
-	// Email 招待されたユーザーのメールアドレス(email address of the invited user)
+	// Email Email address of the invited user
 	Email *string `json:"email,omitempty"`
 
-	// Password 招待されたユーザーのパスワード(password of the invited user)
+	// Password Password of the invited user
 	Password *string `json:"password,omitempty"`
 }
 
@@ -1168,16 +1132,16 @@ type UserId = string
 
 // GetAuthCredentialsParams defines parameters for GetAuthCredentials.
 type GetAuthCredentialsParams struct {
-	// Code 一時コード(Temp Code)
+	// Code Temp Code
 	Code *Code `form:"code,omitempty" json:"code,omitempty"`
 
-	// AuthFlow 認証フロー（Authentication Flow）
-	// tempCodeAuth: 一時コードを利用した認証情報の取得
-	// refreshTokenAuth: リフレッシュトークンを利用した認証情報の取得
-	// 指定されていない場合は tempCodeAuth になります
+	// AuthFlow Authentication Flow
+	// tempCodeAuth: Getting authentication information using a temporary code
+	// refreshTokenAuth: Getting authentication information using a refresh token
+	// If not specified, it will be tempCodeAuth
 	AuthFlow *GetAuthCredentialsParamsAuthFlow `form:"auth-flow,omitempty" json:"auth-flow,omitempty"`
 
-	// RefreshToken リフレッシュトークン(Refresh Token)
+	// RefreshToken Refresh Token
 	RefreshToken *RefreshToken `form:"refresh-token,omitempty" json:"refresh-token,omitempty"`
 }
 
@@ -1186,7 +1150,7 @@ type GetAuthCredentialsParamsAuthFlow string
 
 // GetUserInfoParams defines parameters for GetUserInfo.
 type GetUserInfoParams struct {
-	// Token IDトークン(ID Token)
+	// Token ID Token
 	Token string `form:"token" json:"token"`
 }
 
@@ -1246,6 +1210,9 @@ type SignUpJSONRequestBody = SignUpParam
 
 // ResendSignUpConfirmationEmailJSONRequestBody defines body for ResendSignUpConfirmationEmail for application/json ContentType.
 type ResendSignUpConfirmationEmailJSONRequestBody = ResendSignUpConfirmationEmailParam
+
+// UpdateSingleTenantSettingsJSONRequestBody defines body for UpdateSingleTenantSettings for application/json ContentType.
+type UpdateSingleTenantSettingsJSONRequestBody = UpdateSingleTenantSettingsParam
 
 // CreateTenantAttributeJSONRequestBody defines body for CreateTenantAttribute for application/json ContentType.
 type CreateTenantAttributeJSONRequestBody = CreateTenantAttributeParam
