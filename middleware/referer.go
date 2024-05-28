@@ -15,6 +15,10 @@ func ExtractReferer(next http.Handler) http.Handler {
 		if ref != "" {
 			ctx = context.WithValue(ctx, ctxlib.RefererKey, ref)
 		}
+		xSaaSusReferer := r.Header.Get("X-SaaSus-Referer")
+		if xSaaSusReferer != "" {
+			ctx = context.WithValue(ctx, ctxlib.XSaaSusRefererKey, xSaaSusReferer)
+		}
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

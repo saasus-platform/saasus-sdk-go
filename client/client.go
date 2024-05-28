@@ -89,10 +89,11 @@ func (s *sigV1) generate() (string, error) {
 
 // SetReferer sets the referer to the request header if existed.
 func SetReferer(ctx context.Context, req *http.Request) {
-	referer, ok := ctx.Value(ctxlib.RefererKey).(string)
-	if !ok {
-		return
+	if referer, ok := ctx.Value(ctxlib.RefererKey).(string); ok {
+		req.Header.Set("Referer", referer)
 	}
 
-	req.Header.Set("Referer", referer)
+	if xSaaSusReferer, ok := ctx.Value(ctxlib.XSaaSusRefererKey).(string); ok {
+		req.Header.Set("X-SaaSus-Referer", xSaaSusReferer)
+	}
 }
