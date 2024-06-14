@@ -232,6 +232,17 @@ type ClientInterface interface {
 
 	ResendSignUpConfirmationEmail(ctx context.Context, body ResendSignUpConfirmationEmailJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetCloudFormationLaunchStackLinkForSingleTenant request
+	GetCloudFormationLaunchStackLinkForSingleTenant(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetSingleTenantSettings request
+	GetSingleTenantSettings(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateSingleTenantSettings request with any body
+	UpdateSingleTenantSettingsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateSingleTenantSettings(ctx context.Context, body UpdateSingleTenantSettingsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DeleteStripeTenantAndPricing request
 	DeleteStripeTenantAndPricing(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -1041,6 +1052,54 @@ func (c *Client) ResendSignUpConfirmationEmailWithBody(ctx context.Context, cont
 
 func (c *Client) ResendSignUpConfirmationEmail(ctx context.Context, body ResendSignUpConfirmationEmailJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewResendSignUpConfirmationEmailRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetCloudFormationLaunchStackLinkForSingleTenant(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetCloudFormationLaunchStackLinkForSingleTenantRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetSingleTenantSettings(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetSingleTenantSettingsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateSingleTenantSettingsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSingleTenantSettingsRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateSingleTenantSettings(ctx context.Context, body UpdateSingleTenantSettingsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSingleTenantSettingsRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -3093,6 +3152,100 @@ func NewResendSignUpConfirmationEmailRequestWithBody(server string, contentType 
 	return req, nil
 }
 
+// NewGetCloudFormationLaunchStackLinkForSingleTenantRequest generates requests for GetCloudFormationLaunchStackLinkForSingleTenant
+func NewGetCloudFormationLaunchStackLinkForSingleTenantRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/single-tenant/cloudformation-launch-stack-link")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetSingleTenantSettingsRequest generates requests for GetSingleTenantSettings
+func NewGetSingleTenantSettingsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/single-tenant/settings")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateSingleTenantSettingsRequest calls the generic UpdateSingleTenantSettings builder with application/json body
+func NewUpdateSingleTenantSettingsRequest(server string, body UpdateSingleTenantSettingsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateSingleTenantSettingsRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewUpdateSingleTenantSettingsRequestWithBody generates requests for UpdateSingleTenantSettings with any type of body
+func NewUpdateSingleTenantSettingsRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/single-tenant/settings")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewDeleteStripeTenantAndPricingRequest generates requests for DeleteStripeTenantAndPricing
 func NewDeleteStripeTenantAndPricingRequest(server string) (*http.Request, error) {
 	var err error
@@ -5031,6 +5184,17 @@ type ClientWithResponsesInterface interface {
 
 	ResendSignUpConfirmationEmailWithResponse(ctx context.Context, body ResendSignUpConfirmationEmailJSONRequestBody, reqEditors ...RequestEditorFn) (*ResendSignUpConfirmationEmailResponse, error)
 
+	// GetCloudFormationLaunchStackLinkForSingleTenant request
+	GetCloudFormationLaunchStackLinkForSingleTenantWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetCloudFormationLaunchStackLinkForSingleTenantResponse, error)
+
+	// GetSingleTenantSettings request
+	GetSingleTenantSettingsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSingleTenantSettingsResponse, error)
+
+	// UpdateSingleTenantSettings request with any body
+	UpdateSingleTenantSettingsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSingleTenantSettingsResponse, error)
+
+	UpdateSingleTenantSettingsWithResponse(ctx context.Context, body UpdateSingleTenantSettingsJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSingleTenantSettingsResponse, error)
+
 	// DeleteStripeTenantAndPricing request
 	DeleteStripeTenantAndPricingWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteStripeTenantAndPricingResponse, error)
 
@@ -5997,6 +6161,75 @@ func (r ResendSignUpConfirmationEmailResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r ResendSignUpConfirmationEmailResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetCloudFormationLaunchStackLinkForSingleTenantResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CloudFormationLaunchStackLink
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetCloudFormationLaunchStackLinkForSingleTenantResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetCloudFormationLaunchStackLinkForSingleTenantResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetSingleTenantSettingsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SingleTenantSettings
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetSingleTenantSettingsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetSingleTenantSettingsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateSingleTenantSettingsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateSingleTenantSettingsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateSingleTenantSettingsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -6994,6 +7227,7 @@ func (r UpdateSaasUserPasswordResponse) StatusCode() int {
 type UnlinkProviderResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON500      *Error
 }
 
 // Status returns HTTPResponse.Status
@@ -7477,6 +7711,41 @@ func (c *ClientWithResponses) ResendSignUpConfirmationEmailWithResponse(ctx cont
 		return nil, err
 	}
 	return ParseResendSignUpConfirmationEmailResponse(rsp)
+}
+
+// GetCloudFormationLaunchStackLinkForSingleTenantWithResponse request returning *GetCloudFormationLaunchStackLinkForSingleTenantResponse
+func (c *ClientWithResponses) GetCloudFormationLaunchStackLinkForSingleTenantWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetCloudFormationLaunchStackLinkForSingleTenantResponse, error) {
+	rsp, err := c.GetCloudFormationLaunchStackLinkForSingleTenant(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetCloudFormationLaunchStackLinkForSingleTenantResponse(rsp)
+}
+
+// GetSingleTenantSettingsWithResponse request returning *GetSingleTenantSettingsResponse
+func (c *ClientWithResponses) GetSingleTenantSettingsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSingleTenantSettingsResponse, error) {
+	rsp, err := c.GetSingleTenantSettings(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetSingleTenantSettingsResponse(rsp)
+}
+
+// UpdateSingleTenantSettingsWithBodyWithResponse request with arbitrary body returning *UpdateSingleTenantSettingsResponse
+func (c *ClientWithResponses) UpdateSingleTenantSettingsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSingleTenantSettingsResponse, error) {
+	rsp, err := c.UpdateSingleTenantSettingsWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSingleTenantSettingsResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateSingleTenantSettingsWithResponse(ctx context.Context, body UpdateSingleTenantSettingsJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSingleTenantSettingsResponse, error) {
+	rsp, err := c.UpdateSingleTenantSettings(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSingleTenantSettingsResponse(rsp)
 }
 
 // DeleteStripeTenantAndPricingWithResponse request returning *DeleteStripeTenantAndPricingResponse
@@ -9154,6 +9423,105 @@ func ParseResendSignUpConfirmationEmailResponse(rsp *http.Response) (*ResendSign
 	return response, nil
 }
 
+// ParseGetCloudFormationLaunchStackLinkForSingleTenantResponse parses an HTTP response from a GetCloudFormationLaunchStackLinkForSingleTenantWithResponse call
+func ParseGetCloudFormationLaunchStackLinkForSingleTenantResponse(rsp *http.Response) (*GetCloudFormationLaunchStackLinkForSingleTenantResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCloudFormationLaunchStackLinkForSingleTenantResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CloudFormationLaunchStackLink
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetSingleTenantSettingsResponse parses an HTTP response from a GetSingleTenantSettingsWithResponse call
+func ParseGetSingleTenantSettingsResponse(rsp *http.Response) (*GetSingleTenantSettingsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetSingleTenantSettingsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SingleTenantSettings
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateSingleTenantSettingsResponse parses an HTTP response from a UpdateSingleTenantSettingsWithResponse call
+func ParseUpdateSingleTenantSettingsResponse(rsp *http.Response) (*UpdateSingleTenantSettingsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateSingleTenantSettingsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseDeleteStripeTenantAndPricingResponse parses an HTTP response from a DeleteStripeTenantAndPricingWithResponse call
 func ParseDeleteStripeTenantAndPricingResponse(rsp *http.Response) (*DeleteStripeTenantAndPricingResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -10577,6 +10945,16 @@ func ParseUnlinkProviderResponse(rsp *http.Response) (*UnlinkProviderResponse, e
 	response := &UnlinkProviderResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
 	}
 
 	return response, nil
