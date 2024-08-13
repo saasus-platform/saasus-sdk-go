@@ -145,6 +145,22 @@ type ClientInterface interface {
 	// GetMeteringUnitDateCountByTenantIdAndUnitNameToday request
 	GetMeteringUnitDateCountByTenantIdAndUnitNameToday(ctx context.Context, tenantId TenantId, meteringUnitName MeteringUnitName, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetMeteringUnits request
+	GetMeteringUnits(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateMeteringUnit request with any body
+	CreateMeteringUnitWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateMeteringUnit(ctx context.Context, body CreateMeteringUnitJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteMeteringUnitByID request
+	DeleteMeteringUnitByID(ctx context.Context, meteringUnitId MeteringUnitId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateMeteringUnitByID request with any body
+	UpdateMeteringUnitByIDWithBody(ctx context.Context, meteringUnitId MeteringUnitId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateMeteringUnitByID(ctx context.Context, meteringUnitId MeteringUnitId, body UpdateMeteringUnitByIDJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetPricingPlans request
 	GetPricingPlans(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -441,6 +457,78 @@ func (c *Client) UpdateMeteringUnitTimestampCount(ctx context.Context, tenantId 
 
 func (c *Client) GetMeteringUnitDateCountByTenantIdAndUnitNameToday(ctx context.Context, tenantId TenantId, meteringUnitName MeteringUnitName, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetMeteringUnitDateCountByTenantIdAndUnitNameTodayRequest(c.Server, tenantId, meteringUnitName)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetMeteringUnits(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetMeteringUnitsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateMeteringUnitWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateMeteringUnitRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateMeteringUnit(ctx context.Context, body CreateMeteringUnitJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateMeteringUnitRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteMeteringUnitByID(ctx context.Context, meteringUnitId MeteringUnitId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteMeteringUnitByIDRequest(c.Server, meteringUnitId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateMeteringUnitByIDWithBody(ctx context.Context, meteringUnitId MeteringUnitId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateMeteringUnitByIDRequestWithBody(c.Server, meteringUnitId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateMeteringUnitByID(ctx context.Context, meteringUnitId MeteringUnitId, body UpdateMeteringUnitByIDJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateMeteringUnitByIDRequest(c.Server, meteringUnitId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1448,6 +1536,154 @@ func NewGetMeteringUnitDateCountByTenantIdAndUnitNameTodayRequest(server string,
 	return req, nil
 }
 
+// NewGetMeteringUnitsRequest generates requests for GetMeteringUnits
+func NewGetMeteringUnitsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/metering/units")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateMeteringUnitRequest calls the generic CreateMeteringUnit builder with application/json body
+func NewCreateMeteringUnitRequest(server string, body CreateMeteringUnitJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateMeteringUnitRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateMeteringUnitRequestWithBody generates requests for CreateMeteringUnit with any type of body
+func NewCreateMeteringUnitRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/metering/units")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteMeteringUnitByIDRequest generates requests for DeleteMeteringUnitByID
+func NewDeleteMeteringUnitByIDRequest(server string, meteringUnitId MeteringUnitId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "metering_unit_id", runtime.ParamLocationPath, meteringUnitId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/metering/units/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateMeteringUnitByIDRequest calls the generic UpdateMeteringUnitByID builder with application/json body
+func NewUpdateMeteringUnitByIDRequest(server string, meteringUnitId MeteringUnitId, body UpdateMeteringUnitByIDJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateMeteringUnitByIDRequestWithBody(server, meteringUnitId, "application/json", bodyReader)
+}
+
+// NewUpdateMeteringUnitByIDRequestWithBody generates requests for UpdateMeteringUnitByID with any type of body
+func NewUpdateMeteringUnitByIDRequestWithBody(server string, meteringUnitId MeteringUnitId, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "metering_unit_id", runtime.ParamLocationPath, meteringUnitId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/metering/units/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewGetPricingPlansRequest generates requests for GetPricingPlans
 func NewGetPricingPlansRequest(server string) (*http.Request, error) {
 	var err error
@@ -2146,6 +2382,22 @@ type ClientWithResponsesInterface interface {
 	// GetMeteringUnitDateCountByTenantIdAndUnitNameToday request
 	GetMeteringUnitDateCountByTenantIdAndUnitNameTodayWithResponse(ctx context.Context, tenantId TenantId, meteringUnitName MeteringUnitName, reqEditors ...RequestEditorFn) (*GetMeteringUnitDateCountByTenantIdAndUnitNameTodayResponse, error)
 
+	// GetMeteringUnits request
+	GetMeteringUnitsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetMeteringUnitsResponse, error)
+
+	// CreateMeteringUnit request with any body
+	CreateMeteringUnitWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateMeteringUnitResponse, error)
+
+	CreateMeteringUnitWithResponse(ctx context.Context, body CreateMeteringUnitJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateMeteringUnitResponse, error)
+
+	// DeleteMeteringUnitByID request
+	DeleteMeteringUnitByIDWithResponse(ctx context.Context, meteringUnitId MeteringUnitId, reqEditors ...RequestEditorFn) (*DeleteMeteringUnitByIDResponse, error)
+
+	// UpdateMeteringUnitByID request with any body
+	UpdateMeteringUnitByIDWithBodyWithResponse(ctx context.Context, meteringUnitId MeteringUnitId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateMeteringUnitByIDResponse, error)
+
+	UpdateMeteringUnitByIDWithResponse(ctx context.Context, meteringUnitId MeteringUnitId, body UpdateMeteringUnitByIDJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateMeteringUnitByIDResponse, error)
+
 	// GetPricingPlans request
 	GetPricingPlansWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetPricingPlansResponse, error)
 
@@ -2571,6 +2823,99 @@ func (r GetMeteringUnitDateCountByTenantIdAndUnitNameTodayResponse) Status() str
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetMeteringUnitDateCountByTenantIdAndUnitNameTodayResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetMeteringUnitsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *MeteringUnits
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetMeteringUnitsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetMeteringUnitsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateMeteringUnitResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *MeteringUnit
+	JSON400      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateMeteringUnitResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateMeteringUnitResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteMeteringUnitByIDResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON404      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteMeteringUnitByIDResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteMeteringUnitByIDResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateMeteringUnitByIDResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateMeteringUnitByIDResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateMeteringUnitByIDResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -3136,6 +3481,58 @@ func (c *ClientWithResponses) GetMeteringUnitDateCountByTenantIdAndUnitNameToday
 		return nil, err
 	}
 	return ParseGetMeteringUnitDateCountByTenantIdAndUnitNameTodayResponse(rsp)
+}
+
+// GetMeteringUnitsWithResponse request returning *GetMeteringUnitsResponse
+func (c *ClientWithResponses) GetMeteringUnitsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetMeteringUnitsResponse, error) {
+	rsp, err := c.GetMeteringUnits(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetMeteringUnitsResponse(rsp)
+}
+
+// CreateMeteringUnitWithBodyWithResponse request with arbitrary body returning *CreateMeteringUnitResponse
+func (c *ClientWithResponses) CreateMeteringUnitWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateMeteringUnitResponse, error) {
+	rsp, err := c.CreateMeteringUnitWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateMeteringUnitResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateMeteringUnitWithResponse(ctx context.Context, body CreateMeteringUnitJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateMeteringUnitResponse, error) {
+	rsp, err := c.CreateMeteringUnit(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateMeteringUnitResponse(rsp)
+}
+
+// DeleteMeteringUnitByIDWithResponse request returning *DeleteMeteringUnitByIDResponse
+func (c *ClientWithResponses) DeleteMeteringUnitByIDWithResponse(ctx context.Context, meteringUnitId MeteringUnitId, reqEditors ...RequestEditorFn) (*DeleteMeteringUnitByIDResponse, error) {
+	rsp, err := c.DeleteMeteringUnitByID(ctx, meteringUnitId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteMeteringUnitByIDResponse(rsp)
+}
+
+// UpdateMeteringUnitByIDWithBodyWithResponse request with arbitrary body returning *UpdateMeteringUnitByIDResponse
+func (c *ClientWithResponses) UpdateMeteringUnitByIDWithBodyWithResponse(ctx context.Context, meteringUnitId MeteringUnitId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateMeteringUnitByIDResponse, error) {
+	rsp, err := c.UpdateMeteringUnitByIDWithBody(ctx, meteringUnitId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateMeteringUnitByIDResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateMeteringUnitByIDWithResponse(ctx context.Context, meteringUnitId MeteringUnitId, body UpdateMeteringUnitByIDJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateMeteringUnitByIDResponse, error) {
+	rsp, err := c.UpdateMeteringUnitByID(ctx, meteringUnitId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateMeteringUnitByIDResponse(rsp)
 }
 
 // GetPricingPlansWithResponse request returning *GetPricingPlansResponse
@@ -3841,6 +4238,145 @@ func ParseGetMeteringUnitDateCountByTenantIdAndUnitNameTodayResponse(rsp *http.R
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetMeteringUnitsResponse parses an HTTP response from a GetMeteringUnitsWithResponse call
+func ParseGetMeteringUnitsResponse(rsp *http.Response) (*GetMeteringUnitsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetMeteringUnitsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest MeteringUnits
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateMeteringUnitResponse parses an HTTP response from a CreateMeteringUnitWithResponse call
+func ParseCreateMeteringUnitResponse(rsp *http.Response) (*CreateMeteringUnitResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateMeteringUnitResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest MeteringUnit
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteMeteringUnitByIDResponse parses an HTTP response from a DeleteMeteringUnitByIDWithResponse call
+func ParseDeleteMeteringUnitByIDResponse(rsp *http.Response) (*DeleteMeteringUnitByIDResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteMeteringUnitByIDResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateMeteringUnitByIDResponse parses an HTTP response from a UpdateMeteringUnitByIDWithResponse call
+func ParseUpdateMeteringUnitByIDResponse(rsp *http.Response) (*UpdateMeteringUnitByIDResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateMeteringUnitByIDResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
