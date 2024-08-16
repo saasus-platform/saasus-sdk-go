@@ -23,7 +23,7 @@ type StripeInfo struct {
 
 // UpdateStripeInfoParam defines model for UpdateStripeInfoParam.
 type UpdateStripeInfoParam struct {
-	// SecretKey シークレットキー(secret key)
+	// SecretKey secret key
 	SecretKey string `json:"secret_key"`
 }
 
