@@ -214,6 +214,11 @@ type ClientInterface interface {
 	// DeleteRole request
 	DeleteRole(ctx context.Context, roleName RoleName, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// CreateSaasUserAttribute request with any body
+	CreateSaasUserAttributeWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateSaasUserAttribute(ctx context.Context, body CreateSaasUserAttributeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetSignInSettings request
 	GetSignInSettings(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -231,6 +236,17 @@ type ClientInterface interface {
 	ResendSignUpConfirmationEmailWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	ResendSignUpConfirmationEmail(ctx context.Context, body ResendSignUpConfirmationEmailJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetCloudFormationLaunchStackLinkForSingleTenant request
+	GetCloudFormationLaunchStackLinkForSingleTenant(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetSingleTenantSettings request
+	GetSingleTenantSettings(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateSingleTenantSettings request with any body
+	UpdateSingleTenantSettingsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateSingleTenantSettings(ctx context.Context, body UpdateSingleTenantSettingsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteStripeTenantAndPricing request
 	DeleteStripeTenantAndPricing(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -306,6 +322,9 @@ type ClientInterface interface {
 
 	UpdateTenantPlan(ctx context.Context, tenantId TenantId, body UpdateTenantPlanJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetStripeCustomer request
+	GetStripeCustomer(ctx context.Context, tenantId TenantId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetTenantUsers request
 	GetTenantUsers(ctx context.Context, tenantId TenantId, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -360,6 +379,11 @@ type ClientInterface interface {
 
 	// GetSaasUser request
 	GetSaasUser(ctx context.Context, userId UserId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateSaasUserAttributes request with any body
+	UpdateSaasUserAttributesWithBody(ctx context.Context, userId UserId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateSaasUserAttributes(ctx context.Context, userId UserId, body UpdateSaasUserAttributesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateSaasUserEmail request with any body
 	UpdateSaasUserEmailWithBody(ctx context.Context, userId UserId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -967,6 +991,30 @@ func (c *Client) DeleteRole(ctx context.Context, roleName RoleName, reqEditors .
 	return c.Client.Do(req)
 }
 
+func (c *Client) CreateSaasUserAttributeWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateSaasUserAttributeRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateSaasUserAttribute(ctx context.Context, body CreateSaasUserAttributeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateSaasUserAttributeRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) GetSignInSettings(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetSignInSettingsRequest(c.Server)
 	if err != nil {
@@ -1041,6 +1089,54 @@ func (c *Client) ResendSignUpConfirmationEmailWithBody(ctx context.Context, cont
 
 func (c *Client) ResendSignUpConfirmationEmail(ctx context.Context, body ResendSignUpConfirmationEmailJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewResendSignUpConfirmationEmailRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetCloudFormationLaunchStackLinkForSingleTenant(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetCloudFormationLaunchStackLinkForSingleTenantRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetSingleTenantSettings(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetSingleTenantSettingsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateSingleTenantSettingsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSingleTenantSettingsRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateSingleTenantSettings(ctx context.Context, body UpdateSingleTenantSettingsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSingleTenantSettingsRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1375,6 +1471,18 @@ func (c *Client) UpdateTenantPlan(ctx context.Context, tenantId TenantId, body U
 	return c.Client.Do(req)
 }
 
+func (c *Client) GetStripeCustomer(ctx context.Context, tenantId TenantId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetStripeCustomerRequest(c.Server, tenantId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) GetTenantUsers(ctx context.Context, tenantId TenantId, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetTenantUsersRequest(c.Server, tenantId)
 	if err != nil {
@@ -1605,6 +1713,30 @@ func (c *Client) DeleteSaasUser(ctx context.Context, userId UserId, reqEditors .
 
 func (c *Client) GetSaasUser(ctx context.Context, userId UserId, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetSaasUserRequest(c.Server, userId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateSaasUserAttributesWithBody(ctx context.Context, userId UserId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSaasUserAttributesRequestWithBody(c.Server, userId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateSaasUserAttributes(ctx context.Context, userId UserId, body UpdateSaasUserAttributesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSaasUserAttributesRequest(c.Server, userId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -2946,6 +3078,46 @@ func NewDeleteRoleRequest(server string, roleName RoleName) (*http.Request, erro
 	return req, nil
 }
 
+// NewCreateSaasUserAttributeRequest calls the generic CreateSaasUserAttribute builder with application/json body
+func NewCreateSaasUserAttributeRequest(server string, body CreateSaasUserAttributeJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateSaasUserAttributeRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateSaasUserAttributeRequestWithBody generates requests for CreateSaasUserAttribute with any type of body
+func NewCreateSaasUserAttributeRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/saas-user-attributes")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewGetSignInSettingsRequest generates requests for GetSignInSettings
 func NewGetSignInSettingsRequest(server string) (*http.Request, error) {
 	var err error
@@ -3084,6 +3256,100 @@ func NewResendSignUpConfirmationEmailRequestWithBody(server string, contentType 
 	}
 
 	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetCloudFormationLaunchStackLinkForSingleTenantRequest generates requests for GetCloudFormationLaunchStackLinkForSingleTenant
+func NewGetCloudFormationLaunchStackLinkForSingleTenantRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/single-tenant/cloudformation-launch-stack-link")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetSingleTenantSettingsRequest generates requests for GetSingleTenantSettings
+func NewGetSingleTenantSettingsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/single-tenant/settings")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateSingleTenantSettingsRequest calls the generic UpdateSingleTenantSettings builder with application/json body
+func NewUpdateSingleTenantSettingsRequest(server string, body UpdateSingleTenantSettingsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateSingleTenantSettingsRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewUpdateSingleTenantSettingsRequestWithBody generates requests for UpdateSingleTenantSettings with any type of body
+func NewUpdateSingleTenantSettingsRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/single-tenant/settings")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -3829,6 +4095,40 @@ func NewUpdateTenantPlanRequestWithBody(server string, tenantId TenantId, conten
 	return req, nil
 }
 
+// NewGetStripeCustomerRequest generates requests for GetStripeCustomer
+func NewGetStripeCustomerRequest(server string, tenantId TenantId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "tenant_id", runtime.ParamLocationPath, tenantId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/tenants/%s/stripe-customer", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetTenantUsersRequest generates requests for GetTenantUsers
 func NewGetTenantUsersRequest(server string, tenantId TenantId) (*http.Request, error) {
 	var err error
@@ -4441,6 +4741,53 @@ func NewGetSaasUserRequest(server string, userId UserId) (*http.Request, error) 
 	return req, nil
 }
 
+// NewUpdateSaasUserAttributesRequest calls the generic UpdateSaasUserAttributes builder with application/json body
+func NewUpdateSaasUserAttributesRequest(server string, userId UserId, body UpdateSaasUserAttributesJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateSaasUserAttributesRequestWithBody(server, userId, "application/json", bodyReader)
+}
+
+// NewUpdateSaasUserAttributesRequestWithBody generates requests for UpdateSaasUserAttributes with any type of body
+func NewUpdateSaasUserAttributesRequestWithBody(server string, userId UserId, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "user_id", runtime.ParamLocationPath, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/users/%s/attributes", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewUpdateSaasUserEmailRequest calls the generic UpdateSaasUserEmail builder with application/json body
 func NewUpdateSaasUserEmailRequest(server string, userId UserId, body UpdateSaasUserEmailJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -5013,6 +5360,11 @@ type ClientWithResponsesInterface interface {
 	// DeleteRole request
 	DeleteRoleWithResponse(ctx context.Context, roleName RoleName, reqEditors ...RequestEditorFn) (*DeleteRoleResponse, error)
 
+	// CreateSaasUserAttribute request with any body
+	CreateSaasUserAttributeWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSaasUserAttributeResponse, error)
+
+	CreateSaasUserAttributeWithResponse(ctx context.Context, body CreateSaasUserAttributeJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSaasUserAttributeResponse, error)
+
 	// GetSignInSettings request
 	GetSignInSettingsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSignInSettingsResponse, error)
 
@@ -5030,6 +5382,17 @@ type ClientWithResponsesInterface interface {
 	ResendSignUpConfirmationEmailWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ResendSignUpConfirmationEmailResponse, error)
 
 	ResendSignUpConfirmationEmailWithResponse(ctx context.Context, body ResendSignUpConfirmationEmailJSONRequestBody, reqEditors ...RequestEditorFn) (*ResendSignUpConfirmationEmailResponse, error)
+
+	// GetCloudFormationLaunchStackLinkForSingleTenant request
+	GetCloudFormationLaunchStackLinkForSingleTenantWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetCloudFormationLaunchStackLinkForSingleTenantResponse, error)
+
+	// GetSingleTenantSettings request
+	GetSingleTenantSettingsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSingleTenantSettingsResponse, error)
+
+	// UpdateSingleTenantSettings request with any body
+	UpdateSingleTenantSettingsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSingleTenantSettingsResponse, error)
+
+	UpdateSingleTenantSettingsWithResponse(ctx context.Context, body UpdateSingleTenantSettingsJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSingleTenantSettingsResponse, error)
 
 	// DeleteStripeTenantAndPricing request
 	DeleteStripeTenantAndPricingWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteStripeTenantAndPricingResponse, error)
@@ -5105,6 +5468,9 @@ type ClientWithResponsesInterface interface {
 
 	UpdateTenantPlanWithResponse(ctx context.Context, tenantId TenantId, body UpdateTenantPlanJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateTenantPlanResponse, error)
 
+	// GetStripeCustomer request
+	GetStripeCustomerWithResponse(ctx context.Context, tenantId TenantId, reqEditors ...RequestEditorFn) (*GetStripeCustomerResponse, error)
+
 	// GetTenantUsers request
 	GetTenantUsersWithResponse(ctx context.Context, tenantId TenantId, reqEditors ...RequestEditorFn) (*GetTenantUsersResponse, error)
 
@@ -5159,6 +5525,11 @@ type ClientWithResponsesInterface interface {
 
 	// GetSaasUser request
 	GetSaasUserWithResponse(ctx context.Context, userId UserId, reqEditors ...RequestEditorFn) (*GetSaasUserResponse, error)
+
+	// UpdateSaasUserAttributes request with any body
+	UpdateSaasUserAttributesWithBodyWithResponse(ctx context.Context, userId UserId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSaasUserAttributesResponse, error)
+
+	UpdateSaasUserAttributesWithResponse(ctx context.Context, userId UserId, body UpdateSaasUserAttributesJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSaasUserAttributesResponse, error)
 
 	// UpdateSaasUserEmail request with any body
 	UpdateSaasUserEmailWithBodyWithResponse(ctx context.Context, userId UserId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSaasUserEmailResponse, error)
@@ -5913,6 +6284,29 @@ func (r DeleteRoleResponse) StatusCode() int {
 	return 0
 }
 
+type CreateSaasUserAttributeResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *Attribute
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateSaasUserAttributeResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateSaasUserAttributeResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetSignInSettingsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -5997,6 +6391,75 @@ func (r ResendSignUpConfirmationEmailResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r ResendSignUpConfirmationEmailResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetCloudFormationLaunchStackLinkForSingleTenantResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CloudFormationLaunchStackLink
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetCloudFormationLaunchStackLinkForSingleTenantResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetCloudFormationLaunchStackLinkForSingleTenantResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetSingleTenantSettingsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SingleTenantSettings
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetSingleTenantSettingsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetSingleTenantSettingsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateSingleTenantSettingsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateSingleTenantSettingsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateSingleTenantSettingsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -6465,6 +6928,29 @@ func (r UpdateTenantPlanResponse) StatusCode() int {
 	return 0
 }
 
+type GetStripeCustomerResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *StripeCustomer
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetStripeCustomerResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetStripeCustomerResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetTenantUsersResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -6813,6 +7299,28 @@ func (r GetSaasUserResponse) StatusCode() int {
 	return 0
 }
 
+type UpdateSaasUserAttributesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateSaasUserAttributesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateSaasUserAttributesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type UpdateSaasUserEmailResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -6994,6 +7502,7 @@ func (r UpdateSaasUserPasswordResponse) StatusCode() int {
 type UnlinkProviderResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON500      *Error
 }
 
 // Status returns HTTPResponse.Status
@@ -7419,6 +7928,23 @@ func (c *ClientWithResponses) DeleteRoleWithResponse(ctx context.Context, roleNa
 	return ParseDeleteRoleResponse(rsp)
 }
 
+// CreateSaasUserAttributeWithBodyWithResponse request with arbitrary body returning *CreateSaasUserAttributeResponse
+func (c *ClientWithResponses) CreateSaasUserAttributeWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSaasUserAttributeResponse, error) {
+	rsp, err := c.CreateSaasUserAttributeWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateSaasUserAttributeResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateSaasUserAttributeWithResponse(ctx context.Context, body CreateSaasUserAttributeJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSaasUserAttributeResponse, error) {
+	rsp, err := c.CreateSaasUserAttribute(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateSaasUserAttributeResponse(rsp)
+}
+
 // GetSignInSettingsWithResponse request returning *GetSignInSettingsResponse
 func (c *ClientWithResponses) GetSignInSettingsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSignInSettingsResponse, error) {
 	rsp, err := c.GetSignInSettings(ctx, reqEditors...)
@@ -7477,6 +8003,41 @@ func (c *ClientWithResponses) ResendSignUpConfirmationEmailWithResponse(ctx cont
 		return nil, err
 	}
 	return ParseResendSignUpConfirmationEmailResponse(rsp)
+}
+
+// GetCloudFormationLaunchStackLinkForSingleTenantWithResponse request returning *GetCloudFormationLaunchStackLinkForSingleTenantResponse
+func (c *ClientWithResponses) GetCloudFormationLaunchStackLinkForSingleTenantWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetCloudFormationLaunchStackLinkForSingleTenantResponse, error) {
+	rsp, err := c.GetCloudFormationLaunchStackLinkForSingleTenant(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetCloudFormationLaunchStackLinkForSingleTenantResponse(rsp)
+}
+
+// GetSingleTenantSettingsWithResponse request returning *GetSingleTenantSettingsResponse
+func (c *ClientWithResponses) GetSingleTenantSettingsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSingleTenantSettingsResponse, error) {
+	rsp, err := c.GetSingleTenantSettings(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetSingleTenantSettingsResponse(rsp)
+}
+
+// UpdateSingleTenantSettingsWithBodyWithResponse request with arbitrary body returning *UpdateSingleTenantSettingsResponse
+func (c *ClientWithResponses) UpdateSingleTenantSettingsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSingleTenantSettingsResponse, error) {
+	rsp, err := c.UpdateSingleTenantSettingsWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSingleTenantSettingsResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateSingleTenantSettingsWithResponse(ctx context.Context, body UpdateSingleTenantSettingsJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSingleTenantSettingsResponse, error) {
+	rsp, err := c.UpdateSingleTenantSettings(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSingleTenantSettingsResponse(rsp)
 }
 
 // DeleteStripeTenantAndPricingWithResponse request returning *DeleteStripeTenantAndPricingResponse
@@ -7715,6 +8276,15 @@ func (c *ClientWithResponses) UpdateTenantPlanWithResponse(ctx context.Context, 
 	return ParseUpdateTenantPlanResponse(rsp)
 }
 
+// GetStripeCustomerWithResponse request returning *GetStripeCustomerResponse
+func (c *ClientWithResponses) GetStripeCustomerWithResponse(ctx context.Context, tenantId TenantId, reqEditors ...RequestEditorFn) (*GetStripeCustomerResponse, error) {
+	rsp, err := c.GetStripeCustomer(ctx, tenantId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetStripeCustomerResponse(rsp)
+}
+
 // GetTenantUsersWithResponse request returning *GetTenantUsersResponse
 func (c *ClientWithResponses) GetTenantUsersWithResponse(ctx context.Context, tenantId TenantId, reqEditors ...RequestEditorFn) (*GetTenantUsersResponse, error) {
 	rsp, err := c.GetTenantUsers(ctx, tenantId, reqEditors...)
@@ -7888,6 +8458,23 @@ func (c *ClientWithResponses) GetSaasUserWithResponse(ctx context.Context, userI
 		return nil, err
 	}
 	return ParseGetSaasUserResponse(rsp)
+}
+
+// UpdateSaasUserAttributesWithBodyWithResponse request with arbitrary body returning *UpdateSaasUserAttributesResponse
+func (c *ClientWithResponses) UpdateSaasUserAttributesWithBodyWithResponse(ctx context.Context, userId UserId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSaasUserAttributesResponse, error) {
+	rsp, err := c.UpdateSaasUserAttributesWithBody(ctx, userId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSaasUserAttributesResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateSaasUserAttributesWithResponse(ctx context.Context, userId UserId, body UpdateSaasUserAttributesJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSaasUserAttributesResponse, error) {
+	rsp, err := c.UpdateSaasUserAttributes(ctx, userId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSaasUserAttributesResponse(rsp)
 }
 
 // UpdateSaasUserEmailWithBodyWithResponse request with arbitrary body returning *UpdateSaasUserEmailResponse
@@ -9036,6 +9623,39 @@ func ParseDeleteRoleResponse(rsp *http.Response) (*DeleteRoleResponse, error) {
 	return response, nil
 }
 
+// ParseCreateSaasUserAttributeResponse parses an HTTP response from a CreateSaasUserAttributeWithResponse call
+func ParseCreateSaasUserAttributeResponse(rsp *http.Response) (*CreateSaasUserAttributeResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateSaasUserAttributeResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest Attribute
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetSignInSettingsResponse parses an HTTP response from a GetSignInSettingsWithResponse call
 func ParseGetSignInSettingsResponse(rsp *http.Response) (*GetSignInSettingsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -9142,6 +9762,105 @@ func ParseResendSignUpConfirmationEmailResponse(rsp *http.Response) (*ResendSign
 	}
 
 	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetCloudFormationLaunchStackLinkForSingleTenantResponse parses an HTTP response from a GetCloudFormationLaunchStackLinkForSingleTenantWithResponse call
+func ParseGetCloudFormationLaunchStackLinkForSingleTenantResponse(rsp *http.Response) (*GetCloudFormationLaunchStackLinkForSingleTenantResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCloudFormationLaunchStackLinkForSingleTenantResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CloudFormationLaunchStackLink
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetSingleTenantSettingsResponse parses an HTTP response from a GetSingleTenantSettingsWithResponse call
+func ParseGetSingleTenantSettingsResponse(rsp *http.Response) (*GetSingleTenantSettingsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetSingleTenantSettingsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SingleTenantSettings
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateSingleTenantSettingsResponse parses an HTTP response from a UpdateSingleTenantSettingsWithResponse call
+func ParseUpdateSingleTenantSettingsResponse(rsp *http.Response) (*UpdateSingleTenantSettingsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateSingleTenantSettingsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -9828,6 +10547,39 @@ func ParseUpdateTenantPlanResponse(rsp *http.Response) (*UpdateTenantPlanRespons
 	return response, nil
 }
 
+// ParseGetStripeCustomerResponse parses an HTTP response from a GetStripeCustomerWithResponse call
+func ParseGetStripeCustomerResponse(rsp *http.Response) (*GetStripeCustomerResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetStripeCustomerResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest StripeCustomer
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetTenantUsersResponse parses an HTTP response from a GetTenantUsersWithResponse call
 func ParseGetTenantUsersResponse(rsp *http.Response) (*GetTenantUsersResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -10344,6 +11096,32 @@ func ParseGetSaasUserResponse(rsp *http.Response) (*GetSaasUserResponse, error) 
 	return response, nil
 }
 
+// ParseUpdateSaasUserAttributesResponse parses an HTTP response from a UpdateSaasUserAttributesWithResponse call
+func ParseUpdateSaasUserAttributesResponse(rsp *http.Response) (*UpdateSaasUserAttributesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateSaasUserAttributesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseUpdateSaasUserEmailResponse parses an HTTP response from a UpdateSaasUserEmailWithResponse call
 func ParseUpdateSaasUserEmailResponse(rsp *http.Response) (*UpdateSaasUserEmailResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -10577,6 +11355,16 @@ func ParseUnlinkProviderResponse(rsp *http.Response) (*UnlinkProviderResponse, e
 	response := &UnlinkProviderResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
 	}
 
 	return response, nil
