@@ -1184,6 +1184,12 @@ type GetUserInfoParams struct {
 	Token string `form:"token" json:"token"`
 }
 
+// GetUserInfoByEmailParams defines parameters for GetUserInfoByEmail.
+type GetUserInfoByEmailParams struct {
+	// Email Email
+	Email string `form:"email" json:"email"`
+}
+
 // UpdateAuthInfoJSONRequestBody defines body for UpdateAuthInfo for application/json ContentType.
 type UpdateAuthInfoJSONRequestBody = UpdateAuthInfoParam
 
