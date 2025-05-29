@@ -1,0 +1,242 @@
+{
+  "getLogs": {
+    "testCases": [
+      {
+        "name": "パラメータなし",
+        "params": {}
+      },
+      {
+        "name": "制限数指定_最小値",
+        "params": {
+          "limit": 1
+        }
+      },
+      {
+        "name": "制限数指定_標準値",
+        "params": {
+          "limit": 10
+        }
+      },
+      {
+        "name": "制限数指定_大きな値",
+        "params": {
+          "limit": 100
+        }
+      },
+      {
+        "name": "日付指定_今日",
+        "params": {
+          "created_date": "2023-12-14"
+        }
+      },
+      {
+        "name": "日付指定_昨日",
+        "params": {
+          "created_date": "2023-12-13"
+        }
+      },
+      {
+        "name": "日付指定_1週間前",
+        "params": {
+          "created_date": "2023-12-07"
+        }
+      },
+      {
+        "name": "日付指定_1ヶ月前",
+        "params": {
+          "created_date": "2023-11-14"
+        }
+      },
+      {
+        "name": "日時指定_午前",
+        "params": {
+          "created_at": "2023-12-14T09:00:00Z"
+        }
+      },
+      {
+        "name": "日時指定_正午",
+        "params": {
+          "created_at": "2023-12-14T12:00:00Z"
+        }
+      },
+      {
+        "name": "日時指定_午後",
+        "params": {
+          "created_at": "2023-12-14T15:30:00Z"
+        }
+      },
+      {
+        "name": "日時指定_深夜",
+        "params": {
+          "created_at": "2023-12-14T23:59:59Z"
+        }
+      },
+      {
+        "name": "日時指定_UTC午前0時",
+        "params": {
+          "created_at": "2023-12-14T00:00:00Z"
+        }
+      },
+      {
+        "name": "制限数と日付の組み合わせ",
+        "params": {
+          "limit": 5,
+          "created_date": "2023-12-14"
+        }
+      },
+      {
+        "name": "制限数と日時の組み合わせ",
+        "params": {
+          "limit": 3,
+          "created_at": "2023-12-14T12:00:00Z"
+        }
+      },
+      {
+        "name": "日付と日時の組み合わせ",
+        "params": {
+          "created_date": "2023-12-14",
+          "created_at": "2023-12-14T12:00:00Z"
+        }
+      },
+      {
+        "name": "全パラメータ指定",
+        "params": {
+          "limit": 5,
+          "created_date": "2023-12-14",
+          "created_at": "2023-12-14T12:00:00Z"
+        }
+      },
+      {
+        "name": "境界値テスト_制限数最大",
+        "params": {
+          "limit": 1000
+        }
+      }
+    ],
+    "edgeCases": [
+      {
+        "name": "制限数0_境界値テスト",
+        "params": {
+          "limit": 0
+        },
+        "expectError": false,
+        "note": "制限数0は有効で、全件取得される"
+      },
+      {
+        "name": "制限数負の値_境界値テスト",
+        "params": {
+          "limit": -1
+        },
+        "expectError": false,
+        "note": "負の値は無視され、デフォルト動作になる"
+      },
+      {
+        "name": "無効な日付形式",
+        "params": {
+          "created_date": "invalid-date"
+        },
+        "expectError": false,
+        "note": "無効な日付は無視され、フィルタなしになる"
+      },
+      {
+        "name": "無効な日時形式",
+        "params": {
+          "created_at": "invalid-datetime"
+        },
+        "expectError": false,
+        "note": "無効な日時は無視され、フィルタなしになる"
+      },
+      {
+        "name": "未来の日付",
+        "params": {
+          "created_date": "2025-12-31"
+        },
+        "expectError": false
+      },
+      {
+        "name": "過去の日付_古すぎる",
+        "params": {
+          "created_date": "2020-01-01"
+        },
+        "expectError": false
+      },
+      {
+        "name": "空のカーソル",
+        "params": {
+          "cursor": ""
+        },
+        "expectError": true
+      },
+      {
+        "name": "無効なカーソル形式",
+        "params": {
+          "cursor": "invalid-cursor-format"
+        },
+        "expectError": true
+      }
+    ],
+    "pagination": {
+      "limit": 2
+    }
+  },
+  "getLog": {
+    "testApiLogIds": [
+      "69e732d6-8ecc-45c4-c2eb-8438f7ffe775",
+      "12345678-1234-1234-1234-123456789abc"
+    ],
+    "invalidIds": [
+      "invalid-uuid-format",
+      "",
+      "00000000-0000-0000-0000-000000000000",
+      "123",
+      "not-a-uuid",
+      "69e732d6-8ecc-45c4-c2eb-8438f7ffe77",
+      "69e732d6-8ecc-45c4-c2eb-8438f7ffe7755",
+      "69e732d6-8ecc-45c4-c2eb-8438f7ffe77g",
+      "69e732d6_8ecc_45c4_c2eb_8438f7ffe775",
+      "69e732d68ecc45c4c2eb8438f7ffe775",
+      "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+    ],
+    "edgeCases": [
+      {
+        "name": "NULL文字を含むID",
+        "id": "69e732d6-8ecc-45c4-c2eb-8438f7ffe\u0000",
+        "expectError": true,
+        "expectedStatus": 400
+      },
+      {
+        "name": "非常に長いID",
+        "id": "69e732d6-8ecc-45c4-c2eb-8438f7ffe775-extra-long-string-that-should-not-be-valid",
+        "expectError": true,
+        "expectedStatus": 404
+      },
+      {
+        "name": "特殊文字を含むID",
+        "id": "69e732d6-8ecc-45c4-c2eb-8438f7ffe77!",
+        "expectError": true,
+        "expectedStatus": 404
+      }
+    ]
+  },
+  "performance": {
+    "maxResponseTime": "5s",
+    "testLimit": 1,
+    "loadTestCases": [
+      {
+        "name": "軽負荷テスト",
+        "limit": 1,
+        "expectedMaxTime": "1s"
+      },
+      {
+        "name": "中負荷テスト",
+        "limit": 50,
+        "expectedMaxTime": "3s"
+      },
+      {
+        "name": "高負荷テスト",
+        "limit": 100,
+        "expectedMaxTime": "5s"
+      }
+    ]
+  }
+}

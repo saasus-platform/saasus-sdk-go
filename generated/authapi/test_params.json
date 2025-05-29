@@ -1,0 +1,418 @@
+{
+  "getUserInfo": {
+    "testCases": [
+      {
+        "name": "有効なIDトークン",
+        "params": {
+          "token": "valid_id_token_placeholder"
+        }
+      }
+    ],
+    "edgeCases": [
+      {
+        "name": "無効なIDトークン",
+        "params": {
+          "token": "invalid_token"
+        },
+        "expectError": true
+      },
+      {
+        "name": "空のIDトークン",
+        "params": {
+          "token": ""
+        },
+        "expectError": true
+      },
+      {
+        "name": "期限切れトークン",
+        "params": {
+          "token": "expired_token_placeholder"
+        },
+        "expectError": true
+      }
+    ]
+  },
+  "getUserInfoByEmail": {
+    "testCases": [
+      {
+        "name": "有効なメールアドレス",
+        "params": {
+          "email": "test@example.com"
+        }
+      },
+      {
+        "name": "存在するメールアドレス",
+        "params": {
+          "email": "existing@example.com"
+        }
+      }
+    ],
+    "edgeCases": [
+      {
+        "name": "存在しないメールアドレス",
+        "params": {
+          "email": "nonexistent@example.com"
+        },
+        "expectError": true
+      },
+      {
+        "name": "無効なメール形式",
+        "params": {
+          "email": "invalid-email"
+        },
+        "expectError": true
+      },
+      {
+        "name": "空のメールアドレス",
+        "params": {
+          "email": ""
+        },
+        "expectError": true
+      }
+    ]
+  },
+  "basicInfo": {
+    "testCases": [
+      {
+        "name": "基本設定情報取得",
+        "params": {}
+      }
+    ],
+    "updateParams": {
+      "domainName": "test.example.com",
+      "fromEmailAddress": "noreply@test.example.com",
+      "replyEmailAddress": "support@test.example.com"
+    }
+  },
+  "authInfo": {
+    "testCases": [
+      {
+        "name": "認証情報取得",
+        "params": {}
+      }
+    ],
+    "updateParams": {
+      "callbackUrl": "https://test.example.com/callback"
+    }
+  },
+  "saasUsers": {
+    "testCases": [
+      {
+        "name": "SaaSユーザー一覧取得",
+        "params": {}
+      }
+    ],
+    "createParams": {
+      "email": "newuser@example.com",
+      "password": "TempPassword123!"
+    },
+    "testUserIds": [
+      "f94bfffc-8be2-11ec-b41a-0242ac120004",
+      "12345678-1234-1234-1234-123456789abc"
+    ],
+    "invalidUserIds": [
+      "invalid-uuid",
+      "",
+      "00000000-0000-0000-0000-000000000000"
+    ]
+  },
+  "tenants": {
+    "testCases": [
+      {
+        "name": "テナント一覧取得",
+        "params": {}
+      }
+    ],
+    "createParams": {
+      "name": "Test Tenant",
+      "attributes": {
+        "company": "Test Company",
+        "industry": "Technology"
+      },
+      "backOfficeStaffEmail": "admin@test.example.com"
+    },
+    "testTenantIds": [
+      "69e732d6-8ecc-45c4-c2eb-8438f7ffe775",
+      "12345678-1234-1234-1234-123456789abc"
+    ],
+    "invalidTenantIds": [
+      "invalid-uuid",
+      "",
+      "00000000-0000-0000-0000-000000000000"
+    ]
+  },
+  "tenantUsers": {
+    "createParams": {
+      "email": "tenantuser@example.com",
+      "attributes": {
+        "department": "Engineering",
+        "position": "Developer"
+      }
+    },
+    "updateParams": {
+      "attributes": {
+        "department": "Product",
+        "position": "Product Manager"
+      }
+    }
+  },
+  "roles": {
+    "testCases": [
+      {
+        "name": "役割一覧取得",
+        "params": {}
+      }
+    ],
+    "createParams": {
+      "roleName": "test_role",
+      "displayName": "Test Role"
+    },
+    "testRoleNames": [
+      "admin",
+      "user",
+      "viewer"
+    ],
+    "invalidRoleNames": [
+      "nonexistent_role",
+      "",
+      "invalid role name"
+    ]
+  },
+  "userAttributes": {
+    "testCases": [
+      {
+        "name": "ユーザー属性一覧取得",
+        "params": {}
+      }
+    ],
+    "createParams": {
+      "attributeName": "test_attribute",
+      "displayName": "Test Attribute",
+      "attributeType": "string"
+    },
+    "testAttributeNames": [
+      "birthday",
+      "department",
+      "position"
+    ],
+    "invalidAttributeNames": [
+      "nonexistent_attribute",
+      "",
+      "invalid attribute name"
+    ]
+  },
+  "tenantAttributes": {
+    "testCases": [
+      {
+        "name": "テナント属性一覧取得",
+        "params": {}
+      }
+    ],
+    "createParams": {
+      "attributeName": "test_tenant_attribute",
+      "displayName": "Test Tenant Attribute",
+      "attributeType": "string"
+    }
+  },
+  "envs": {
+    "testCases": [
+      {
+        "name": "環境一覧取得",
+        "params": {}
+      }
+    ],
+    "createParams": {
+      "id": 999,
+      "name": "test_env",
+      "displayName": "Test Environment"
+    },
+    "testEnvIds": [
+      1,
+      2,
+      3
+    ],
+    "invalidEnvIds": [
+      99999,
+      88888,
+      77777
+    ]
+  },
+  "credentials": {
+    "testCases": [
+      {
+        "name": "認証情報取得_一時コード",
+        "params": {
+          "code": "valid_temp_code_placeholder",
+          "authFlow": "tempCodeAuth"
+        }
+      },
+      {
+        "name": "認証情報取得_リフレッシュトークン",
+        "params": {
+          "refreshToken": "valid_refresh_token_placeholder",
+          "authFlow": "refreshTokenAuth"
+        }
+      }
+    ],
+    "createParams": {
+      "idToken": "test_id_token",
+      "accessToken": "test_access_token",
+      "refreshToken": "test_refresh_token"
+    },
+    "edgeCases": [
+      {
+        "name": "無効な一時コード",
+        "params": {
+          "code": "invalid_code",
+          "authFlow": "tempCodeAuth"
+        },
+        "expectError": true
+      },
+      {
+        "name": "無効なリフレッシュトークン",
+        "params": {
+          "refreshToken": "invalid_refresh_token",
+          "authFlow": "refreshTokenAuth"
+        },
+        "expectError": true
+      }
+    ]
+  },
+  "signUp": {
+    "testCases": [
+      {
+        "name": "新規登録",
+        "params": {
+          "email": "signup@example.com"
+        }
+      }
+    ],
+    "resendParams": {
+      "email": "signup@example.com"
+    }
+  },
+  "invitations": {
+    "createParams": {
+      "email": "invite@example.com",
+      "accessToken": "valid_access_token_placeholder",
+      "envs": [
+        {
+          "id": 1,
+          "roleNames": ["user"]
+        }
+      ]
+    },
+    "validateParams": {
+      "accessToken": "valid_access_token_placeholder"
+    },
+    "testInvitationIds": [
+      "69e732d6-8ecc-45c4-c2eb-8438f7ffe775",
+      "12345678-1234-1234-1234-123456789abc"
+    ],
+    "invalidInvitationIds": [
+      "invalid-uuid",
+      "",
+      "00000000-0000-0000-0000-000000000000"
+    ]
+  },
+  "identityProviders": {
+    "updateParams": {
+      "provider": "Google",
+      "identityProviderProps": {
+        "applicationId": "test_app_id",
+        "applicationSecret": "test_app_secret",
+        "approvalScope": "profile email openid",
+        "isButtonHidden": false
+      }
+    }
+  },
+  "signInSettings": {
+    "updateParams": {
+      "passwordPolicy": {
+        "minimumLength": 8,
+        "isRequireLowercase": true,
+        "isRequireNumbers": true,
+        "isRequireSymbols": true,
+        "isRequireUppercase": true,
+        "temporaryPasswordValidityDays": 7
+      },
+      "deviceConfiguration": {
+        "deviceRemembering": "userOptIn"
+      },
+      "mfaConfiguration": {
+        "mfaConfiguration": "optional"
+      },
+      "selfRegist": {
+        "enable": true
+      }
+    }
+  },
+  "customizePages": {
+    "updateParams": {
+      "signUpPage": {
+        "htmlContents": "<html><body>Sign Up</body></html>",
+        "isTermsOfService": true,
+        "isPrivacyPolicy": true
+      },
+      "signInPage": {
+        "htmlContents": "<html><body>Sign In</body></html>",
+        "isTermsOfService": false,
+        "isPrivacyPolicy": false
+      },
+      "passwordResetPage": {
+        "htmlContents": "<html><body>Password Reset</body></html>",
+        "isTermsOfService": false,
+        "isPrivacyPolicy": false
+      }
+    }
+  },
+  "customizePageSettings": {
+    "updateParams": {
+      "title": "Test SaaS",
+      "termsOfServiceUrl": "https://test.example.com/terms",
+      "privacyPolicyUrl": "https://test.example.com/privacy",
+      "googleTagManagerContainerId": "GTM-TEST123",
+      "icon": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+      "favicon": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
+    }
+  },
+  "notificationMessages": {
+    "updateParams": {
+      "signUp": {
+        "subject": "Welcome to Test SaaS",
+        "message": "Thank you for signing up!"
+      },
+      "createUser": {
+        "subject": "Your account has been created",
+        "message": "Your temporary password is {####}"
+      }
+    }
+  },
+  "singleTenantSettings": {
+    "updateParams": {
+      "enabled": true,
+      "roleArn": "arn:aws:iam::123456789012:role/test-role",
+      "cloudformationTemplate": "dGVzdCB0ZW1wbGF0ZQ==",
+      "ddlTemplate": "dGVzdCBkZGw=",
+      "roleExternalId": "test-external-id"
+    }
+  },
+  "performance": {
+    "maxResponseTime": "5s",
+    "testLimit": 1,
+    "loadTestCases": [
+      {
+        "name": "軽負荷テスト",
+        "expectedMaxTime": "2s"
+      },
+      {
+        "name": "中負荷テスト",
+        "expectedMaxTime": "3s"
+      },
+      {
+        "name": "高負荷テスト",
+        "expectedMaxTime": "5s"
+      }
+    ]
+  }
+}

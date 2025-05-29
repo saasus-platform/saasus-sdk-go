@@ -1,0 +1,286 @@
+openapi: 3.0.0
+info:
+  description: "SaaSus ApiLog API Schema"
+  version: "1.0.0"
+  title: "SaaSus ApiLog API Schema"
+  x-title-i18n:
+    jpn: "SaaSus ApiLog API スキーマ"
+  contact:
+    name: "Anti-Pattern"
+servers:
+  - url: "https://api.saasus.io/v1/apilog"
+    description: Production API Server
+tags:
+  - name: "apiLog"
+    description: API execution log
+    x-description-i18n:
+      jpn: api実行ログ
+  - name: "error"
+    description: Error for testing
+    x-description-i18n:
+      jpn: テスト用途のエラー
+security:
+  - Bearer: []
+paths:
+  /logs:
+    get:
+      tags:
+        - apiLog
+      operationId: GetLogs
+      summary: Get API execution log list
+      x-summary-i18n:
+        jpn: 全API実行ログ取得
+      description: Retrieve the log of all API executions.
+      x-description-i18n:
+        jpn: 全API実行のログ登録を取得します。
+      parameters:
+        - in: query
+          name: created_date
+          schema:
+            type: string
+            format: date
+          description: The date, in format of YYYY-MM-DD, to retrieve the log.
+          x-description-i18n:
+            jpn: ログを取得する日付 (YYYY-MM-DD 形式)
+        - in: query
+          name: created_at
+          schema:
+            type: string
+            format: date-time
+          description: The datetime, in ISO 8601 format, to retrieve the log.
+          x-description-i18n:
+            jpn: ログを取得する日時 (ISO 8601 形式の日時)
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+          description: Maximum number of logs to retrieve.
+          x-description-i18n:
+            jpn: 取得するログの最大数
+        - in: query
+          name: cursor
+          schema:
+            type: string
+          description: Cursor for cursor pagination.
+          x-description-i18n:
+            jpn: カーソルページネーション用のカーソル
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: API log created
+                x-title-i18n:
+                  jpn: 作成されたAPIログ
+                $ref: "#/components/schemas/ApiLogs"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /logs/{api_log_id}:
+    get:
+      tags:
+        - apiLog
+      operationId: GetLog
+      summary: Get API execution log
+      x-summary-i18n:
+        jpn: API実行ログ取得
+      description: Retrieve the log of the API execution with the specified ID.
+      x-description-i18n:
+        jpn: 指定したIDのAPI実行のログ登録を取得します。
+      parameters:
+        - $ref: '#/components/parameters/ApiLogId'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: API log
+                x-title-i18n:
+                  jpn: APIログ
+                $ref: "#/components/schemas/ApiLog"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /errors/internal-server-error:
+    get:
+      tags:
+        - "error"
+      operationId: ReturnInternalServerError
+      summary: Returns a server error with status code 500
+      x-summary-i18n:
+        jpn: ステータスコード500でサーバーエラーを返却
+      description: |
+        This endpoint is used for testing purposes. Returns a server error with status code 500.
+      x-description-i18n:
+        jpn: |
+          テスト用途で使用するエンドポイントです。ステータスコード500でサーバーエラーを返却します。
+      responses:
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
+      description: Credentials or access token for API
+  parameters:
+    ApiLogId:
+      in: path
+      name: api_log_id
+      description: API Log ID
+      x-description-i18n:
+        jpn: APIログID
+      required: true
+      schema:
+        $ref: "#/components/schemas/Uuid"
+  schemas:
+    Error:
+      properties:
+        type:
+          type: string
+          description: permission_denied
+        message:
+          type: string
+          description: Error message
+      required:
+        - type
+        - message
+    Uuid:
+      type: string
+      example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+    ApiLogs:
+      title: API execution log list
+      x-title-i18n:
+        jpn: API実行ログ一覧
+      type: object
+      properties:
+        api_logs:
+          type: array
+          items: { $ref: "#/components/schemas/ApiLog" }
+        cursor:
+          type: string
+          description: Cursor for cursor pagination
+          x-description-i18n:
+            jpn: カーソルページネーション用のカーソル
+      required:
+        - api_logs
+    ApiLog:
+      title: API log
+      x-title-i18n:
+        jpn: Apiログ
+      type: object
+      allOf:
+      - properties:
+          trace_id:
+            type: string
+            example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+            description: Trace ID
+            x-description-i18n:
+              jpn: トレースID
+          api_log_id:
+            $ref: "#/components/schemas/Uuid"
+            description: API Log ID
+            x-description-i18n:
+              jpn: APIログID
+          created_at:
+            type: integer
+            x-go-type: int64
+            example: 1670997124
+            description: Epoch second of API log registration timestamp
+            x-description-i18n:
+              jpn: APIログ登録日時のエポック秒
+          created_date:
+            type: string
+            example: "2022-12-14"
+            description: API log registration date
+            x-description-i18n:
+              jpn: APIログ登録日
+          ttl:
+            type: integer
+            x-go-type: int64
+            example: 1670997124
+            description: Epoch second of planned API log deletion
+            x-description-i18n:
+              jpn: APIログ削除予定エポック秒
+          request_method:
+            type: string
+            example: "GET"
+            description: Request method
+            x-description-i18n:
+              jpn: リクエストメソッド
+          saas_id:
+            $ref: "#/components/schemas/Uuid"
+            description: SaaS ID
+            x-description-i18n:
+              jpn: saas id
+          api_key:
+            type: string
+            example: icFS9Hit7jZjeSKMbNZP2cmfqBseyxnJZ
+            description: API Key
+            x-description-i18n:
+              jpn: APIキー
+          response_status:
+            type: string
+            example: 200
+            description: Response status
+            x-description-i18n:
+              jpn: レスポンスステータス
+          request_uri:
+            type: string
+            example: /v1/auth/tenants
+            description: Request URI
+            x-description-i18n:
+              jpn: リクエストURI
+          remote_address:
+            type: string
+            example: 192.168.0.20
+            description: Client IP Address
+            x-description-i18n:
+              jpn: クライアントIPアドレス
+          referer:
+            type: string
+            example: /v1/auth/user_info
+            description: The referrer of the request
+            x-description-i18n:
+              jpn: リクエストリファラー
+          request_body:
+            type: string
+            example: '{"name":"1207 Tenant","back_office_staff_email":"example.com"}'
+            description: The body of the request
+            x-description-i18n:
+              jpn: リクエストボディー
+          response_body:
+            type: string
+            example: '{"id": "98684c58-ca59-4046-9c2a-861ef6f12dd4", "name":"1207 Tenant"}'
+            description: The body of the response
+            x-description-i18n:
+              jpn: レスポンスボディー
+        required:
+          - trace_id
+          - api_log_id
+          - created_at
+          - created_date
+          - ttl
+          - request_method
+          - saas_id
+          - api_key
+          - response_status
+          - request_uri
+          - remote_address
+          - referer
+          - request_body
+          - response_body

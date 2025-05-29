@@ -1,0 +1,5299 @@
+openapi: 3.0.0
+info:
+  description: "Schema"
+  x-description-i18n:
+    jpn: "スキーマ"
+  version: "1.0.0"
+  title: "SaaSus Auth API Schema"
+  contact:
+    name: "Anti-Pattern"
+servers:
+  - url: "https://api.saasus.io/v1/auth"
+    description: Production API Server
+tags:
+  - name: "basicInfo"
+    description: Basic Info
+    x-description-i18n:
+      jpn: "基本情報"
+  - name: "authInfo"
+    description: Auth Info
+    x-description-i18n:
+      jpn: "認証情報"
+  - name: "saasUser"
+    description: SaaS User
+    x-description-i18n:
+      jpn: "SaaS単位のユーザー"
+  - name: "tenantUser"
+    description: Tenant User
+    x-description-i18n:
+      jpn: "Tenant単位のユーザー"
+  - name: "userAttribute"
+    description: Additional User Attributes
+    x-description-i18n:
+      jpn: "ユーザーの追加属性"
+  - name: "tenantAttribute"
+    description: Additional Tenant Attributes
+    x-description-i18n:
+      jpn: "テナントの追加属性"
+  - name: "role"
+    description: Role
+    x-description-i18n:
+      jpn: "役割(ロール)"
+  - name: "tenant"
+    description: Tenant
+    x-description-i18n:
+      jpn: "テナント"
+  - name: "saasusTenant"
+    description: SaaSus Tenant
+    x-description-i18n:
+      jpn: "SaaSusテナント"
+  - name: "env"
+    description: Environment Info
+    x-description-i18n:
+      jpn: "環境情報"
+  - name: "credential"
+    description: Authentication/Authorization Info
+    x-description-i18n:
+      jpn: "認証・認可情報"
+  - name: "invitation"
+    description: Invitation
+    x-description-i18n:
+      jpn: "招待"
+  - name: "singleTenant"
+    description: Single Tenant Management
+    x-description-i18n:
+      jpn: "シングルテナント管理"
+  - name: "error"
+    description: Testing Purpose Error
+    x-description-i18n:
+      jpn: "テスト用途のエラー"
+security:
+  - Bearer: []
+paths:
+  /userinfo:
+    get:
+      tags:
+        - userInfo
+      operationId: GetUserInfo
+      summary: Get User Info
+      x-summary-i18n:
+        jpn: ユーザー情報取得
+      description: |
+        User information is obtained based on the ID token of the SaaS user (registered user).
+        The ID token is passed to the Callback URL during login from the SaaSus Platform generated login screen.
+        User information can be obtained from calling this API with an ID token from the URL on the server side.
+        Since the acquired tenant, role (role), price plan, etc. are included, it is possible to implement authorization based on it.
+      x-description-i18n:
+        jpn: |
+          SaaS利用ユーザ(登録ユーザ)のIDトークンを元に、ユーザ情報を取得します。
+          IDトークンは、SaaSus Platform生成のログイン画面からログイン時にCallback URLに渡されます。
+          サーバ側でそのURLからIDトークンを取得し、このAPIを呼ぶことにより、該当ユーザの情報が取得できます。
+          取得した上には、所属テナントや役割(ロール)、料金プランなどが含まれているため、それを元に認可の実装を行うことが可能です。
+      parameters:
+        - in: query
+          name: token
+          description: ID Token
+          x-description-i18n:
+            jpn: IDトークン
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: User Info
+                x-title-i18n:
+                  jpn: ユーザー情報
+                $ref: "#/components/schemas/UserInfo"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /userinfo/search/email:
+    get:
+      tags:
+        - userInfo
+      operationId: GetUserInfoByEmail
+      summary: Get User Info by Email
+      x-summary-i18n:
+        jpn: メールアドレスからユーザー情報取得
+      description: |
+        Get user information by email address.
+      x-description-i18n:
+        jpn: |
+          メールアドレスを条件にユーザー情報を取得します
+      parameters:
+        - in: query
+          name: email
+          description: Email
+          x-description-i18n:
+            jpn: メールアドレス
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: User Info
+                x-title-i18n:
+                  jpn: ユーザー情報
+                $ref: "#/components/schemas/UserInfo"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /basic-info:
+    get:
+      tags:
+        - basicInfo
+      operationId: GetBasicInfo
+      summary: Get Basic Configurations
+      x-summary-i18n:
+        jpn: 基本設定情報の取得
+      description: |
+        Get the domain name and CNAME record based on the SaaS ID.
+        By setting the CNAME record on the DNS the login screen will be generated.
+      x-description-i18n:
+        jpn: |
+          SaaS ID を元に設定されているドメイン名と CNAME レコードを取得します。
+          取得した CNAME レコードを DNS に設定することで、ログイン画面を生成します。
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: Basic Setting List
+                x-title-i18n:
+                  jpn: 基本設定情報一覧
+                $ref: "#/components/schemas/BasicInfo"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - basicInfo
+      operationId: UpdateBasicInfo
+      summary: Update Basic Configurations
+      x-summary-i18n:
+        jpn: 基本設定情報の更新
+      description: |
+        Update the domain name that was set as a parameter based on the SaaS ID.
+        After the CNAME record is generated, set it in your DNS.
+        If it is set on a SaaS application that is already running, it will affect the behavior.
+      x-description-i18n:
+        jpn: |
+          SaaS ID を元にパラメータとして設定したドメイン名を設定更新します。
+          CNAME レコードが生成されますので、 DNS に設定して下さい。
+          既に稼働中の SaaS アプリケーションに設定している場合には、動作に影響があります。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBasicInfoParam"
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /auth-info:
+    get:
+      tags:
+        - authInfo
+      operationId: GetAuthInfo
+      summary: Get Authentication Info
+      x-summary-i18n:
+        jpn: 認証情報を取得
+      description: |
+        Get the post-login SaaS URL that contains authentication information.
+        You can pass authentication information to the URL obtained here and implement this Callback using the SaaSus SDK.
+      x-description-i18n:
+        jpn: |
+          ログイン後に認証情報を渡す SaaS の URL を取得します。
+          ここで取得した URL へ認証情報を渡し、SaaSus SDK を利用してこの Callback の実装をすることが可能となります。
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: Basic Settings
+                x-title-i18n:
+                  jpn: 基本設定情報一覧
+                $ref: "#/components/schemas/AuthInfo"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - authInfo
+      operationId: UpdateAuthInfo
+      summary: Update Authentication Info
+      x-summary-i18n:
+        jpn: 認証情報を更新
+      description: |
+        Register post-login SaaS URL for authentication information.
+        It is possible to pass authentication information to the URL registered here and implement this Callback using the SaaSus SDK.
+      x-description-i18n:
+        jpn: |
+          ログイン後に認証情報を渡す SaaS の URL を登録します。
+          ここで登録した URL に認証情報を渡し、SaaSus SDK を利用してこの Callback の実装をすることが可能となります。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAuthInfoParam"
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users:
+    get:
+      tags:
+        - saasUser
+      operationId: GetSaasUsers
+      summary: Get Users
+      x-summary-i18n:
+        jpn: ユーザー一覧を取得
+      description: |
+        Get all SaaS users.
+      x-description-i18n:
+        jpn: |
+          SaaSのユーザー全件を取得します。
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: List of all SaaS users
+                x-title-i18n:
+                  jpn: SaaS単位の全ユーザー一覧
+                $ref: "#/components/schemas/SaasUsers"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      tags:
+        - saasUser
+      operationId: CreateSaasUser
+      summary: Create SaaS User
+      x-summary-i18n:
+        jpn: SaaSにユーザーを作成
+      description: |
+        Create SaaS User.
+        If attributes is empty, a temporary password will be sent to the registered email.
+      x-description-i18n:
+        jpn: |
+          SaaSにユーザーを作成します。
+          passwordを空にした場合、登録されたメールアドレスに対して仮パスワードを送信します。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSaasUserParam"
+      responses:
+        201:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: Created User
+                x-title-i18n:
+                  jpn: 作成したユーザー
+                $ref: "#/components/schemas/SaasUser"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /users/{user_id}:
+    get:
+      tags:
+        - saasUser
+      operationId: GetSaasUser
+      summary: Get User
+      x-summary-i18n:
+        jpn: ユーザー情報を取得
+      description: |
+        Get user information based on user ID.
+      x-description-i18n:
+        jpn: |
+          ユーザーIDからユーザー情報を取得します。
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SaasUser"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - saasUser
+      operationId: DeleteSaasUser
+      summary: Delete User
+      x-summary-i18n:
+        jpn: ユーザー情報を削除
+      description: |
+        Delete all users with matching user ID from the tenant and SaaS.
+      x-description-i18n:
+        jpn: |
+          ユーザーIDを元に一致するユーザーをテナントからすべて削除し、SaaSからも削除します。
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        200:
+          description: OK
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/{user_id}/password:
+    patch:
+      tags:
+        - saasUser
+      operationId: UpdateSaasUserPassword
+      summary: Change Password
+      x-summary-i18n:
+        jpn: パスワードを変更
+      description: |
+        Change user's login password.
+      x-description-i18n:
+        jpn: |
+          ユーザーのログインパスワードを変更します。
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSaasUserPasswordParam"
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/{user_id}/email:
+    patch:
+      tags:
+        - saasUser
+      operationId: UpdateSaasUserEmail
+      summary: Change Email
+      x-summary-i18n:
+        jpn: メールアドレスを変更
+      description: |
+        Change user's email.
+      x-description-i18n:
+        jpn: |
+          ユーザーのメールアドレスを変更します。
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSaasUserEmailParam"
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/{user_id}/email/request:
+    post:
+      tags:
+        - saasUser
+      operationId: RequestEmailUpdate
+      summary: Request User Email Update
+      x-summary-i18n:
+        jpn: ユーザーのメールアドレス変更要求
+      description: |
+        Request to update the user's email address.
+        Sends a verification code to the requested email address.
+        Requires the user's access token.
+        The verification code is valid for 24 hours.
+      x-description-i18n:
+        jpn: |
+          ユーザーのメールアドレス変更を要求します。
+          要求されたメールアドレスに対して検証コードを送信します。
+          ユーザーのアクセストークンが必要です。
+          検証コードの有効期限は24時間です。
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestEmailUpdateParam"
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/{user_id}/email/confirm:
+    post:
+      tags:
+        - saasUser
+      operationId: ConfirmEmailUpdate
+      summary: Confirm User Email Update
+      x-summary-i18n:
+        jpn: ユーザーのメールアドレス変更確認
+      description: |
+        Verify the code to confirm the user's email address update.
+        Requires the user's access token.
+      x-description-i18n:
+        jpn: |
+          ユーザーのメールアドレス変更確認のためにコードを検証します。
+          ユーザーのアクセストークンが必要です。
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfirmEmailUpdateParam"
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/{user_id}/attributes:
+    patch:
+      tags:
+        - saasUser
+      operationId: UpdateSaasUserAttributes
+      summary: Update SaaS User Attributes
+      x-summary-i18n:
+        jpn: SaaSユーザーの属性情報を更新
+      description: |
+        Update the additional attributes of the SaaS user.
+      x-description-i18n:
+        jpn: |
+          SaaSユーザーの追加属性を更新します。
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSaasUserAttributesParam"
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/{user_id}/mfa/software-token:
+    put:
+      tags:
+        - saasUser
+      operationId: UpdateSoftwareToken
+      summary: Register Authentication Application
+      x-summary-i18n:
+        jpn: 認証アプリケーションを登録
+      description: |
+        Register an authentication application.
+      x-description-i18n:
+        jpn: |
+          認証アプリケーションを登録します。
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSoftwareTokenParam"
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/{user_id}/mfa/software-token/secret-code:
+    post:
+      tags:
+        - saasUser
+      operationId: CreateSecretCode
+      summary: Create secret code for authentication application registration
+      x-summary-i18n:
+        jpn: 認証アプリケーション登録用のシークレットコードを作成
+      description: |
+        Create a secret code for authentication application registration.
+      x-description-i18n:
+        jpn: |
+          認証アプリケーション登録用のシークレットコードを作成します。
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSecretCodeParam"
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SoftwareTokenSecretCode'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/{user_id}/mfa/preference:
+    get:
+      tags:
+        - saasUser
+      operationId: GetUserMfaPreference
+      summary: Get User's MFA Settings
+      x-summary-i18n:
+        jpn: ユーザーのMFA設定を取得
+      description: |
+        Get the user's MFA settings.
+      x-description-i18n:
+        jpn: |
+          ユーザーのMFA設定を取得します。
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MfaPreference'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+        - saasUser
+      operationId: UpdateUserMfaPreference
+      summary: Update User's MFA Settings
+      x-summary-i18n:
+        jpn: ユーザーのMFA設定を更新
+      description: |
+        Update user's MFA settings.
+      x-description-i18n:
+        jpn: |
+          ユーザーのMFA設定を更新します。
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserMfaPreferenceParam'
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Error'
+  /users/{user_id}/providers/{provider_name}:
+    delete:
+      tags:
+        - saasUser
+      operationId: UnlinkProvider
+      summary: Unlink external identity providers
+      x-summary-i18n:
+        jpn: 外部IDプロバイダの連携解除
+      description: |
+        Unlink external identity providers.
+      x-description-i18n:
+        jpn: |
+          外部IDプロバイダの連携を解除します。
+      parameters:
+        - in: path
+          name: provider_name
+          schema:
+            type: string
+            example: "Google"
+          required: true
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Error'
+  /tenants/all/users:
+    get:
+      tags:
+        - tenantUser
+      operationId: GetAllTenantUsers
+      summary: Get Users
+      x-summary-i18n:
+        jpn: ユーザー一覧を取得
+      description: |
+        Get all users belonging to the tenant.
+        The same user belonging to multiple tenants will be returned as a different object.
+        Id is not unique.
+      x-description-i18n:
+        jpn: |
+          テナントに所属しているユーザー全件を取得します。
+          複数テナントに所属する同一ユーザーは別のオブジェクトとして返却されます。
+          idは一意ではありません。
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Users"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /tenants/all/users/{user_id}:
+    get:
+      tags:
+        - tenantUser
+      operationId: GetAllTenantUser
+      summary: Get User Info
+      x-summary-i18n:
+        jpn: ユーザー情報を取得
+      description: |
+        Get information on user belonging to the tenant from the user ID.
+        If the user belongs to multiple tenants, it will be returned as another object.
+      x-description-i18n:
+        jpn: |
+          ユーザーIDからテナントに所属しているユーザー情報を取得します。
+          複数テナントに所属している場合は別のオブジェクトとして返却されます。
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Users"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /tenants/{tenant_id}/users:
+    get:
+      tags:
+        - tenantUser
+      operationId: GetTenantUsers
+      summary: Get Tenant Users
+      x-summary-i18n:
+        jpn: テナントのユーザー一覧を取得
+      description: |
+        Get all the users belonging to the tenant.
+        Id is unique.
+      x-description-i18n:
+        jpn: |
+          テナントに所属するユーザーを全件取得します。
+          idは一意です。
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Users"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - tenantUser
+      operationId: CreateTenantUser
+      summary: Create Tenant User
+      x-summary-i18n:
+        jpn: テナントにユーザーを作成
+      description: |
+        Create a tenant user.
+        If attributes is empty, the additional attributes will be created empty.
+      x-description-i18n:
+        jpn: |
+          テナントにユーザーを作成します。
+          attributesを空のオブジェクトにした場合、追加属性は空で作成されます。
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTenantUserParam"
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                title: Created User
+                x-title-i18n:
+                  jpn: 作成されたユーザー
+                $ref: "#/components/schemas/User"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /tenants/{tenant_id}/users/{user_id}:
+    get:
+      tags:
+        - tenantUser
+      operationId: GetTenantUser
+      summary: Get Tenant User
+      x-summary-i18n:
+        jpn: テナントのユーザー情報を取得
+      description: |
+        Get one tenant user by specific ID.
+      x-description-i18n:
+        jpn: |
+          テナントのユーザーをIDから一件取得します。
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+        - tenantUser
+      operationId: UpdateTenantUser
+      summary: Update Tenant User Attribute
+      x-summary-i18n:
+        jpn: テナントのユーザー属性情報を更新
+      description: |
+        Update tenant user attributes.
+      x-description-i18n:
+        jpn: |
+          テナントのユーザー属性情報を更新します。
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTenantUserParam"
+      responses:
+        200:
+          description: OK
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - tenantUser
+      operationId: DeleteTenantUser
+      summary: Delete Tenant User
+      x-summary-i18n:
+        jpn: テナントのユーザー情報を削除
+      description: |
+        Delete a user from the tenant.
+      x-description-i18n:
+        jpn: |
+          テナントからユーザーを削除します。
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        200:
+          description: OK
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /tenants/{tenant_id}/users/{user_id}/envs/{env_id}/roles:
+    post:
+      tags:
+        - tenantUser
+      operationId: CreateTenantUserRoles
+      summary: Create Tenant User Role
+      x-summary-i18n:
+        jpn: テナントのユーザー情報に役割(ロール)を作成
+      description: |
+        Create roles on tenant users.
+      x-description-i18n:
+        jpn: |
+          テナントのユーザーに役割(ロール)を作成します。
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/EnvId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTenantUserRolesParam"
+      responses:
+        201:
+          description: Created
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /tenants/{tenant_id}/users/{user_id}/envs/{env_id}/roles/{role_name}:
+    delete:
+      tags:
+        - tenantUser
+      operationId: DeleteTenantUserRole
+      summary: Remove Role From Tenant User
+      x-summary-i18n:
+        jpn: テナントのユーザーから役割(ロール)を削除
+      description: |
+        Remove a role from a tenant user.
+      x-description-i18n:
+        jpn: |
+          テナントのユーザーから役割(ロール)を削除します。
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/EnvId'
+        - $ref: '#/components/parameters/RoleName'
+      responses:
+        200:
+          description: OK
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /roles:
+    get:
+      tags:
+        - role
+      operationId: GetRoles
+      summary: Get Roles
+      x-summary-i18n:
+        jpn: 役割(ロール)一覧を取得
+      description: |
+        Get registered roles list.
+        Granting users the roles defined here makes it easy to implement role-based authorization on the SaaS side.
+        In addition, even the same user can have different roles for each tenant/environment to which they belong.
+      x-description-i18n:
+        jpn: |
+          登録されている役割(ロール)を一覧として取得します。
+          ここで定義した役割をユーザーに付与することによって、SaaS側で役割ベースの認可を実装することが用意になります。
+          また、同じユーザーでも、属するテナント・環境ごとに持っている役割を変えることが可能です。
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: Roles
+                x-title-i18n:
+                  jpn: 役割(ロール)一覧
+                $ref: "#/components/schemas/Roles"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - role
+      operationId: CreateRole
+      summary: Create Role
+      x-summary-i18n:
+        jpn: 役割(ロール)を作成
+      description: |
+        Create a role.
+        By granting users the roles created here, it becomes easier to implement role-based authorization on the SaaS side.
+        In addition, even the same user can have different roles for each tenant/environment to which they belong.
+      x-description-i18n:
+        jpn: |
+          役割(ロール)を作成します。
+          ここで作成した役割をユーザーに付与することによって、SaaS側で役割ベースの認可を実装することが用意になります。
+          また、同じユーザーでも、属するテナント・環境ごとに持っている役割を変えることが可能です。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRoleParam"
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                title: Created roles
+                x-title-i18n:
+                  jpn: 作成された役割(ロール)
+                $ref: "#/components/schemas/Role"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /roles/{role_name}:
+    delete:
+      tags:
+        - role
+      operationId: DeleteRole
+      summary: Delete Role
+      x-summary-i18n:
+        jpn: 役割(ロール)を削除
+      description: |
+        Delete role.
+      x-description-i18n:
+        jpn: |
+          役割(ロール)を削除します。
+      parameters:
+        - $ref: '#/components/parameters/RoleName'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /user-attributes:
+    get:
+      tags:
+        - userAttribute
+      operationId: GetUserAttributes
+      summary: Get User Attributes
+      x-summary-i18n:
+        jpn: ユーザー属性の一覧を取得
+      description: |
+        Get additional attributes of the user saved in the SaaSus Platform.
+        For example, you can define items associated with a user, such as user name, birthday, etc.
+        If you don't want personal information on the SaaS Platform side, personal information can be kept on the SaaS side without user attribute definition.
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform にて保持するユーザーの追加属性を取得します。
+          例えば、ユーザー名を持たせる、誕生日を持たせるなど、ユーザーに紐付いた項目の定義を行うことができます。
+          一方で、個人情報を SaaSus Platform 側に持たせたくない場合は、このユーザー属性定義を行わずに SaaS 側で個人情報を持つことを検討してください。
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: User Attributes
+                x-title-i18n:
+                  jpn: ユーザー属性一覧
+                $ref: "#/components/schemas/UserAttributes"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - userAttribute
+      operationId: CreateUserAttribute
+      summary: Create User Attributes
+      x-summary-i18n:
+        jpn: ユーザー属性の作成
+      description: |
+        Create additional user attributes to be kept on the SaaSus Platform.
+        You can give different values to each tenant.
+        For example, you can define items associated with a user, such as user name, birthday, etc.
+        If you don't want personal information on the SaaS Platform side, personal information can be kept on the SaaS side without user attribute definition.
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform にて保持するユーザーの追加属性を登録します。
+          テナント毎に異なる値を持たせることができます。
+          例えば、ユーザー名を持たせる、誕生日を持たせるなど、ユーザーに紐付いた項目の定義を行うことができます。
+          一方で、個人情報を SaaSus Platform 側に持たせたくない場合は、このユーザー属性定義を行わずに SaaS 側で個人情報を持つことを検討してください。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserAttributeParam"
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                title: Created User Attribute
+                x-title-i18n:
+                  jpn: 作成されたUserAttribute
+                $ref: "#/components/schemas/Attribute"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /user-attributes/{attribute_name}:
+    delete:
+      tags:
+        - userAttribute
+      operationId: DeleteUserAttribute
+      summary: Delete User Attribute
+      x-summary-i18n:
+        jpn: ユーザー属性の削除
+      description: |
+        Delete user attributes kept on the SaaSus Platform.
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform にて保持するユーザーの追加属性を削除します。
+      parameters:
+        - in: path
+          name: attribute_name
+          description: Attribute Name
+          x-description-i18n:
+            jpn: 属性名
+          schema:
+            type: string
+            example: birthday
+          required: true
+      responses:
+        200:
+          description: OK
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /saas-user-attributes:
+    post:
+      tags:
+        - userAttribute
+      operationId: CreateSaasUserAttribute
+      summary: Create SaaS User Attributes
+      x-summary-i18n:
+        jpn: SaaSユーザー属性の作成
+      description: |
+        Create additional SaaS user attributes to be kept on the SaaSus Platform.
+        You can give common values to all tenants.
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform にて保持するSaaSユーザーの追加属性を登録します。
+          すべてのテナントに対して共通の値を持たせることができます。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSaasUserAttributeParam"
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                title: Created User Attribute
+                x-title-i18n:
+                  jpn: 作成されたUserAttribute
+                $ref: "#/components/schemas/Attribute"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /tenant-attributes:
+    get:
+      tags:
+        - tenantAttribute
+      operationId: GetTenantAttributes
+      summary: Get Tenant Attributes
+      x-summary-i18n:
+        jpn: テナント属性の一覧を取得
+      description: |
+        Get definitions for additional tenant attributes managed by the SaaSus Platform.
+        For example, tenant name, memo, etc., then get the attributes from SaaS using the SaaSus SDK/API.
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform で管理する、テナントの追加属性の定義を取得します。
+          例えばテナントの呼び名やメモなどをを持たせることができ、SaaSからSaaSus SDK/APIを利用して取得することができます。
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: Added Tenant Attributes
+                x-title-i18n:
+                  jpn: テナント追加属性一覧
+                $ref: "#/components/schemas/TenantAttributes"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - tenantAttribute
+      operationId: CreateTenantAttribute
+      summary: Create Tenant Attribute
+      x-summary-i18n:
+        jpn: テナント属性の作成
+      description: |
+        Register additional tenant attributes to be managed by SaaSus Platform.
+        For example, tenant name, memo, etc., then get the attributes from SaaS using the SaaSus SDK/API.
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform で管理する、テナントの追加属性の登録を行います。
+          例えばテナントの呼び名やメモなどをを持たせることができ、SaaSからSaaSus SDK/APIを利用して取得することができます。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTenantAttributeParam"
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                title: Created Tenant Attribute
+                x-title-i18n:
+                  jpn: 作成されたテナント属性情報
+                $ref: "#/components/schemas/Attribute"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /tenant-attributes/{attribute_name}:
+    delete:
+      tags:
+        - tenantAttribute
+      operationId: DeleteTenantAttribute
+      summary: Delete Tenant Attribute
+      x-summary-i18n:
+        jpn: テナント属性の削除
+      description: |
+        Deletes tenant attributes managed by SaaSus Platform.
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform で管理する、テナントの追加属性の削除を行います。
+      parameters:
+        - in: path
+          name: attribute_name
+          description: Attribute Name
+          x-description-i18n:
+            jpn: 属性名
+          schema:
+            type: string
+            example: birthday
+          required: true
+      responses:
+        200:
+          description: OK
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /tenants:
+    get:
+      tags:
+        - tenant
+      operationId: GetTenants
+      summary: Get Tenants
+      x-summary-i18n:
+        jpn: テナント一覧取得
+      description: |
+        Get tenants managed by SaaSus Platform.
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform で管理する、テナント情報の取得を行います。
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tenants"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - tenant
+      operationId: CreateTenant
+      summary: Create Tenant
+      x-summary-i18n:
+        jpn: テナントを作成
+      description: |
+        Create a tenant managed by the SaaSus Platform.
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform で管理する、テナント情報を作成します。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTenantParam"
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                title: Created Tenant
+                x-title-i18n:
+                  jpn: 作成されたTenant
+                $ref: "#/components/schemas/Tenant"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /tenants/{tenant_id}:
+    get:
+      tags:
+        - tenant
+      operationId: GetTenant
+      summary: Get Tenant Details
+      x-summary-i18n:
+        jpn: テナント情報を取得
+      description: |
+        Get the details of tenant managed on the SaaSus Platform.
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform で管理する、テナントの詳細情報を取得します。
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: Tenant Details
+                x-title-i18n:
+                  jpn: テナント情報
+                $ref: "#/components/schemas/TenantDetail"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+        - tenant
+      operationId: UpdateTenant
+      summary: Update Tenant Details
+      x-summary-i18n:
+        jpn: テナント情報を更新
+      description: |
+        Update SaaSus Platform tenant details.
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform で管理する、テナントの詳細情報を更新します。
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTenantParam"
+      responses:
+        200:
+          description: OK
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - tenant
+      operationId: DeleteTenant
+      summary: Delete Tenant
+      x-summary-i18n:
+        jpn: テナント情報を削除
+      description: |
+        Delete SaaSus Platform tenant.
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform で管理する、テナントの詳細情報を削除します。
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /tenants/{tenant_id}/plans:
+    put:
+      tags:
+        - tenant
+      operationId: UpdateTenantPlan
+      summary: Update Tenant Plan Information
+      x-summary-i18n:
+        jpn: テナントのプラン情報を更新
+      description: |
+        Update SaaSus Platform tenant plan information.
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform で管理しているテナントのプラン情報を更新します。
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTenantPlanParam"
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /tenants/{tenant_id}/billing-info:
+    put:
+      tags:
+        - tenant
+      operationId: UpdateTenantBillingInfo
+      summary: Update Tenant Billing Information
+      x-summary-i18n:
+        jpn: テナントの請求先情報を更新
+      description: |
+        Update SaaSus Platform tenant billing information.
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform で管理しているテナントの請求先情報を更新します。
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTenantBillingInfoParam"
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /tenants/{tenant_id}/invitations:
+    get:
+      tags:
+        - invitation
+      operationId: GetTenantInvitations
+      summary: Get Tenant Invitations
+      x-summary-i18n:
+        jpn: テナントの招待一覧を取得
+      description: |
+        Get a list of invitations to the tenant.
+      x-description-i18n:
+        jpn: |
+          テナントへの招待一覧を取得します。
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: Invitations
+                x-title-i18n:
+                  jpn: 招待一覧
+                $ref: "#/components/schemas/Invitations"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - invitation
+      operationId: CreateTenantInvitation
+      summary: Create Tenant Invitation
+      x-summary-i18n:
+        jpn: テナントへの招待を作成
+      description: |
+        Create an invitation to the tenant.
+      x-description-i18n:
+        jpn: |
+          テナントへの招待を作成します。
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTenantInvitationParam"
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                title: Created Invitation
+                x-title-i18n:
+                  jpn: 作成された招待
+                $ref: "#/components/schemas/Invitation"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /tenants/{tenant_id}/invitations/{invitation_id}:
+    get:
+      tags:
+        - invitation
+      operationId: GetTenantInvitation
+      summary: Get Tenant Invitation
+      x-summary-i18n:
+        jpn: テナントの招待情報を取得
+      description: |
+        Get invitation information for the tenant.
+      x-description-i18n:
+        jpn: |
+          テナントへの招待情報を取得します。
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/InvitationId'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: Invitation
+                x-title-i18n:
+                  jpn:  招待情報
+                $ref: "#/components/schemas/Invitation"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - invitation
+      operationId: DeleteTenantInvitation
+      summary: Delete Tenant Invitation
+      x-summary-i18n:
+        jpn: テナントへの招待を削除
+      description: |
+        Delete an invitation for the tenant.
+      x-description-i18n:
+        jpn: |
+          テナントへの招待を削除します。
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/InvitationId'
+      responses:
+        200:
+          description: OK
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /invitations/{invitation_id}/validity:
+    get:
+      tags:
+        - invitation
+      operationId: GetInvitationValidity
+      summary: Get Invitation Validity
+      x-summary-i18n:
+        jpn: テナントへの招待の有効性を取得
+      description: |
+        Get the validity of an invitation to the tenant.
+      x-description-i18n:
+        jpn: |
+          テナントへの招待の有効性を取得します。
+      parameters:
+        - $ref: '#/components/parameters/InvitationId'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: Invitation Validity
+                x-title-i18n:
+                  jpn: 招待の有効性
+                $ref: "#/components/schemas/InvitationValidity"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /invitations/{invitation_id}/validate:
+    patch:
+      tags:
+        - invitation
+      operationId: ValidateInvitation
+      summary: Validate Invitation
+      x-summary-i18n:
+        jpn: テナントへの招待を検証
+      description: |
+        Validate an invitation to the tenant.
+      x-description-i18n:
+        jpn: |
+          テナントへの招待を検証します。
+      parameters:
+        - $ref: '#/components/parameters/InvitationId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValidateInvitationParam"
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /tenants/{tenant_id}/identity-providers:
+    get:
+      tags:
+        - tenant
+      operationId: GetTenantIdentityProviders
+      summary: Get identity provider per tenant
+      x-summary-i18n:
+        jpn: テナント毎の外部IDプロバイダ取得
+      description: |
+        Get sign-in information via external identity provider per tenant.
+      x-description-i18n:
+        jpn: |
+          テナント毎の外部IDプロバイダ経由のサインイン情報を取得します。
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: Tenant Identity Providers
+                x-title-i18n:
+                  jpn: テナント毎の外部IDプロバイダのサインイン情報
+                $ref: "#/components/schemas/TenantIdentityProviders"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - tenant
+      operationId: UpdateTenantIdentityProvider
+      summary: Update identity provider per tenant
+      x-summary-i18n:
+        jpn: テナント毎の外部IDプロバイダ更新
+      description: |
+        Update sign-in information via external identity provider per tenant.
+      x-description-i18n:
+        jpn: |
+          テナント毎の外部IDプロバイダ経由のサインイン情報を更新します。
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTenantIdentityProviderParam"
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /external-users/request:
+    post:
+      tags:
+        - saasUser
+      operationId: RequestExternalUserLink
+      summary: Request External User Account Link
+      x-summary-i18n:
+        jpn: 外部アカウントのユーザー連携要求
+      description: |
+        Request to link an external account user.
+        Get the email address of the user to be linked from the access token and send a verification code to that email address.
+        The verification code is valid for 24 hours.
+      x-description-i18n:
+        jpn: |
+          外部アカウントのユーザー連携を要求します。
+          アクセストークンから連携するユーザーのメールアドレスを取得し、そのメールアドレスに対して検証コードを送信します。
+          検証コードの有効期限は24時間です。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestExternalUserLinkParam"
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /external-users/confirm:
+    post:
+      tags:
+        - saasUser
+      operationId: ConfirmExternalUserLink
+      summary: Confirm External User Account Link
+      x-summary-i18n:
+        jpn: 外部アカウントのユーザーの連携確認
+      description: |
+        Verify the code for external account user link confirmation.
+      x-description-i18n:
+        jpn: |
+          外部アカウントのユーザー連携確認のためにコードを検証します。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfirmExternalUserLinkParam"
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /notification-messages:
+    get:
+      tags:
+        - basicInfo
+      operationId: FindNotificationMessages
+      summary: Get Notification Email Templates
+      x-summary-i18n:
+        jpn: 通知メールテンプレートを取得
+      description: |
+        Get notification email templates.
+      x-description-i18n:
+        jpn: |
+          各種通知メールテンプレートを取得します。
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: Notification Email Template
+                x-title-i18n:
+                  jpn: 通知メールテンプレート
+                $ref: "#/components/schemas/NotificationMessages"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - basicInfo
+      operationId: UpdateNotificationMessages
+      summary: Update Notification Email Template
+      x-summary-i18n:
+        jpn: 通知メールテンプレートを更新
+      description: |
+        Update notification email template.
+      x-description-i18n:
+        jpn: |
+          各種通知メールテンプレート更新します。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateNotificationMessagesParam"
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /identity-providers:
+    get:
+      tags:
+        - authInfo
+      operationId: GetIdentityProviders
+      summary: Get Sign-In Information Via External Provider
+      x-summary-i18n:
+        jpn: cognitoに設定している外部プロバイダ経由のサインイン情報取得
+      description: |
+        Get sign-in information via external provider set in cognito.
+      x-description-i18n:
+        jpn: |
+          cognitoに設定している外部プロバイダ経由のサインイン情報を取得します。
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: Identity Providers
+                x-title-i18n:
+                  jpn: 外部IDプロバイダのサインイン情報
+                $ref: "#/components/schemas/IdentityProviders"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - authInfo
+      operationId: UpdateIdentityProvider
+      summary: Update Sign-In Information
+      x-summary-i18n:
+        jpn: 外部IDプロバイダのサインイン情報更新
+      description: Update the sign-in information for the external ID provider
+      x-description-i18n:
+        jpn: |
+          外部IDプロバイダのサインイン情報を更新します。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateIdentityProviderParam"
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /sign-in-settings:
+    get:
+      tags:
+        - authInfo
+      operationId: GetSignInSettings
+      summary: Get Password Requirements
+      x-summary-i18n:
+        jpn: パスワード要件を取得
+      description: |
+        Get user password requirements.
+        Set a secure password that is difficult to decipher by increasing the number of digits by combining alphabets, numbers, and symbols.
+      x-description-i18n:
+        jpn: |
+          ユーザーパスワードの要件設定を取得します。
+          アルファベット、数字、記号の組み合わせで、桁数を長くすれば解読されづらい安全なパスワードを設定することが可能となります。
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: Password Requirement
+                x-title-i18n:
+                  jpn: パスワード要件
+                $ref: "#/components/schemas/SignInSettings"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - authInfo
+      operationId: UpdateSignInSettings
+      summary: Update Password Requirements
+      x-summary-i18n:
+        jpn: パスワード要件を更新
+      description: |
+        Update user password requirements.
+        Set a secure password that is difficult to decipher by increasing the number of digits by combining alphabets, numbers, and symbols.
+      x-description-i18n:
+        jpn: |
+          ユーザーパスワードの要件設定を更新します。
+          アルファベット、数字、記号の組み合わせで、桁数を長くすれば解読されづらい安全なパスワードを設定することが可能となります。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSignInSettingsParam"
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /customize-pages:
+    get:
+      tags:
+        - basicInfo
+      operationId: GetCustomizePages
+      summary: Get Authentication Page Setting
+      x-summary-i18n:
+        jpn: 認証系画面設定情報取得
+      description: |
+        Get the authentication screen setting information (new registration, login, password reset, etc.).
+      x-description-i18n:
+        jpn: |
+          認証系画面設定情報（新規登録・ログイン・パスワードリセット等）を取得します。
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: Customized Page info
+                x-title-i18n:
+                  jpn: カスタマイズ画面情報
+                $ref: "#/components/schemas/CustomizePages"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+        - basicInfo
+      operationId: UpdateCustomizePages
+      summary: Authentication Page Setting
+      x-summary-i18n:
+        jpn: 認証系画面設定情報設定
+      description: |
+        Update the authentication page setting information (new registration, login, password reset, etc.).
+      x-description-i18n:
+        jpn: |
+          認証系画面設定情報（新規登録・ログイン・パスワードリセット等）を更新します。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCustomizePagesParam"
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /customize-page-settings:
+    get:
+      tags:
+        - basicInfo
+      operationId: GetCustomizePageSettings
+      summary: Get Authentication Authorization Basic Information
+      x-summary-i18n:
+        jpn: 認証認可基本情報取得
+      description: |
+        Get authentication authorization basic information.
+      x-description-i18n:
+        jpn: |
+          認証認可基本情報を取得します。
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: Authentication Authorization Basic Information
+                x-title-i18n:
+                  jpn: 認証認可基本情報
+                $ref: "#/components/schemas/CustomizePageSettings"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+        - basicInfo
+      operationId: UpdateCustomizePageSettings
+      summary: Update Authentication Authorization Basic Information
+      x-summary-i18n:
+        jpn: 認証認可基本情報更新
+      description: |
+        Update authentication authorization basic information.
+      x-description-i18n:
+        jpn: |
+          認証認可基本情報を更新します。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCustomizePageSettingsParam"
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /envs:
+    get:
+      tags:
+        - env
+      operationId: GetEnvs
+      summary: Get Env Info
+      x-summary-i18n:
+        jpn: 環境情報一覧を取得
+      description: |
+        Get registered environment information.
+        Multiple environments can be defined, such as an environment for testing linkage, an environment for development, and an environment for actual operation.
+      x-description-i18n:
+        jpn: |
+          登録されている環境情報を取得します。
+          連携のテストや開発用環境や実際の運用で利用する環境など複数の環境を定義することができます。
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envs"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - env
+      operationId: CreateEnv
+      summary: Create Env Info
+      x-summary-i18n:
+        jpn: 環境情報を作成
+      description: |
+        Create environment information.
+        Multiple environments can be defined, such as an environment for testing linkage, an environment for development, and an environment for actual operation.
+      x-description-i18n:
+        jpn: |
+          環境情報を作成します。
+          連携のテストや開発用環境や実際の運用で利用する環境など複数の環境を定義することができます。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEnvParam"
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Env"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /envs/{env_id}:
+    get:
+      tags:
+        - env
+      parameters:
+        - $ref: '#/components/parameters/EnvId'
+      operationId: GetEnv
+      summary: Get Env Details
+      x-summary-i18n:
+        jpn: 環境情報を取得
+      description: |
+        Get environment details.
+      x-description-i18n:
+        jpn: |
+          環境情報の詳細を取得します。
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Env"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+        - env
+      parameters:
+        - $ref: '#/components/parameters/EnvId'
+      operationId: UpdateEnv
+      summary: Update Env Info
+      x-summary-i18n:
+        jpn: 環境情報を更新
+      description: |
+        Update env info.
+      x-description-i18n:
+        jpn: |
+          環境情報を更新します。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEnvParam"
+      responses:
+        200:
+          description: OK
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - env
+      parameters:
+        - $ref: '#/components/parameters/EnvId'
+      operationId: DeleteEnv
+      summary: Delete Env Info
+      x-summary-i18n:
+        jpn: 環境情報を削除
+      description: |
+        Delete env info. Env with id 3 cannot be deleted.
+      x-description-i18n:
+        jpn: |
+          環境情報を削除します。idが3の環境は削除できません。
+      responses:
+        200:
+          description: OK
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /stripe/init:
+    patch:
+      tags:
+        - tenant
+      operationId: CreateTenantAndPricing
+      summary: Stripe Initial Setting
+      x-summary-i18n:
+        jpn: stripe初期設定
+      description: |
+        Set Stripe initial information via billing
+      x-description-i18n:
+        jpn: |
+          billing経由でstripeへ初期情報を設定
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /stripe:
+    delete:
+      tags:
+        - tenant
+      operationId: DeleteStripeTenantAndPricing
+      summary: Delete Customer and Product From Stripe
+      x-summary-i18n:
+        jpn: stripe上の顧客情報・商品情報の削除
+      description: |
+        Delete customer and product from Stripe.
+      x-description-i18n:
+        jpn: |
+          stripe上の顧客情報・商品情報を削除します
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /credentials:
+    get:
+      tags:
+        - credential
+      operationId: GetAuthCredentials
+      summary: Get Authentication/Authorization Information
+      x-summary-i18n:
+        jpn: 認証・認可情報の取得
+      description: |
+        Get ID token, access token, and refresh token using a temporary code or a refresh token.
+      x-description-i18n:
+        jpn: |
+          一時コードまたはリフレッシュトークンを利用してIDトークン・アクセストークン・リフレッシュトークンを取得する。
+      parameters:
+        - $ref: '#/components/parameters/Code'
+        - $ref: '#/components/parameters/AuthFlow'
+        - $ref: '#/components/parameters/RefreshToken'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Credentials'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - credential
+      operationId: CreateAuthCredentials
+      summary: Save Authentication/Authorization Information
+      x-summary-i18n:
+        jpn: 認証・認可情報の保存
+      description: |
+        Temporarily save the parameter for the ID token, access token, and refresh token and return a temporary code for obtaining.
+        Temporary codes are valid for 10 seconds from issuance.
+      x-description-i18n:
+        jpn: |
+          引数のIDトークン・アクセストークン・リフレッシュトークンを一時保存し取得用の一時コードを返却する。
+          一時コードの有効期間は発行から10秒です。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAuthCredentialsParam'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizationTempCode'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /sign-up:
+    post:
+      tags:
+        - saasUser
+      operationId: SignUp
+      summary: Sign Up
+      x-summary-i18n:
+        jpn: 新規登録
+      description: |
+        Register a new user. A temporary password will be sent to the registered email.
+      x-description-i18n:
+        jpn: |
+          ユーザーを新規登録します。登録されたメールアドレスに対して仮パスワードを送信します。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUpParam'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                title: Created User
+                x-title-i18n:
+                  jpn: 作成したユーザー
+                $ref: "#/components/schemas/SaasUser"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /sign-up/resend:
+    post:
+      tags:
+        - saasUser
+      operationId: ResendSignUpConfirmationEmail
+      summary: Resend Sign Up Confirmation Email
+      x-summary-i18n:
+        jpn: 新規登録時の確認メール再送信
+      description: |
+        Resend temporary password for the new registered user.
+      x-description-i18n:
+        jpn: |
+          新規登録時の仮パスワードを再送信します。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResendSignUpConfirmationEmailParam'
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /aws-marketplace/sign-up:
+    post:
+      tags:
+        - saasUser
+      operationId: SignUpWithAwsMarketplace
+      summary: Sign Up with AWS Marketplace
+      x-summary-i18n:
+        jpn: AWS Marketplaceによるユーザー新規登録
+      description: |
+        Register a new user linked to AWS Marketplace. A temporary password will be sent to the registered email.
+        If the Registration Token is not valid, an error is returned.
+      x-description-i18n:
+        jpn: |
+          AWS Marketplaceと連携したユーザーを新規登録します。登録されたメールアドレスに対して仮パスワードを送信します。
+          Registration Tokenが有効でない場合はエラーを返却します。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUpWithAwsMarketplaceParam'
+      responses:
+        201:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: Created User
+                x-title-i18n:
+                  jpn: 作成したユーザー
+                $ref: "#/components/schemas/SaasUser"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /aws-marketplace/sign-up-confirm:
+    post:
+      tags:
+        - saasUser
+      operationId: ConfirmSignUpWithAwsMarketplace
+      summary: Confirm Sign Up with AWS Marketplace
+      x-summary-i18n:
+        jpn: AWS Marketplaceによるユーザー新規登録の確定
+      description: |
+        Confirm a new use registeration linked to AWS Marketplace. Create a new tenant linked to AWS Marketplace.
+        If the Registration Token is not valid, an error is returned.
+      x-description-i18n:
+        jpn: |
+          AWS Marketplaceと連携したユーザー新規登録を確定します。AWS Marketplaceと連携したテナントを新規作成します。
+          Registration Tokenが有効でない場合はエラーを返却します。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmSignUpWithAwsMarketplaceParam'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                title: Created Tenant
+                x-title-i18n:
+                  jpn: 作成したテナント
+                $ref: "#/components/schemas/Tenant"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /aws-marketplace/link:
+    patch:
+      tags:
+        - saasUser
+      operationId: LinkAwsMarketplace
+      summary: Link an existing tenant with AWS Marketplace
+      x-summary-i18n:
+        jpn: AWS Marketplaceと既存のテナントの連携
+      description: |
+        Link an existing tenant with AWS Marketplace.
+        If the Registration Token is not valid, an error is returned.
+      x-description-i18n:
+        jpn: |
+          AWS Marketplaceと既存のテナントを連携します。
+          Registration Tokenが有効でない場合はエラーを返却します。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LinkAwsMarketplaceParam'
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /plans/reset:
+    put:
+      tags:
+        - tenant
+      operationId: ResetPlan
+      summary: Delete all information related to rate plans
+      x-summary-i18n:
+        jpn: プランに関わる情報を全削除
+      description: |
+        Delete all information related to rate plans.
+        Delete plans linked to tenants and plan definitions.
+        If you are using the Stripe linkage, the linkage will be removed.
+      x-description-i18n:
+        jpn: |
+          料金プランに関わる情報を全削除します。
+          テナントに連携されたプランとプラン定義を削除します。
+          Stripe連携している場合、連携が解除されます。
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /single-tenant/cloudformation-launch-stack-link:
+    get:
+      tags:
+        - singleTenant
+      operationId: GetCloudFormationLaunchStackLinkForSingleTenant
+      summary: Get CloudFormation Stack Launch Link For Single Tenant
+      x-summary-i18n:
+        jpn: SingleTenant用CloudFormationスタック起動リンク取得
+      description: |
+        Get the CloudFormation stack activation link for Single Tenant.
+      x-description-i18n:
+        jpn: |
+          SingleTenant用CloudFormationスタック起動リンクを取得します。
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CloudFormationLaunchStackLink"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /single-tenant/settings:
+    get:
+      tags:
+        - singleTenant
+      operationId: GetSingleTenantSettings
+      summary: Retrieve the settings of the single tenant.
+      x-summary-i18n:
+        jpn: シングルテナント機能の設定情報を取得する
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SingleTenantSettings"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+        - singleTenant
+      operationId: UpdateSingleTenantSettings
+      summary: Update configuration information for single-tenant functionality
+      x-summary-i18n:
+        jpn: シングルテナント機能の設定情報を更新する
+      description: |
+        Updates configuration information for single-tenant functionality
+        Returns error if single tenant feature cannot be enabled.
+      x-description-i18n:
+        jpn: |
+          シングルテナント機能の設定情報を更新します。
+          シングルテナント機能の有効化ができない場合はエラーを返します。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSingleTenantSettingsParam'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /tenants/{tenant_id}/stripe-customer:
+    get:
+      tags:
+        - tenant
+      operationId: GetStripeCustomer
+      summary: Get Stripe Customer
+      x-summary-i18n:
+        jpn: Stripe顧客情報取得
+      description: |
+        Get the Stripe Customer information associated with the tenant, including their subscriptions.
+      x-description-i18n:
+        jpn: |
+          テナントに連携されているStripe顧客情報を取得します。
+          サブスクリプション情報も含まれます。
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: Stripe Customer
+                x-title-i18n:
+                  jpn: Stripe顧客情報
+                $ref: "#/components/schemas/StripeCustomer"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /errors/internal-server-error:
+    get:
+      tags:
+        - "error"
+      operationId: ReturnInternalServerError
+      summary: Return Internal Server Error
+      x-summary-i18n:
+        jpn: ステータスコード500でサーバーエラーを返却
+      description: |
+        This endpoint is used for testing purposes. Returns a server error with status code 500.
+      x-description-i18n:
+        jpn: |
+          テスト用途で使用するエンドポイントです。ステータスコード500でサーバーエラーを返却します。
+      responses:
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
+      description: Credentials or access token for API
+  parameters:
+    UserId:
+      in: path
+      name: user_id
+      description: User ID
+      x-description-i18n:
+        jpn: ユーザーID
+      schema:
+        type: string
+        example: f94bfffc-8be2-11ec-b41a-0242ac120004
+      required: true
+    RoleName:
+      in: path
+      name: role_name
+      description: Role name
+      x-description-i18n:
+        jpn: 役割(ロール)名
+      schema:
+        type: string
+        example: admin
+      required: true
+    TenantId:
+      in: path
+      name: tenant_id
+      description: Tenant ID
+      x-description-i18n:
+        jpn: テナントID
+      required: true
+      schema:
+        $ref: "#/components/schemas/Uuid"
+    EnvId:
+      in: path
+      name: env_id
+      description: Env ID
+      x-description-i18n:
+        jpn: 環境ID
+      required: true
+      schema:
+        $ref: "#/components/schemas/Id"
+    ApiKey:
+      in: path
+      name: api_key
+      description: API key
+      x-description-i18n:
+        jpn: APIキー
+      schema:
+        type: string
+        example: ZDMiIHN0UmVmOmRvY3VtZW50SUQ9Inhtc
+      required: true
+    AuthFlow:
+      in: query
+      name: auth-flow
+      description: |
+        Authentication Flow
+        tempCodeAuth: Getting authentication information using a temporary code
+        refreshTokenAuth: Getting authentication information using a refresh token
+        If not specified, it will be tempCodeAuth
+      x-description-i18n:
+        jpn: |
+          認証フロー
+          tempCodeAuth: 一時コードを利用した認証情報の取得
+          refreshTokenAuth: リフレッシュトークンを利用した認証情報の取得
+          指定されていない場合は tempCodeAuth になります
+      schema:
+        type: string
+        enum:
+          - tempCodeAuth
+          - refreshTokenAuth
+    Code:
+      in: query
+      name: code
+      description: Temp Code
+      x-description-i18n:
+        jpn: 一時コード
+      schema:
+        $ref: '#/components/schemas/Uuid'
+    RefreshToken:
+      in: query
+      name: refresh-token
+      description: Refresh Token
+      x-description-i18n:
+        jpn: リフレッシュトークン
+      schema:
+        type: string
+    InvitationId:
+      in: path
+      name: invitation_id
+      description: Invitation ID
+      x-description-i18n:
+        jpn: 招待ID
+      required: true
+      schema:
+        $ref: '#/components/schemas/Uuid'
+  schemas:
+    UserInfo:
+      title: User Info
+      x-title-i18n:
+        jpn: ユーザー情報
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/Uuid"
+          description: uuid
+        email:
+          type: string
+          description: E-mail
+          x-description-i18n:
+            jpn: メールアドレス
+          example: hoge@example.com
+        user_attribute:
+          type: object
+          additionalProperties: true
+          example: { address: "東京都", employee_number: 100 }
+          description: user additional attributes
+          x-description-i18n:
+            jpn: ユーザー追加属性
+        tenants:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserAvailableTenant"
+          description: Tenant Info
+          x-description-i18n:
+            jpn: テナント情報
+      required:
+        - id
+        - email
+        - user_attribute
+        - tenants
+    BasicInfo:
+      title: Basic Setting Info
+      x-title-i18n:
+        jpn: 基本設定情報
+      type: object
+      properties:
+        domain_name:
+          type: string
+          example: dev.saasus.io
+          description: Domain Name
+          x-description-i18n:
+            jpn: ドメイン名
+        is_dns_validated:
+          type: boolean
+          example: false
+          description: DNS Record Verification Results
+          x-description-i18n:
+            jpn: DNSレコードの検証結果
+        certificate_dns_record:
+          $ref: "#/components/schemas/DnsRecord"
+          description: Certificate Domain Name
+          x-description-i18n:
+            jpn: 代替ドメイン名
+        cloud_front_dns_record:
+          $ref: "#/components/schemas/DnsRecord"
+          description: CloudFront DNS Records
+          x-description-i18n:
+            jpn: Cloud Front DNS レコード
+        dkim_dns_records:
+          type: array
+          items:
+            $ref: "#/components/schemas/DnsRecord"
+          description: DKIM DNS Records
+          x-description-i18n:
+            jpn: DKIM DNS レコード
+        default_domain_name:
+          type: string
+          description: Default Domain Name
+          x-description-i18n:
+            jpn: デフォルトドメイン名
+          example: d78bh0l3saarv.cloudfront.net
+        from_email_address:
+          type: string
+          description: Sender Email for Authentication Email
+          x-description-i18n:
+            jpn: 認証メールの送信元メールアドレス
+          example: test@example.com
+        reply_email_address:
+          type: string
+          description: Reply-from email address of authentication email
+          x-description-i18n:
+            jpn: 認証メールの返信元メールアドレス
+          example: test@example.com
+        is_ses_sandbox_granted:
+          type: boolean
+          example: false
+          description: SES sandbox release and Cognito SES configuration results
+          x-description-i18n:
+            jpn: SESのサンドボックス解除及びCognitoのSES設定結果
+      required:
+        - domain_name
+        - is_dns_validated
+        - certificate_dns_record
+        - cloud_front_dns_record
+        - dkim_dns_records
+        - default_domain_name
+        - from_email_address
+        - reply_email_address
+        - is_ses_sandbox_granted
+    DnsRecord:
+      title: DNS Record
+      x-title-i18n:
+        jpn: DNSレコード
+      type: object
+      properties:
+        type:
+          type: string
+          description: CNAME Resource Record
+          x-description-i18n:
+            jpn: CNAMEリソースレコード
+          enum:
+            - CNAME
+          example: CNAME
+        name:
+          type: string
+          example: _k90jaskdfawehro.domain-of-saasus-client.com.
+          description: Record Name
+          x-description-i18n:
+            jpn: レコード名
+        value:
+          type: string
+          example: _cmojwc239j102mosd9.acm-validations.aws.
+          description: Value
+          x-description-i18n:
+            jpn: 値
+      required:
+        - type
+        - name
+        - value
+    AuthInfo:
+      title: Authentication Information
+      x-title-i18n:
+        jpn: 認証情報
+      type: object
+      properties:
+        callback_url:
+          type: string
+          example: https://example.com/callback
+          description: Redirect After Authentication
+          x-description-i18n:
+            jpn: 認証後遷移先
+      required:
+        - callback_url
+    SaasUser:
+      title: SaaS User
+      x-title-i18n:
+        jpn: SaaSユーザー
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/Uuid"
+          description: User ID
+          x-description-i18n:
+            jpn: ユーザーID
+        email:
+          type: string
+          example: hoge@example.com
+          description: E-mail
+          x-description-i18n:
+            jpn: メールアドレス
+        attributes:
+          type: object
+          additionalProperties: true
+          example: { address: "東京都", birthday: 19940925, sex: "男" }
+          description: |
+            Attribute information
+          x-description-i18n:
+            jpn: |
+              属性情報
+      required:
+        - id
+        - email
+        - attributes
+    SaasUsers:
+      title: SaaS Users
+      x-title-i18n:
+        jpn: SaaSユーザー一覧
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/SaasUser"
+      required:
+        - users
+    CreateSaasUserParam:
+      title: SaaS User-Created Parameters
+      x-title-i18n:
+        jpn: SaaSユーザー作成パラメータ
+      type: object
+      properties:
+        email:
+          type: string
+          example: hoge@example.com
+          description: E-mail
+          x-description-i18n:
+            jpn: メールアドレス
+        password:
+          type: string
+          example: "@Pass#Word1"
+          description: Password
+          x-description-i18n:
+            jpn: パスワード
+      required:
+        - email
+    User:
+      title: User
+      x-title-i18n:
+        jpn: ユーザー
+      type: object
+      properties:
+        id:
+          type: string
+          example: f94bfffc-8be2-11ec-b41a-0242ac120004
+          description: User ID
+          x-description-i18n:
+            jpn: ユーザーID
+        tenant_id:
+          $ref: "#/components/schemas/Uuid"
+          description: Tenant ID
+          x-description-i18n:
+            jpn: テナントID
+        tenant_name:
+          type: string
+          example: saasus
+          description: Tenant Name
+          x-description-i18n:
+            jpn: テナント名
+        email:
+          type: string
+          example: hoge@example.com
+          description: E-mail
+          x-description-i18n:
+            jpn: メールアドレス
+        attributes:
+          type: object
+          additionalProperties: true
+          example: { address: "東京都", birthday: 19940925, sex: "男" }
+          description: |
+            Attribute information (Get information set by defining user attributes in the SaaS development console)
+          x-description-i18n:
+            jpn: |
+              属性情報（SaaS 開発コンソールでユーザー属性定義を行い設定された情報を取得します）
+        envs:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserEnv"
+      required:
+        - id
+        - tenant_id
+        - tenant_name
+        - email
+        - attributes
+        - envs
+    Users:
+      title: Users
+      x-title-i18n:
+        jpn: ユーザー一覧
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+      required:
+        - users
+    UserEnv:
+      title: User env, roles
+      x-title-i18n:
+        jpn: ユーザーのenv、役割一覧
+      description: User env info, roles
+      x-description-i18n:
+        jpn: ユーザーの環境情報、役割(ロール)情報
+      $ref: "#/components/schemas/UserAvailableEnv"
+    ApiKeys:
+      title: API Key List
+      x-title-i18n:
+        jpn: APIキー一覧
+      type: object
+      properties:
+        api_keys:
+          description: API Key
+          x-description-i18n:
+            jpn: APIキー
+          type: array
+          items:
+            type: string
+            example: 1234567890abcdef
+      required:
+        - api_keys
+    UpdateBasicInfoParam:
+      title: Update Basic Setting Parameter
+      x-title-i18n:
+        jpn: 基本設定の更新パラメータ
+      type: object
+      properties:
+        domain_name:
+          type: string
+          example: dev.saasus.io
+          description: Domain Name
+          x-description-i18n:
+            jpn: ドメイン名
+        from_email_address:
+          type: string
+          description: Sender email of authentication email
+          x-description-i18n:
+            jpn: 認証メールの送信元メールアドレス
+          example: test@example.com
+        reply_email_address:
+          type: string
+          description: Reply-from email address of authentication email
+          x-description-i18n:
+            jpn: 認証メールの返信元メールアドレス
+          example: test@example.com
+      required:
+        - domain_name
+        - from_email_address
+    UpdateAuthInfoParam:
+      title: Update Authentication Information Parameter
+      x-title-i18n:
+        jpn: 認証情報の更新パラメータ
+      $ref: "#/components/schemas/AuthInfo"
+    CreateTenantUserParam:
+      title: User Creation Parameters
+      x-title-i18n:
+        jpn: ユーザーの作成パラメータ
+      type: object
+      properties:
+        email:
+          type: string
+          example: hoge@example.com
+          description: E-mail
+          x-description-i18n:
+            jpn: メールアドレス
+        attributes:
+          type: object
+          additionalProperties: true
+          example: { address: "東京都", birthday: 19940925, sex: "男" }
+          description: |
+            Attribute information (Get information set by defining user attributes in the SaaS development console)
+          x-description-i18n:
+            jpn: |
+              属性情報（SaaS 開発コンソールでユーザー属性定義を行い設定された情報を取得します）
+      required:
+        - email
+        - attributes
+    UpdateTenantUserParam:
+      title: Update User Parameters
+      x-title-i18n:
+        jpn: ユーザーの更新パラメータ
+      type: object
+      properties:
+        attributes:
+          type: object
+          additionalProperties: true
+          example: { address: "東京都", birthday: 19940925, sex: "男" }
+          description: |
+            Attribute information (Get information set by defining user attributes in the SaaS development console)
+          x-description-i18n:
+            jpn: |
+              属性情報（SaaS 開発コンソールでユーザー属性定義を行い設定された情報を取得します）
+      required:
+        - attributes
+    UpdateSaasUserPasswordParam:
+      title: User Password Update Parameters
+      x-title-i18n:
+        jpn: ユーザーパスワード更新パラメータ
+      type: object
+      properties:
+        password:
+          type: string
+          example: "@Pass#Word1"
+          description: Password
+          x-description-i18n:
+            jpn: パスワード
+      required:
+        - password
+    UpdateSaasUserEmailParam:
+      title: User E-mail Update Parameter
+      x-title-i18n:
+        jpn: ユーザーのメールアドレス更新パラメータ
+      type: object
+      properties:
+        email:
+          type: string
+          example: hoge@example.com
+          description: E-mail
+          x-description-i18n:
+            jpn: メールアドレス
+      required:
+        - email
+    RequestEmailUpdateParam:
+      title: Request User Email Update Parameter
+      x-title-i18n:
+        jpn: ユーザーのメールアドレス変更要求パラメータ
+      type: object
+      properties:
+        email:
+          type: string
+          example: hoge@example.com
+          description: Email Address
+          x-description-i18n:
+            jpn: メールアドレス
+        access_token:
+          title: Access Token
+          x-title-i18n:
+            jpn: アクセストークン
+          type: string
+      required:
+        - email
+        - access_token
+    ConfirmEmailUpdateParam:
+      title: Confirm User Email Update Parameter
+      x-title-i18n:
+        jpn: ユーザーのメールアドレス変更確認パラメータ
+      type: object
+      properties:
+        code:
+          title: Verification Code
+          x-title-i18n:
+            jpn: 検証コード
+          type: string
+          example: "123456"
+        access_token:
+          title: Access Token
+          x-title-i18n:
+            jpn: アクセストークン
+          type: string
+      required:
+        - code
+        - access_token
+    UpdateSaasUserAttributesParam:
+      title: Update SaaS User Attribute Parameters
+      x-title-i18n:
+        jpn: SaaSユーザー属性の更新パラメータ
+      type: object
+      properties:
+        attributes:
+          type: object
+          additionalProperties: true
+          example: { address: "東京都", birthday: 19940925, sex: "男" }
+          description: |
+            Attribute information
+          x-description-i18n:
+            jpn: |
+              属性情報
+      required:
+        - attributes
+    CreateUserAttributeParam:
+      title: Create User Attribute Parameter
+      x-title-i18n:
+        jpn: ユーザー属性の作成パラメータ
+      $ref: "#/components/schemas/Attribute"
+    CreateSaasUserAttributeParam:
+      title: Create SaaS User Attribute Parameter
+      x-title-i18n:
+        jpn: SaaSユーザー属性の作成パラメータ
+      $ref: "#/components/schemas/Attribute"
+    CreateTenantAttributeParam:
+      title: Create Tenant Attribute Parameter
+      x-title-i18n:
+        jpn: テナント追加属性の作成パラメータ
+      $ref: "#/components/schemas/Attribute"
+    CreateRoleParam:
+      title: Create Role Parameter
+      x-title-i18n:
+        jpn: 役割(ロール)の作成パラメータ
+      $ref: "#/components/schemas/Role"
+    CreateTenantUserRolesParam:
+      title: Add Role to User Parameter
+      x-title-i18n:
+        jpn: ユーザーの役割(ロール)追加パラメータ
+      type: object
+      properties:
+        role_names:
+          type: array
+          description: Role Info
+          x-description-i18n:
+            jpn: 役割(ロール)情報
+          items:
+            type: string
+            example: admin
+      required:
+        - role_names
+    Id:
+      type: integer
+      x-go-type: uint64
+      example: 1
+    Uuid:
+      type: string
+      example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+    Attribute:
+      type: object
+      properties:
+        attribute_name:
+          type: string
+          example: birthday
+          description: Attribute Name
+          x-description-i18n:
+            jpn: 属性名
+        display_name:
+          type: string
+          example: Birthday
+          description: Display Name
+          x-description-i18n:
+            jpn: 表示名
+        attribute_type:
+          $ref: "#/components/schemas/AttributeType"
+      required:
+        - attribute_name
+        - display_name
+        - attribute_type
+    UserAttributes:
+      title: User Attributes
+      x-title-i18n:
+        jpn: ユーザー属性一覧
+      type: object
+      properties:
+        user_attributes:
+          type: array
+          description: User Attribute Definition
+          x-description-i18n:
+            jpn: ユーザー属性定義
+          items: { $ref: "#/components/schemas/Attribute" }
+      required:
+        - user_attributes
+    TenantAttributes:
+      title: Tenant Additional Attributes
+      x-title-i18n:
+        jpn: テナントの追加属性一覧
+      type: object
+      properties:
+        tenant_attributes:
+          type: array
+          description: Tenant Attribute Definition
+          x-description-i18n:
+            jpn: テナント属性定義
+          items: { $ref: "#/components/schemas/Attribute" }
+      required:
+        - tenant_attributes
+    AttributeType:
+      type: string
+      enum:
+        - string
+        - number
+        - bool
+        - date
+      description: |
+        Type (date can be set to YYYY-MM-DD format.)
+      x-description-i18n:
+        jpn: |
+          型（dateはYYYY-MM-DDの形式で使用する事ができます。）
+    SaasId:
+      title: SaaSID
+      type: object
+      properties:
+        tenant_id:
+          $ref: "#/components/schemas/Uuid"
+          description: Tenant ID
+          x-description-i18n:
+            jpn: テナントID
+        env_id:
+          $ref: "#/components/schemas/Id"
+          description: Environment ID
+          x-description-i18n:
+            jpn: 環境ID
+        saas_id:
+          type: string
+          example: ede66c43-9b9d-4222-93ed-5f11c96e08e2
+          description: SaaS ID
+      required:
+        - tenant_id
+        - env_id
+        - saas_id
+    Role:
+      title: Role
+      x-title-i18n:
+        jpn: 役割(ロール)
+      type: object
+      description: role info
+      x-description-i18n:
+        jpn: 役割(ロール)情報
+      properties:
+        role_name:
+          type: string
+          example: admin
+          description: role name
+          x-description-i18n:
+            jpn: 役割(ロール)名
+        display_name:
+          type: string
+          example: 管理者
+          description: role display name
+          x-description-i18n:
+            jpn: 役割(ロール)表示名
+      required:
+        - role_name
+        - display_name
+    Roles:
+      title: Roles
+      x-title-i18n:
+        jpn: 役割(ロール)一覧
+      type: object
+      properties:
+        roles:
+          type: array
+          items: {$ref: "#/components/schemas/Role"}
+      required:
+        - roles
+    Tenant:
+      title: Tenants
+      x-title-i18n:
+        jpn: テナント情報
+      type: object
+      allOf:
+      - properties:
+          id:
+            $ref: "#/components/schemas/Uuid"
+            description: Tenant ID
+            x-description-i18n:
+              jpn: テナントID
+          plan_id:
+            $ref: "#/components/schemas/Uuid"
+            description: Plan ID
+            x-description-i18n:
+              jpn: 料金プランID
+          billing_info:
+            $ref: "#/components/schemas/BillingInfo"
+            description: billing info
+            x-description-i18n:
+              jpn: 請求先情報
+        required:
+          - id
+      - $ref: "#/components/schemas/TenantProps"
+      - $ref: "#/components/schemas/PlanReservation"
+      - $ref: "#/components/schemas/PlanHistories"
+    TenantDetail:
+      title: Tenant Detail
+      x-title-i18n:
+        jpn: テナント詳細情報
+      type: object
+      allOf:
+      - properties:
+          current_plan_period_start:
+            type: integer
+            example: 1672531200
+            description: current plan period start
+            x-description-i18n:
+              jpn: 現在のプランの開始日時
+          current_plan_period_end:
+            type: integer
+            example: 1675209600
+            description: current plan period end
+            x-description-i18n:
+              jpn: 現在のプランの終了日時
+      - $ref: "#/components/schemas/Tenant"
+    TenantProps:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Anti-Pattern Inc.
+          description: tenant name
+          x-description-i18n:
+            jpn: テナント名
+        attributes:
+          type: object
+          additionalProperties: true
+          example: { address: "東京都", employee_number: 100 }
+          description: attribute info
+          x-description-i18n:
+            jpn: 属性情報
+        back_office_staff_email:
+          type: string
+          example: hoge@example.com
+          description: administrative staff email address
+          x-description-i18n:
+            jpn: 事務管理部門スタッフメールアドレス
+      required:
+        - name
+        - attributes
+        - back_office_staff_email
+    PlanReservation:
+      title: Tenant Plan Reservation Information
+      x-title-i18n:
+        jpn: テナントのプラン予約情報
+      type: object
+      properties:
+        next_plan_id:
+          $ref: "#/components/schemas/Uuid"
+          description: next billing plan ID
+          x-description-i18n:
+            jpn: 次回料金プランID
+        using_next_plan_from:
+          type: integer
+          example: 1640995200
+          description: |
+            Next billing plan start time (When using stripe, you can create a subscription that starts at the beginning of the current month by specifying 00:00 (UTC) at the beginning of the current month. Ex. 1672531200 for January 2023.)
+          x-description-i18n:
+            jpn: |
+              次回料金プラン開始日時（stripe連携時、当月月初の0時（UTC）を指定すると当月月初開始のサブスクリプションを作成できます。ex. 2023年1月の場合は、1672531200 ）
+        next_plan_tax_rate_id:
+          $ref: "#/components/schemas/Uuid"
+          description: Tax rate ID
+          x-description-i18n:
+            jpn: 税率ID
+        proration_behavior:
+          $ref: '#/components/schemas/ProrationBehavior'
+          description: If you have a stripe linkage, you can set the behavior of the proportional allocation when changing plans.
+          x-description-i18n:
+            jpn: プラン変更時の比例配分の挙動
+        delete_usage:
+          $ref: '#/components/schemas/DeleteUsage'
+          description: If you have a stripe linkage,  you can set whether to delete pay-as-you-go items when changing plans.
+          x-description-i18n:
+            jpn: プラン変更時に現在のサブスクリプションに含まれる従量課金アイテムを削除できます。
+    BillingInfo:
+      title: Tenant Billing Info
+      x-title-i18n:
+        jpn: テナント請求情報
+      type: object
+      properties:
+        name:
+          type: string
+          description: Tenant name for billing
+          x-description-i18n:
+            jpn: 請求用のテナント名
+          example: 株式会社テストテナント
+        address:
+          $ref: '#/components/schemas/BillingAddress'
+        invoice_language:
+          $ref: '#/components/schemas/InvoiceLanguage'
+      required:
+        - name
+        - address
+        - invoice_language
+    InvoiceLanguage:
+      type: string
+      description: Language of invoice
+      x-description-i18n:
+        jpn: 請求書の言語
+      enum:
+        - "ja-JP"
+        - "en-US"
+    BillingAddress:
+      title: Tenant Billing Address
+      x-title-i18n:
+        jpn: テナントの請求先住所
+      properties:
+        street:
+          type: string
+          description: Street address, apartment or suite number.
+          x-description-i18n:
+            jpn: 住所の通りの名前や番地を含めた部分
+          example: 神宮前1-1-1
+        city:
+          type: string
+          description: City, district, suburb, town, or village.
+          x-description-i18n:
+            jpn: 住所の市区町村
+          example: 渋谷区
+        state:
+          type: string
+          description: State name or abbreviation.
+          x-description-i18n:
+            jpn: 住所の都道府県または州
+          example: 東京都
+        country:
+          type: string
+          pattern: '^[A-Z]{2}$'
+          description: Country of the address using ISO 3166-1 alpha-2 code.
+          x-description-i18n:
+            jpn: 住所の国を ISO 3166-1 alpha-2 コードで指定します。
+          example: "JP"
+        additional_address_info:
+          type: string
+          description: Additional information about the address, such as a building name, floor, or department name.
+          x-description-i18n:
+            jpn: 建物名・部屋番号などの住所に関する追加情報
+          example: オフィスビル3階
+        postal_code:
+          type: string
+          description: ZIP or postal code.
+          x-description-i18n:
+            jpn: 郵便番号
+          example: '123-4567'
+      required:
+        - street
+        - city
+        - state
+        - country
+        - postal_code
+    Tenants:
+      title: Tenants
+      x-title-i18n:
+        jpn: テナント一覧
+      type: object
+      description: Tenant Info
+      x-description-i18n:
+        jpn: テナント情報
+      properties:
+        tenants:
+          type: array
+          items: { $ref: "#/components/schemas/Tenant" }
+      required:
+        - tenants
+    CreateTenantParam:
+      title: Create Tenant Parameters
+      x-title-i18n:
+        jpn: テナントの新規作成パラメータ
+      $ref: "#/components/schemas/TenantProps"
+    UpdateTenantParam:
+      title: Update Tenant Parameters
+      x-title-i18n:
+        jpn: テナントの更新パラメータ
+      $ref: "#/components/schemas/TenantProps"
+    UpdateTenantPlanParam:
+      title: Update Tenant Plan Parameters
+      x-title-i18n:
+        jpn: テナントのプラン情報更新パラメータ
+      $ref: "#/components/schemas/PlanReservation"
+    UpdateTenantBillingInfoParam:
+      title: Update Tenant Billing Info Parameters
+      x-title-i18n:
+        jpn: テナントの請求先情報更新パラメータ
+      $ref: "#/components/schemas/BillingInfo"
+    UserAvailableTenant:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/Uuid"
+          description: Tenant ID
+          x-description-i18n:
+            jpn: テナントID
+        name:
+          type: string
+          example: Anti-Pattern Inc.
+          description: Tenant Name
+          x-description-i18n:
+            jpn: テナント名
+        completed_sign_up:
+          type: boolean
+          example: true
+        envs:
+          type: array
+          description: environmental info, role info
+          x-description-i18n:
+            jpn: 環境情報、役割(ロール)情報
+          items: { $ref: "#/components/schemas/UserAvailableEnv" }
+        user_attribute:
+          type: object
+          additionalProperties: true
+          example: { address: "東京都", employee_number: 100 }
+          description: user additional attributes
+          x-description-i18n:
+            jpn: ユーザー追加属性
+        back_office_staff_email:
+          type: string
+          example: hoge@example.com
+          description: back office contact email
+          x-description-i18n:
+            jpn: バックオフィス担当者のメール
+        plan_id:
+          title: Plan ID contracted by tenant
+          x-title-i18n:
+            jpn: テナントが契約している料金プランのID
+          $ref: '#/components/schemas/Uuid'
+          description: Plan ID
+          x-description-i18n:
+            jpn: 料金プランID
+        is_paid:
+          type: boolean
+          description: |
+            tenant payment status
+            ※ Currently, it is returned only when stripe is linked.
+          x-description-i18n:
+            jpn: |
+              テナントの支払い状況
+              ※ 現在はストライプ連携時のみ返却されます。
+          example: true
+      required:
+        - id
+        - name
+        - completed_sign_up
+        - envs
+        - user_attribute
+        - back_office_staff_email
+    UserAvailableEnv:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+          description: env ID
+          x-description-i18n:
+            jpn: 環境ID
+        name:
+          type: string
+          description: env name
+          x-description-i18n:
+            jpn: 環境名
+          example: SaaSus dev
+        display_name:
+          type: string
+          description: env display name
+          x-description-i18n:
+            jpn: 環境表示名
+          example: SaaSus dev
+        roles:
+          type: array
+          description: role info
+          x-description-i18n:
+            jpn: 役割(ロール)情報
+          items: { $ref: "#/components/schemas/Role" }
+      required:
+        - id
+        - name
+        - roles
+    Error:
+      properties:
+        type:
+          type: string
+          description: permission_denied
+        message:
+          type: string
+          description: Error message
+        data:
+          type: object
+          additionalProperties: true
+          example: { sign_in_page_url: "auth.dev.saasus.io" }
+      required:
+        - type
+        - message
+    NotificationMessages:
+      type: object
+      properties:
+        sign_up:
+          $ref: "#/components/schemas/MessageTemplate"
+          description: login email
+          x-description-i18n:
+            jpn: ログイン時メール
+        create_user:
+          $ref: "#/components/schemas/MessageTemplate"
+          description: send temporary password email to new users
+          x-description-i18n:
+            jpn: 新規ユーザーへの一時パスワード送信メール
+        resend_code:
+          $ref: "#/components/schemas/MessageTemplate"
+          description: confirmation code resend email for existing users
+          x-description-i18n:
+            jpn: 既存ユーザーへの確認コード再送メール
+        forgot_password:
+          $ref: "#/components/schemas/MessageTemplate"
+          description: confirmation code email for forgotten password request
+          x-description-i18n:
+            jpn: 忘れたパスワードのリクエスト用の確認コード送信メール
+        update_user_attribute:
+          $ref: "#/components/schemas/MessageTemplate"
+          description: confirmation code resend email for existing users
+          x-description-i18n:
+            jpn: 既存ユーザーへの確認コード再送メール
+        verify_user_attribute:
+          $ref: "#/components/schemas/MessageTemplate"
+          description: confirmation email
+          x-description-i18n:
+            jpn: 確認メール
+        authentication_mfa:
+          $ref: "#/components/schemas/MessageTemplate"
+          description: MFA code email for authentication
+          x-description-i18n:
+            jpn: 認証時の MFA コード送信メール
+        invite_tenant_user:
+          $ref: "#/components/schemas/MessageTemplate"
+          description: User invitation email to tenant
+          x-description-i18n:
+            jpn: テナントへのユーザー招待メール
+        verify_external_user:
+          $ref: "#/components/schemas/MessageTemplate"
+          description: External account user verification email
+          x-description-i18n:
+            jpn: 外部アカウントのユーザー検証メール
+      required:
+        - sign_up
+        - create_user
+        - resend_code
+        - forgot_password
+        - update_user_attribute
+        - verify_user_attribute
+        - authentication_mfa
+        - invite_tenant_user
+        - verify_external_user
+    MessageTemplate:
+      type: object
+      properties:
+        subject:
+          type: string
+          example: Verify your new account
+          description: Title
+          x-description-i18n:
+            jpn: タイトル
+        message:
+          type: string
+          example: The verification code to your new account is {####}
+          description: Message
+          x-description-i18n:
+            jpn: メッセージ
+      required:
+        - subject
+        - message
+    UpdateNotificationMessagesParam:
+      type: object
+      properties:
+        sign_up:
+          $ref: "#/components/schemas/MessageTemplate"
+          description: Login email
+          x-description-i18n:
+            jpn: ログイン時メール
+        create_user:
+          $ref: "#/components/schemas/MessageTemplate"
+          description: Send temporary password email to new users
+          x-description-i18n:
+            jpn: 新規ユーザーへの一時パスワード送信メール
+        resend_code:
+          $ref: "#/components/schemas/MessageTemplate"
+          description: Confirmation code resend email for existing users
+          x-description-i18n:
+            jpn: 既存ユーザーへの確認コード再送メール
+        forgot_password:
+          $ref: "#/components/schemas/MessageTemplate"
+          description: Confirmation code email for forgotten password request
+          x-description-i18n:
+            jpn: 忘れたパスワードのリクエスト用の確認コード送信メール
+        update_user_attribute:
+          $ref: "#/components/schemas/MessageTemplate"
+          description: Confirmation code resend email for existing users
+          x-description-i18n:
+            jpn: 既存ユーザーへの確認コード再送メール
+        verify_user_attribute:
+          $ref: "#/components/schemas/MessageTemplate"
+          description: Confirmation email
+          x-description-i18n:
+            jpn: 確認メール
+        authentication_mfa:
+          $ref: "#/components/schemas/MessageTemplate"
+          description: MFA code email for authentication
+          x-description-i18n:
+            jpn: 認証時の MFA コード送信メール
+        invite_tenant_user:
+          $ref: "#/components/schemas/MessageTemplate"
+          description: User invitation email to tenant
+          x-description-i18n:
+            jpn: テナントへのユーザー招待メール
+        verify_external_user:
+          $ref: "#/components/schemas/MessageTemplate"
+          description: External account user verification email
+          x-description-i18n:
+            jpn: 外部アカウントのユーザー検証メール
+
+    IdentityProviders:
+      type: object
+      properties:
+        google:
+          $ref: "#/components/schemas/IdentityProviderProps"
+      required:
+        - google
+    IdentityProviderProps:
+      type: object
+      properties:
+        application_id:
+          type: string
+          example: 1234567890123456
+        application_secret:
+          type: string
+          example: 123456789b00def123456a12345678d1
+        approval_scope:
+          type: string
+          example: profile email openid
+        is_button_hidden:
+          type: boolean
+          example: false
+      required:
+        - application_id
+        - application_secret
+        - approval_scope
+    UpdateIdentityProviderParam:
+      type: object
+      properties:
+        provider:
+          $ref: "#/components/schemas/ProviderName"
+        identity_provider_props:
+          description: |
+            If identity_provider_props is null, it deactivates the sign-in information for the external ID provider specified by provider.
+          x-description-i18n:
+            jpn: identity_provider_propsがnullの場合は、providerで指定された外部IDプロバイダのサインイン情報を無効化する。
+          $ref: "#/components/schemas/IdentityProviderProps"
+      required:
+        - provider
+    ProviderName:
+      type: string
+      enum:
+        - Google
+      example: Google
+    ProviderType:
+      type: string
+      enum:
+        - SAML
+      example: SAML
+    TenantIdentityProviders:
+      title: Tenant Identity Providers
+      x-title-i18n:
+        jpn: テナント毎の外部IDプロバイダ一覧
+      type: object
+      properties:
+        saml:
+          type: object
+          allOf:
+          - properties:
+              sign_in_url:
+                type: string
+                example: https://example.com/sign-in/saml/1234567890123456
+            required:
+              - sign_in_url
+          - $ref: "#/components/schemas/IdentityProviderSaml"
+    UpdateTenantIdentityProviderParam:
+      title: Update Tenant Identity Providers Parameters
+      x-title-i18n:
+        jpn: テナント毎の外部IDプロバイダ更新パラメータ
+      type: object
+      description: |
+        If identity_provider_props is null, the sign-in information for the external identity provider specified in provider_type is disabled.
+      x-description-i18n:
+        jpn: |
+          identity_provider_propsがnullの場合は、provider_typeで指定された外部IDプロバイダのサインイン情報を無効化します。
+      properties:
+        provider_type:
+          $ref: "#/components/schemas/ProviderType"
+        identity_provider_props:
+          $ref: "#/components/schemas/TenantIdentityProviderProps"
+      required:
+        - provider_type
+    TenantIdentityProviderProps:
+      title: Tenant Identity Provider
+      x-title-i18n:
+        jpn: テナント毎の外部IDプロバイダ
+      type: object
+      oneOf:
+        - $ref: "#/components/schemas/IdentityProviderSaml"
+    IdentityProviderSaml:
+      title: SAML Identity Provider
+      x-title-i18n:
+        jpn: SAML外部IDプロバイダ
+      type: object
+      properties:
+        metadata_url:
+          type: string
+          example: https://example.com/saml/metadata
+        email_attribute:
+          type: string
+          example: email
+      required:
+        - metadata_url
+        - email_attribute
+    SignInSettings:
+      type: object
+      properties:
+        password_policy:
+          $ref: "#/components/schemas/PasswordPolicy"
+        device_configuration:
+          $ref: "#/components/schemas/DeviceConfiguration"
+        mfa_configuration:
+          $ref: "#/components/schemas/MfaConfiguration"
+        recaptcha_props:
+          $ref: "#/components/schemas/RecaptchaProps"
+        account_verification:
+          $ref: "#/components/schemas/AccountVerification"
+        self_regist:
+          $ref: "#/components/schemas/SelfRegist"
+        identity_provider_configuration:
+          $ref: "#/components/schemas/IdentityProviderConfiguration"
+      required:
+        - password_policy
+        - device_configuration
+        - mfa_configuration
+        - recaptcha_props
+        - account_verification
+        - self_regist
+        - identity_provider_configuration
+    PasswordPolicy:
+      type: object
+      description: Password Policy
+      x-description-i18n:
+        jpn: パスワードポリシー
+      properties:
+        minimum_length:
+          type: integer
+          x-go-type: uint64
+          example: 10
+          description: Minimum number of characters
+          x-description-i18n:
+            jpn: 最小文字数
+        is_require_lowercase:
+          type: boolean
+          example: true
+          description: Contains one or more lowercase characters
+          x-description-i18n:
+            jpn: 一文字以上の小文字を含むが設定されているか
+        is_require_numbers:
+          type: boolean
+          example: true
+          description: Contains one or more numeric characters
+          x-description-i18n:
+            jpn: 一文字以上の数字を含むが設定されているか
+        is_require_symbols:
+          type: boolean
+          example: true
+          description: Contains one or more special characters
+          x-description-i18n:
+            jpn: 一文字以上の特殊文字を含むが設定されているか
+        is_require_uppercase:
+          type: boolean
+          example: true
+          description: Contains one or more uppercase letters
+          x-description-i18n:
+            jpn: 一文字以上の大文字を含むが設定されているか
+        temporary_password_validity_days:
+          type: integer
+          x-go-type: uint64
+          example: 10
+          description: Temporary password expiration date
+          x-description-i18n:
+            jpn: 仮パスワードの有効期限
+      required:
+        - minimum_length
+        - is_require_lowercase
+        - is_require_numbers
+        - is_require_symbols
+        - is_require_uppercase
+        - temporary_password_validity_days
+    DeviceConfiguration:
+      type: object
+      description: Settings for remembering trusted devices
+      x-description-i18n:
+        jpn: 信頼済みデバイスの記憶の設定
+      properties:
+        device_remembering:
+          type: string
+          enum:
+            - always
+            - userOptIn
+            - "no"
+          example: always
+          description: |
+            always: always remember
+            userOptIn: user opt-in
+            no: don't save
+          x-description-i18n:
+            jpn: |
+              always: 常に記憶する
+              userOptIn: ユーザーオプトイン
+              no: 記録しない
+      required:
+        - device_remembering
+    AccountVerification:
+      type: object
+      description: |
+        Account authentication settings
+        ※ This function is not yet provided, so it cannot be changed or saved.
+      x-description-i18n:
+        jpn: |
+          アカウント認証設定
+          ※ 未提供の機能のため、変更・保存はできません。
+      properties:
+        verification_method:
+          type: string
+          enum:
+            - code
+            - link
+          example: code
+          description: |
+            code: verification code
+            link: verification link
+            ※ This function is not yet provided, so it cannot be changed or saved.
+          x-description-i18n:
+            jpn: |
+              code: 検証コード
+              link: 検証リンク
+              ※ 未提供の機能のため、変更・保存はできません
+        sending_to:
+          type: string
+          enum:
+            - email
+            - sms
+            - smsOrEmail
+          example: email
+          description: |
+            email: e-mail
+            sms: SMS
+            smsOrEmail: email if SMS is not possible
+          x-description-i18n:
+            jpn: |
+              email: Eメール
+              sms: SMS
+              smsOrEmail: SMS不可の場合にEメール
+      required:
+        - verification_method
+        - sending_to
+    UpdateSignInSettingsParam:
+      type: object
+      properties:
+        password_policy:
+          $ref: "#/components/schemas/PasswordPolicy"
+        device_configuration:
+          $ref: "#/components/schemas/DeviceConfiguration"
+        mfa_configuration:
+          $ref: "#/components/schemas/MfaConfiguration"
+        recaptcha_props:
+          $ref: "#/components/schemas/RecaptchaProps"
+        account_verification:
+          $ref: "#/components/schemas/AccountVerification"
+        self_regist:
+          $ref: "#/components/schemas/SelfRegist"
+    MfaConfiguration:
+      type: object
+      description: |
+        MFA device authentication settings
+        ※ This function is not yet provided, so it cannot be changed or saved.
+      x-description-i18n:
+        jpn: |
+          MFAデバイス認証設定
+          ※ 未提供の機能のため、変更・保存はできません
+      properties:
+        mfa_configuration:
+          type: string
+          enum:
+            - "on"
+            - optional
+          example: on
+          description: |
+            on: apply when all users log in
+            optional: apply to individual users with MFA factor enabled
+            ※ The parameter is currently optional and fixed.
+          x-description-i18n:
+            jpn: |
+              on: 全ユーザーがログイン時に適用
+              optional: MFA要素が有効になっている個別ユーザーに適用
+              ※ パラメータは現在optionalで固定となります。
+      required:
+        - mfa_configuration
+    RecaptchaProps:
+      type: object
+      description: |
+        reCAPTCHA authentication settings
+        ※ This function is not yet provided, so it cannot be changed or saved.
+      x-description-i18n:
+        jpn: |
+          reCAPTCHA認証設定
+          ※ 未提供の機能のため、変更・保存はできません。
+      properties:
+        site_key:
+          type: string
+          example: ede66c43-9b9d-4222-93ed-5f11c96e08e2
+          description: site key
+          x-description-i18n:
+            jpn: サイトキー
+        secret_key:
+          type: string
+          example: d5794b1b-5f92-4dc6-aa48-085dbb08b813
+          description: secret key
+          x-description-i18n:
+            jpn: シークレットキー
+      required:
+        - site_key
+        - secret_key
+    IdentityProviderConfiguration:
+      title: External Identity Provider Configuration
+      x-title-i18n:
+        jpn: 外部IDプロバイダ設定
+      type: object
+      description: |
+        This information is required to set up sign-in using an external identity provider.
+        It cannot be changed.
+      x-description-i18n:
+        jpn: |
+          外部IDプロバイダを利用したサインインの設定をするために必要な情報です。
+          変更はできません。
+      properties:
+        domain:
+          type: string
+          description: domain
+          x-description-i18n:
+            jpn: ドメイン
+        redirect_url:
+          type: string
+          description: redirect URL
+          x-description-i18n:
+            jpn: リダイレクトURL
+        entity_id:
+          type: string
+          description: entity ID
+          x-description-i18n:
+            jpn: 識別子
+        reply_url:
+          type: string
+          description: reply URL
+          x-description-i18n:
+            jpn: 応答URL
+      required:
+        - domain
+        - redirect_url
+        - entity_id
+        - reply_url
+    CreateEnvParam:
+      title: Create Environment Parameters
+      x-title-i18n:
+        jpn: 環境の作成パラメータ
+      $ref: "#/components/schemas/Env"
+    UpdateEnvParam:
+      title: Environment Update Parameters
+      x-title-i18n:
+        jpn: 環境の更新パラメータ
+      type: object
+      properties:
+        name:
+          type: string
+          example: saasus_dev
+          description: env name
+          x-description-i18n:
+            jpn: 環境名
+        display_name:
+          type: string
+          example: SaaSus dev
+          description: env display name
+          x-description-i18n:
+            jpn: 環境表示名
+      required:
+        - name
+    Env:
+      title: Env Info
+      x-title-i18n:
+        jpn: 環境情報
+      description: env info
+      x-description-i18n:
+        jpn: 環境情報
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+          description: env ID
+          x-description-i18n:
+            jpn: 環境ID
+        name:
+          type: string
+          example: saasus_dev
+          description: env name
+          x-description-i18n:
+            jpn: 環境名
+        display_name:
+          type: string
+          example: SaaSus dev
+          description: env display name
+          x-description-i18n:
+            jpn: 環境表示名
+      required:
+        - id
+        - name
+    Envs:
+      title: Env Info
+      x-title-i18n:
+        jpn: 環境情報
+      description: env list
+      x-description-i18n:
+        jpn: env一覧
+      type: object
+      properties:
+        envs:
+          type: array
+          items: {$ref: "#/components/schemas/Env"}
+      required:
+        - envs
+    CustomizePages:
+      type: object
+      properties:
+        sign_up_page:
+          $ref: "#/components/schemas/CustomizePageProps"
+          description: new registration page
+          x-description-i18n:
+            jpn: 新規登録画面
+        sign_in_page:
+          $ref: "#/components/schemas/CustomizePageProps"
+          description: login page
+          x-description-i18n:
+            jpn: ログイン画面
+        password_reset_page:
+          $ref: "#/components/schemas/CustomizePageProps"
+          description: password reset page
+          x-description-i18n:
+            jpn: パスワードリセット画面
+      required:
+        - sign_up_page
+        - sign_in_page
+        - password_reset_page
+    CustomizePageProps:
+      type: object
+      properties:
+        html_contents:
+          type: string
+          example: <html><div>画面内容</div></html>
+          description: |
+            Edit page HTML
+            ※ This function is not yet provided, so it cannot be changed or saved.
+          x-description-i18n:
+            jpn: |
+              画面のHTMLを編集できます
+              ※ 未提供の機能のため、変更・保存はできません
+        is_terms_of_service:
+          type: boolean
+          example: true
+          description: display the terms of use agreement check box
+          x-description-i18n:
+            jpn: 利用規約の同意チェックボックスを表示するが設定されているか
+        is_privacy_policy:
+          type: boolean
+          example: true
+          description: show the privacy policy checkbox
+          x-description-i18n:
+            jpn: プライバシーポリシーチェックボックスを表示するが設定されているか
+      required:
+        - html_contents
+        - is_terms_of_service
+        - is_privacy_policy
+    UpdateCustomizePagesParam:
+      type: object
+      properties:
+        sign_up_page:
+          $ref: "#/components/schemas/CustomizePageProps"
+          description: new registration page
+          x-description-i18n:
+            jpn: 新規登録画面
+        sign_in_page:
+          $ref: "#/components/schemas/CustomizePageProps"
+          description: login page
+          x-description-i18n:
+            jpn: ログイン画面
+        password_reset_page:
+          $ref: "#/components/schemas/CustomizePageProps"
+          description: password reset page
+          x-description-i18n:
+            jpn: パスワードリセット画面
+    SelfRegist:
+      type: object
+      description: self sign-up permission
+      x-description-i18n:
+        jpn: セルフサインアップを許可設定
+      properties:
+        enable:
+          type: boolean
+          example: true
+      required:
+        - enable
+    CustomizePageSettingsProps:
+      type: object
+      properties:
+        title:
+          type: string
+          example: SaaSus
+          description: service name
+          x-description-i18n:
+            jpn: サービス名
+        terms_of_service_url:
+          type: string
+          example: http://dev.example.com/terms
+          description: terms of service URL
+          x-description-i18n:
+            jpn: 利用規約URL
+        privacy_policy_url:
+          type: string
+          example: http://dev.example.com/privacy
+          description: privacy policy URL
+          x-description-i18n:
+            jpn: プライバシーポリシーURL
+        google_tag_manager_container_id:
+          type: string
+          example: GTM-XXXXXXX
+          description: Google Tag Manager container ID
+          x-description-i18n:
+            jpn: Google Tag Manager コンテナ ID
+      required:
+        - title
+        - terms_of_service_url
+        - privacy_policy_url
+        - google_tag_manager_container_id
+    CustomizePageSettings:
+      type: object
+      allOf:
+      - properties:
+          icon:
+            type: string
+            example: http://icon.example.com
+            description: service icon
+            x-description-i18n:
+              jpn: サービスアイコン
+          favicon:
+            type: string
+            example: http://icon.example.com
+            description: favicon
+            x-description-i18n:
+              jpn: ファビコン
+        required:
+          - icon
+          - favicon
+      - $ref: "#/components/schemas/CustomizePageSettingsProps"
+    UpdateCustomizePageSettingsParam:
+      type: object
+      allOf:
+      - properties:
+          icon:
+            type: string
+            format: base64
+            example: data:image/png;base64,ZDMiIHN0UmVmOmRvY3VtZW50SUQ9Inhtc==
+            description: service icon
+            x-description-i18n:
+              jpn: サービスアイコン
+          favicon:
+            type: string
+            format: base64
+            example: data:image/png;base64,ZDMiIHN0UmVmOmRvY3VtZW50SUQ9Inhtc==
+            description: favicon
+            x-description-i18n:
+              jpn: ファビコン
+        required:
+          - icon
+          - favicon
+      - $ref: "#/components/schemas/CustomizePageSettingsProps"
+    PlanHistory:
+      type: object
+      properties:
+        plan_id:
+          $ref: "#/components/schemas/Uuid"
+          description: Plan ID
+          x-description-i18n:
+            jpn: 料金プランID
+        plan_applied_at:
+          type: integer
+          example: 1640995200
+          description: Registration date
+          x-description-i18n:
+            jpn: 登録日時
+        tax_rate_id:
+          $ref: "#/components/schemas/Uuid"
+          description: Tax rate ID
+          x-description-i18n:
+            jpn: 税率ID
+        proration_behavior:
+          $ref: "#/components/schemas/ProrationBehavior"
+          description: Setting the behavior of the proportional allocation when the plan is changed.
+          x-description-i18n:
+            jpn: プラン変更時の比例配分の挙動設定
+        delete_usage:
+          $ref: '#/components/schemas/DeleteUsage'
+          description: If you have a stripe linkage,  you can set whether to delete pay-as-you-go items when changing plans.
+          x-description-i18n:
+            jpn: stripe連携をしている場合で、プラン変更時に現在のサブスクリプションに含まれる従量課金アイテムを削除できます。
+      required:
+        - plan_id
+        - plan_applied_at
+    PlanHistories:
+      type: object
+      properties:
+        plan_histories:
+          type: array
+          items: {$ref: "#/components/schemas/PlanHistory"}
+          description: Plan History
+          x-description-i18n:
+            jpn: 料金プラン履歴
+      required:
+        - plan_histories
+    ClientSecret:
+      title: ClientSecret
+      type: object
+      properties:
+        client_secret:
+          type: string
+          description: Client Secret
+          x-description-i18n:
+            jpn: クライアントシークレット
+          example: d9eH6xcJ5OU4tUff
+      required:
+        - client_secret
+    Credentials:
+      title: Authentication/Authorization Information
+      x-title-i18n:
+        jpn: 認証・認可情報
+      type: object
+      properties:
+        id_token:
+          title: ID Token
+          x-title-i18n:
+            jpn: IDトークン
+          description: ID token
+          x-description-i18n:
+            jpn: IDトークン
+          type: string
+        access_token:
+          title: Access Token
+          x-title-i18n:
+            jpn: アクセストークン
+          description: Access token
+          x-description-i18n:
+            jpn: アクセストークン
+          type: string
+        refresh_token:
+          title: Refresh Token
+          x-title-i18n:
+            jpn: リフレッシュトークン
+          description: Refresh token
+          x-description-i18n:
+            jpn: リフレッシュトークン
+          type: string
+      required:
+        - id_token
+        - access_token
+    CreateAuthCredentialsParam:
+      title: Authentication/Authorization Storage Parameters
+      x-title-i18n:
+        jpn: 認証・認可情報の保存パラメータ
+      $ref: '#/components/schemas/Credentials'
+    AuthorizationTempCode:
+      type: object
+      properties:
+        code:
+          title: Authorization Code for Getting Authentication/Authorization Information
+          x-title-i18n:
+            jpn: 認証・認可情報取得のための認可コード
+          description: Temp Code
+          x-description-i18n:
+            jpn: 一時コード
+          $ref: "#/components/schemas/Uuid"
+      required:
+        - code
+
+    CreateSecretCodeParam:
+      title: Secret Code Creation Parameters for Authentication Application Registration
+      x-title-i18n:
+        jpn: 認証アプリケーション登録用のシークレットコード作成パラメータ
+      type: object
+      properties:
+        access_token:
+          title: Access Token
+          x-title-i18n:
+            jpn: アクセストークン
+          description: access token
+          x-description-i18n:
+            jpn: アクセストークン
+          type: string
+      required:
+        - access_token
+    SoftwareTokenSecretCode:
+      title: Secret Code for Authentication Application Registration
+      x-title-i18n:
+        jpn: 認証アプリケーション登録用のシークレットコード
+      type: object
+      properties:
+        secret_code:
+          title: Secret Code
+          x-title-i18n:
+            jpn: シークレットコード
+          description: secret code
+          x-description-i18n:
+            jpn: シークレットコード
+          type: string
+      required:
+        - secret_code
+    UpdateSoftwareTokenParam:
+      title: Authentication Application Registration Parameters
+      x-title-i18n:
+        jpn: 認証アプリケーションの登録パラメータ
+      type: object
+      properties:
+        access_token:
+          title: Access Token
+          x-title-i18n:
+            jpn: アクセストークン
+          description: access token
+          x-description-i18n:
+            jpn: アクセストークン
+          type: string
+        verification_code:
+          title: Verification Code
+          x-title-i18n:
+            jpn: 検証コード
+          description: verification code
+          x-description-i18n:
+            jpn: 検証コード
+          type: string
+      required:
+        - access_token
+        - verification_code
+    MfaPreference:
+      title: User MFA Settings
+      x-title-i18n:
+        jpn: ユーザーのMFA設定
+      type: object
+      properties:
+        enabled:
+          title: Enable MFA
+          x-title-i18n:
+            jpn: MFAを有効にするか否か
+          description: enable MFA
+          x-description-i18n:
+            jpn: MFAを有効にするか否か
+          type: boolean
+        method:
+          title: MFA Method
+          x-title-i18n:
+            jpn: MFAの方法
+          description: MFA method (required if enabled is true)
+          x-description-i18n:
+            jpn: MFAの方法(enabledがtrueの場合は必須)
+          type: string
+          enum:
+            - softwareToken
+      required:
+        - enabled
+    UpdateUserMfaPreferenceParam:
+      title: User's MFA Settings Update Parameters
+      x-title-i18n:
+        jpn: ユーザーのMFA設定更新パラメータ
+      $ref: '#/components/schemas/MfaPreference'
+    SignUpParam:
+      title: Sign Up Parameters
+      x-title-i18n:
+        jpn: 新規登録パラメータ
+      type: object
+      properties:
+        email:
+          title: Email Address
+          x-title-i18n:
+            jpn: メールアドレス
+          description: Email Address
+          x-description-i18n:
+            jpn: メールアドレス
+          type: string
+      required:
+        - email
+    ResendSignUpConfirmationEmailParam:
+      title: Resend Sign Up Confirmation Email Parameters
+      x-title-i18n:
+        jpn: 新規登録時の確認メール再送信パラメータ
+      type: object
+      properties:
+        email:
+          title: Email Address
+          x-title-i18n:
+            jpn: メールアドレス
+          description: Email Address
+          x-description-i18n:
+            jpn: メールアドレス
+          type: string
+      required:
+        - email
+    SignUpWithAwsMarketplaceParam:
+      title: Sign Up with AWS Marketplace Parameters
+      x-title-i18n:
+        jpn: AWS Marketplaceによるユーザー新規登録パラメータ
+      type: object
+      properties:
+        email:
+          title: Email Address
+          x-title-i18n:
+            jpn: メールアドレス
+          description: Email Address
+          x-description-i18n:
+            jpn: メールアドレス
+          type: string
+        registration_token:
+          title: Registration Token
+          x-title-i18n:
+            jpn: 登録トークン
+          description: Registration Token
+          x-description-i18n:
+            jpn: 登録トークン
+          type: string
+      required:
+        - email
+        - registration_token
+    ConfirmSignUpWithAwsMarketplaceParam:
+      title: Confirm Sign Up with AWS Marketplace Parameters
+      x-title-i18n:
+        jpn: AWS Marketplaceによるユーザー新規登録の確定パラメータ
+      type: object
+      properties:
+        tenant_name:
+          title: Tenant Name
+          x-title-i18n:
+            jpn: テナント名
+          description: Tenant name
+          x-description-i18n:
+            jpn: テナント名
+          type: string
+        access_token:
+          title: Access Token
+          x-title-i18n:
+            jpn: アクセストークン
+          description: Access token
+          x-description-i18n:
+            jpn: アクセストークン
+          type: string
+        registration_token:
+          title: Registration Token
+          x-title-i18n:
+            jpn: 登録トークン
+          description: Registration Token
+          x-description-i18n:
+            jpn: 登録トークン
+          type: string
+      required:
+        - access_token
+        - registration_token
+    LinkAwsMarketplaceParam:
+      title: Confirm Sign Up with AWS Marketplace Parameters
+      x-title-i18n:
+        jpn: AWS Marketplaceによるユーザー新規登録の確定パラメータ
+      type: object
+      properties:
+        tenant_id:
+          title: Tenant ID
+          x-title-i18n:
+            jpn: テナントID
+          description: Tenant ID
+          x-description-i18n:
+            jpn: テナントID
+          type: string
+        access_token:
+          title: Access Token
+          x-title-i18n:
+            jpn: アクセストークン
+          description: Access token
+          x-description-i18n:
+            jpn: アクセストークン
+          type: string
+        registration_token:
+          title: Registration Token
+          x-title-i18n:
+            jpn: 登録トークン
+          description: Registration Token
+          x-description-i18n:
+            jpn: 登録トークン
+          type: string
+      required:
+        - tenant_id
+        - access_token
+        - registration_token
+    InvitationStatus:
+      title: Invitation Status
+      x-title-i18n:
+        jpn: 招待ステータス
+      type: string
+      enum:
+        - pending
+        - accepted
+        - expired
+    Invitation:
+      title: Invitation
+      x-title-i18n:
+        jpn: 招待
+      type: object
+      properties:
+        id:
+          title: Invitation ID
+          x-title-i18n:
+            jpn: 招待ID
+          description: Invitation ID
+          x-description-i18n:
+            jpn: 招待ID
+          $ref: "#/components/schemas/Uuid"
+        email:
+          title: Email Address
+          x-title-i18n:
+            jpn: メールアドレス
+          description: Email address of the invited user
+          x-description-i18n:
+            jpn: 招待されたユーザーのメールアドレス
+          type: string
+          example: test@example.com
+        invitation_url:
+          title: Invitation URL
+          x-title-i18n:
+            jpn: 招待URL
+          description: Invitation URL
+          x-description-i18n:
+            jpn: 招待URL
+          type: string
+          example: https://auth.dev.saasus.io/invite?id=69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+        envs:
+          type: array
+          items: {$ref: "#/components/schemas/UserEnv"}
+        expired_at:
+          title: Expiration Date
+          x-title-i18n:
+            jpn: 有効期限
+          description: Expiration date of the invitation
+          x-description-i18n:
+            jpn: 招待の有効期限
+          type: integer
+          example: 1640995200
+        status:
+          title: Invitation Status
+          x-title-i18n:
+            jpn: 招待ステータス
+          description: Invitation status
+          x-description-i18n:
+            jpn: 招待ステータス
+          $ref: "#/components/schemas/InvitationStatus"
+      required:
+        - id
+        - email
+        - invitation_url
+        - envs
+        - expired_at
+        - status
+    Invitations:
+      title: Invitation List
+      x-title-i18n:
+        jpn: 招待一覧
+      type: object
+      properties:
+        invitations:
+          type: array
+          items: {$ref: "#/components/schemas/Invitation"}
+          description: Invitation list
+          x-description-i18n:
+            jpn: 招待一覧
+      required:
+        - invitations
+    CreateTenantInvitationParam:
+      title: Invitation Creation Parameters
+      x-title-i18n:
+        jpn: 招待の作成パラメータ
+      type: object
+      properties:
+        email:
+          title: Email Address
+          x-title-i18n:
+            jpn: メールアドレス
+          description: Email address of the user to be invited
+          x-description-i18n:
+            jpn: 招待するユーザーのメールアドレス
+          type: string
+          example: test@example.com
+        access_token:
+          title: Access Token
+          x-title-i18n:
+            jpn: アクセストークン
+          description: Access token of the user who creates an invitation
+          x-description-i18n:
+            jpn: 招待を作成するユーザーのアクセストークン
+          type: string
+        envs:
+          title: Invited User Environment Information
+          x-title-i18n:
+            jpn: 招待するユーザーの環境情報
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                title: Environment ID
+                x-title-i18n:
+                  jpn: 環境ID
+                description: Environment ID
+                x-description-i18n:
+                  jpn: 環境ID
+                $ref: "#/components/schemas/Id"
+              role_names:
+                title: Role Name
+                x-title-i18n:
+                  jpn: 役割名
+                description: Role name
+                x-description-i18n:
+                  jpn: 役割名
+                type: array
+                items:
+                  type: string
+                  example: admin
+            required:
+              - id
+              - role_names
+      required:
+        - email
+        - access_token
+        - envs
+    ValidateInvitationParam:
+      title: Invitation Validation Parameters
+      x-title-i18n:
+        jpn: 招待の検証パラメータ
+      description: |
+        Access token is required for existing users, and email and password is required for new users.
+      x-description-i18n:
+        jpn: |
+          既存ユーザーの場合はアクセストークン、新規ユーザーの場合はメールアドレスとパスワードが必須です。
+      type: object
+      properties:
+        access_token:
+          title: Access Token
+          x-title-i18n:
+            jpn: アクセストークン
+          description: Access token of the invited user
+          x-description-i18n:
+            jpn: 招待されたユーザーのアクセストークン
+          type: string
+        email:
+          title: Email Address
+          x-title-i18n:
+            jpn: メールアドレス
+          description: Email address of the invited user
+          x-description-i18n:
+            jpn: 招待されたユーザーのメールアドレス
+          type: string
+          example: test@example.com
+        password:
+          title: Password
+          x-title-i18n:
+            jpn: パスワード
+          description: Password of the invited user
+          x-description-i18n:
+            jpn: 招待されたユーザーのパスワード
+          type: string
+    InvitationValidity:
+      title: Invitation Validity
+      x-title-i18n:
+        jpn: 招待の有効性
+      description: Invitation validity
+      x-description-i18n:
+        jpn: 招待の有効性
+      type: object
+      properties:
+        is_valid:
+          title: Whether the validation is valid or not
+          x-title-i18n:
+            jpn: 招待が有効か否か
+          description: Whether the validation is valid or not
+          x-description-i18n:
+            jpn: 招待が有効か否か
+          type: boolean
+      required:
+        - is_valid
+    ProrationBehavior:
+      type: string
+      title: Proration Behavior When Changing Plans
+      x-title-i18n:
+        jpn: プラン変更時の比例配分の挙動
+      description:  |
+        If you have a strine linkage, you can set the behavior of the proportional allocation when changing plans.
+        When a plan is changed, you can set whether to prorate the billing amount and reflect it on the next invoice, to issue a prorated invoice immediately, or not to prorate at all.
+      x-description-i18n:
+        jpn: |
+          stripe連携している場合で、プラン変更時の比例配分の挙動を設定できます。
+          プラン変更した場合に、請求金額を日割り計算し次回請求書に反映させるか、日割り計算した請求を即時に発行する、日割り計算をしないを設定できます。
+      enum:
+        - create_prorations
+        - none
+        - always_invoice
+    DeleteUsage:
+      type: boolean
+      title: Proration Behavior When Changing Plans
+      x-title-i18n:
+        jpn: プラン変更時の従量課金アイテムの削除
+      description: |
+        If you have a stripe linkage,  you can set whether to delete pay-as-you-go items when changing plans.
+        When you change plan, you can remove all pay-as-you-go items included in your current subscription to stop being billed based on pay-as-you-go items.
+        The recorded usage is cleared immediately. Since it cannot be restored, please note that plan change reservations with delete_usage set to true cannot be canceled.
+      x-description-i18n:
+        jpn: |
+          stripe連携している場合で、プラン変更時に従量課金アイテムを削除するか設定できます。
+          プラン変更した場合に、現在のサブスクリプションに含まれる従量課金アイテムを全て削除して、従量課金アイテムに基づく請求の発生を止めることができます。
+          即時に記録している使用量がクリアされます。それらは復元できないため、delete_usageをtrueにしたプラン変更予約は取り消しできません。
+    RequestExternalUserLinkParam:
+      title: Request External User Account Link Parameters
+      x-title-i18n:
+        jpn: 外部アカウントのユーザー連携要求パラメータ
+      type: object
+      properties:
+        access_token:
+          title: Access Token
+          x-title-i18n:
+            jpn: アクセストークン
+          type: string
+      required:
+        - access_token
+    ConfirmExternalUserLinkParam:
+      title: Confirm External User Account Link Parameters
+      x-title-i18n:
+        jpn: 外部アカウントのユーザー連携確認パラメータ
+      type: object
+      properties:
+        access_token:
+          title: Access Token
+          x-title-i18n:
+            jpn: アクセストークン
+          type: string
+        code:
+          title: Verification Code
+          x-title-i18n:
+            jpn: 検証コード
+          type: string
+          example: "123456"
+      required:
+        - access_token
+        - code
+    CloudFormationLaunchStackLink:
+      title: AWS CloudFormation Stack Launch Link
+      x-title-i18n:
+        jpn: AWS CloudFormationスタック作成リンク
+      type: object
+      properties:
+        link:
+          title: cloud formation launch dtack link
+          x-title-i18n:
+            jpn: cloud formation launch dtack link
+          type: string
+          example: "https://us-west-2.console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/create?stackName=sample&templateURL=https://s3.us-west-2.amazonaws.com/cloudformation-templates-sample.template"
+      required:
+        - link
+    SingleTenantSettings:
+      title: Single Tenant settings
+      x-title-i18n:
+        jpn: シングルテナント設定
+      type: object
+      properties:
+        enabled:
+          title: Enable Single Tenant settings or Not
+          x-title-i18n:
+            jpn: シングルテナント設定を有効にするか否か
+          description: enable Single Tenant settings or not
+          x-description-i18n:
+            jpn: シングルテナント設定を有効にするか否か
+          type: boolean
+        role_arn:
+          title: ARN of the role to be AssumeRole
+          x-title-i18n:
+            jpn: AssumeRoleするためのロールのARN
+          description: ARN of the role for SaaS Platform to AssumeRole
+          x-description-i18n:
+            jpn: SaaS PlatformがAssumeRoleするためのロールのARN
+          type: string
+          example: arn:aws:iam::123456789012:role/role-name
+        cloudformation_template_url:
+          title: CloudFormation template URL
+          x-title-i18n:
+            jpn: CloudFormationテンプレートURL
+          description: S3 URL where the CloudFormationTemplate to be executed in the SaaS environment is stored
+          x-description-i18n:
+            jpn: SaaS環境で実行するCloudFormationTemplateが格納されているS3のURL
+          type: string
+          example: https://presigned-url-test.s3.ap-northeast-1.amazonaws.com/test.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=xxxxxx%2F20230710%2Fap-northeast-1%2Fs3%2Faws4_request&X-Amz-Date=20230710T054140Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=xxxxxxxxxxxxxxxx
+        ddl_template_url:
+          title: ddl template URL
+          x-title-i18n:
+            jpn: ddlテンプレートURL
+          description: S3 URL where the CloudFormationTemplate to be executed in the SaaS environment is stored
+          x-description-i18n:
+            jpn: S3 URL where the ddlTemplate to be executed in the SaaS environment is stored
+          type: string
+          example: https://presigned-url-test.s3.ap-northeast-1.amazonaws.com/test.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=xxxxxx%2F20230710%2Fap-northeast-1%2Fs3%2Faws4_request&X-Amz-Date=20230710T054140Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=xxxxxxxxxxxxxxxx
+        role_external_id:
+          title: External id to use when AssumeRole
+          x-title-i18n:
+            jpn: AssumeRoleする時に使用するExternalID
+          description: External id used by SaaSus when AssumeRole to operate SaaS
+          x-description-i18n:
+            jpn: SaaSusがSaaSを操作するためにAssumeRoleする時に使用するexternal id
+          type: string
+          example: 1234567890
+      required:
+        - enabled
+        - role_arn
+        - cloudformation_template_url
+        - ddl_template_url
+        - role_external_id
+    UpdateSingleTenantSettingsParam:
+      title: Single Tenant settings update parameters
+      x-title-i18n:
+        jpn: シングルテナント設定更新パラメータ
+      properties:
+        enabled:
+          title: Enable Single Tenant settings or Not
+          x-title-i18n:
+            jpn: シングルテナント設定を有効にするか否か
+          description: enable Single Tenant settings or not
+          x-description-i18n:
+            jpn: シングルテナント設定を有効にするか否か
+          type: boolean
+        role_arn:
+          title: ARN of the role to be AssumeRole
+          x-title-i18n:
+            jpn: AssumeRoleするためのロールのARN
+          description: ARN of the role for SaaS Platform to AssumeRole
+          x-description-i18n:
+            jpn: SaaS PlatformがAssumeRoleするためのロールのARN
+          type: string
+          example: arn:aws:iam::123456789012:role/role-name
+        cloudformation_template:
+          title: CloudFormation template file
+          x-title-i18n:
+            jpn: CloudFormationテンプレートファイル
+          description: CloudFormation template file
+          x-description-i18n:
+            jpn: SaaS環境で実行するCloudFormationTemplateファイル
+          type: string
+          format: base64
+          example: U3dhZ2dlciByb2Nrcw==
+        ddl_template:
+          title: ddl template file
+          x-title-i18n:
+            jpn: ddlテンプレートファイル
+          description: ddl file to run in SaaS environment
+          x-description-i18n:
+            jpn: SaaS環境で実行するddlファイル
+          type: string
+          format: base64
+          example: U3dhZ2dlciByb2Nrcw==
+        role_external_id:
+          title: External id to use when AssumeRole
+          x-title-i18n:
+            jpn: AssumeRoleする時に使用するExternalID
+          description: External id used by SaaSus when AssumeRole to operate SaaS
+          x-description-i18n:
+            jpn: SaaSusがSaaSを操作するためにAssumeRoleする時に使用するexternal id
+          type: string
+          example: 1234567890
+    StripeCustomer:
+      title: Stripe Customer Information
+      x-title-i18n:
+        jpn: Stripeの顧客ID連携情報
+      type: object
+      properties:
+        customer_id:
+          title: Customer ID
+          x-title-i18n:
+            jpn: 顧客ID
+          description: stripe Customer ID
+          x-description-i18n:
+            jpn: stripeの顧客ID
+          type: string
+          example: cus_1234567890
+        subscription_schedule_id:
+          title: Subscription Schedule ID
+          x-title-i18n:
+            jpn: サブスクリプションスケジュールID
+          description: stripe Subscription Schedule ID
+          x-description-i18n:
+            jpn: stripeのサブスクリプションスケジュールID
+          type: string
+          example: cus_1234567890
+      required:
+        - customer_id
+        - subscription_schedule_id

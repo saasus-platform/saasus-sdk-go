@@ -1,0 +1,473 @@
+go test -v -run TestE2E_
+=== RUN   TestE2E_GetAuthInfoWithResponse
+    client_e2e_test.go:314: ステータスコード: 200
+    client_e2e_test.go:322: 認証情報: CallbackUrl=https://test.example.com/callback
+--- PASS: TestE2E_GetAuthInfoWithResponse (0.26s)
+=== RUN   TestE2E_UpdateAuthInfoWithResponse
+    client_e2e_test.go:356: ステータスコード: 200
+    client_e2e_test.go:360: 認証情報の更新が成功しました
+--- PASS: TestE2E_UpdateAuthInfoWithResponse (0.30s)
+=== RUN   TestE2E_GetBasicInfoWithResponse
+    client_e2e_test.go:386: ステータスコード: 200
+    client_e2e_test.go:394: 基本情報: DomainName=
+    client_e2e_test.go:395: DNS検証済み: false
+    client_e2e_test.go:396: SESサンドボックス解除済み: false
+    client_e2e_test.go:399: ドメイン名が空です
+    client_e2e_test.go:402: 送信元メールアドレスが空です
+--- FAIL: TestE2E_GetBasicInfoWithResponse (0.08s)
+=== RUN   TestE2E_UpdateBasicInfoWithResponse
+    client_e2e_test.go:436: ステータスコード: 400
+    client_e2e_test.go:447: 予期しないステータスコード: 400
+--- FAIL: TestE2E_UpdateBasicInfoWithResponse (16.91s)
+=== RUN   TestE2E_GetSaasUsersWithResponse
+    client_e2e_test.go:466: ステータスコード: 200
+    client_e2e_test.go:474: SaaSユーザー数: 1
+    client_e2e_test.go:480: ユーザー 1: ID=f2dd075c-5d38-4156-8ab6-ebfb9647c2b8, Email=tsukamoto+multi-product@anti-pattern.co.jp
+--- PASS: TestE2E_GetSaasUsersWithResponse (0.42s)
+=== RUN   TestE2E_CreateSaasUserWithResponse
+    client_e2e_test.go:524: ステータスコード: 400
+    client_e2e_test.go:542: バリデーションエラー: Type=invalid_parameter, Message=
+    client_e2e_test.go:544: バリデーションエラーが発生しました（既存ユーザーの可能性）
+--- PASS: TestE2E_CreateSaasUserWithResponse (0.05s)
+=== RUN   TestE2E_GetSaasUserWithResponse
+    client_e2e_test.go:573: テスト対象のユーザーID: f2dd075c-5d38-4156-8ab6-ebfb9647c2b8
+    client_e2e_test.go:585: ステータスコード: 200
+    client_e2e_test.go:593: ユーザー詳細: ID=f2dd075c-5d38-4156-8ab6-ebfb9647c2b8, Email=tsukamoto+multi-product@anti-pattern.co.jp
+=== RUN   TestE2E_GetSaasUserWithResponse/無効なユーザーID_invalid-uuid
+    client_e2e_test.go:623: 期待通りエラーレスポンス: 404
+=== RUN   TestE2E_GetSaasUserWithResponse/無効なユーザーID_
+    client_e2e_test.go:623: 期待通りエラーレスポンス: 404
+=== RUN   TestE2E_GetSaasUserWithResponse/無効なユーザーID_00000000-0000-0000-0000-000000000000
+    client_e2e_test.go:623: 期待通りエラーレスポンス: 404
+--- PASS: TestE2E_GetSaasUserWithResponse (0.91s)
+    --- PASS: TestE2E_GetSaasUserWithResponse/無効なユーザーID_invalid-uuid (0.11s)
+    --- PASS: TestE2E_GetSaasUserWithResponse/無効なユーザーID_ (0.02s)
+    --- PASS: TestE2E_GetSaasUserWithResponse/無効なユーザーID_00000000-0000-0000-0000-000000000000 (0.11s)
+=== RUN   TestE2E_DeleteSaasUserWithResponse
+    client_e2e_test.go:646: テスト用ユーザーの作成に失敗したため、削除テストをスキップします
+--- SKIP: TestE2E_DeleteSaasUserWithResponse (0.05s)
+=== RUN   TestE2E_GetTenantsWithResponse
+    client_e2e_test.go:695: ステータスコード: 200
+    client_e2e_test.go:703: テナント数: 6
+    client_e2e_test.go:709: テナント 1: ID=6dbb27d0-95ed-4740-8459-d7d24c353269, Name=A社 ResourceCloud
+    client_e2e_test.go:709: テナント 2: ID=4f877a8f-5235-41cf-b61d-03fa1ad282ad, Name=A社 DXplus
+    client_e2e_test.go:709: テナント 3: ID=345dd942-cfa4-4271-9015-8b11c02b10ac, Name=B社 InduStudy
+--- PASS: TestE2E_GetTenantsWithResponse (0.07s)
+=== RUN   TestE2E_CreateTenantWithResponse
+    client_e2e_test.go:754: ステータスコード: 400
+    client_e2e_test.go:776: 予期しないステータスコード: 400
+--- FAIL: TestE2E_CreateTenantWithResponse (0.06s)
+=== RUN   TestE2E_GetRolesWithResponse
+    client_e2e_test.go:795: ステータスコード: 200
+    client_e2e_test.go:803: 役割数: 2
+    client_e2e_test.go:809: 役割 1: RoleName=admin, DisplayName=SaaS管理者
+    client_e2e_test.go:809: 役割 2: RoleName=test_role_�, DisplayName=Test Role
+--- PASS: TestE2E_GetRolesWithResponse (0.07s)
+=== RUN   TestE2E_CreateRoleWithResponse
+    client_e2e_test.go:853: ステータスコード: 400
+    client_e2e_test.go:872: 予期しないステータスコード: 400
+--- FAIL: TestE2E_CreateRoleWithResponse (0.05s)
+=== RUN   TestE2E_GetEnvsWithResponse
+    client_e2e_test.go:891: ステータスコード: 200
+    client_e2e_test.go:899: 環境数: 2
+    client_e2e_test.go:905: 環境 1: ID=3, Name=test_env
+    client_e2e_test.go:905: 環境 2: ID=999, Name=test_env_�
+--- PASS: TestE2E_GetEnvsWithResponse (0.04s)
+=== RUN   TestE2E_GetUserAttributesWithResponse
+    client_e2e_test.go:939: ステータスコード: 200
+    client_e2e_test.go:947: ユーザー属性数: 3
+    client_e2e_test.go:953: 属性 1: Name=available_productDXplus, DisplayName=DXplus利用可否, Type=bool
+    client_e2e_test.go:953: 属性 2: Name=available_productInduStudy, DisplayName=InduStudy利用可否, Type=bool
+    client_e2e_test.go:953: 属性 3: Name=test_user_attr_�, DisplayName=Test Attribute, Type=string
+--- PASS: TestE2E_GetUserAttributesWithResponse (0.04s)
+=== RUN   TestE2E_GetTenantAttributesWithResponse
+    client_e2e_test.go:980: ステータスコード: 200
+    client_e2e_test.go:988: テナント属性数: 2
+    client_e2e_test.go:994: 属性 1: Name=product, DisplayName=利用サービス, Type=string
+    client_e2e_test.go:994: 属性 2: Name=test_tenant_attr_�, DisplayName=Test Tenant Attribute, Type=string
+--- PASS: TestE2E_GetTenantAttributesWithResponse (0.03s)
+=== RUN   TestE2E_GetSignInSettingsWithResponse
+    client_e2e_test.go:1021: ステータスコード: 200
+    client_e2e_test.go:1029: サインイン設定: パスワード最小長=8
+    client_e2e_test.go:1030: デバイス記憶設定: no
+    client_e2e_test.go:1031: MFA設定: optional
+--- PASS: TestE2E_GetSignInSettingsWithResponse (0.39s)
+=== RUN   TestE2E_GetIdentityProvidersWithResponse
+    client_e2e_test.go:1057: ステータスコード: 200
+    client_e2e_test.go:1065: Google IDプロバイダー: ApplicationId=
+--- PASS: TestE2E_GetIdentityProvidersWithResponse (0.09s)
+=== RUN   TestE2E_GetCustomizePagesWithResponse
+    client_e2e_test.go:1091: ステータスコード: 200
+    client_e2e_test.go:1099: カスタマイズページ設定を取得しました
+    client_e2e_test.go:1100: サインアップページ: 利用規約=false, プライバシーポリシー=false
+--- PASS: TestE2E_GetCustomizePagesWithResponse (0.04s)
+=== RUN   TestE2E_GetCustomizePageSettingsWithResponse
+    client_e2e_test.go:1127: ステータスコード: 200
+    client_e2e_test.go:1135: ページ設定: Title=Test SaaS
+    client_e2e_test.go:1136: 利用規約URL: https://test.example.com/terms
+    client_e2e_test.go:1137: プライバシーポリシーURL: https://test.example.com/privacy
+--- PASS: TestE2E_GetCustomizePageSettingsWithResponse (0.21s)
+=== RUN   TestE2E_FindNotificationMessagesWithResponse
+    client_e2e_test.go:1163: ステータスコード: 200
+    client_e2e_test.go:1171: 通知メッセージ設定を取得しました
+    client_e2e_test.go:1172: サインアップメッセージ: Subject=Welcome to Test SaaS
+    client_e2e_test.go:1173: ユーザー作成メッセージ: Subject=Your account has been created
+--- PASS: TestE2E_FindNotificationMessagesWithResponse (0.04s)
+=== RUN   TestE2E_GetSingleTenantSettingsWithResponse
+    client_e2e_test.go:1199: ステータスコード: 200
+    client_e2e_test.go:1207: シングルテナント設定: Enabled=true
+    client_e2e_test.go:1209: RoleArn: arn:aws:iam::123456789012:role/test-role
+    client_e2e_test.go:1210: RoleExternalId: test-external-id
+--- PASS: TestE2E_GetSingleTenantSettingsWithResponse (0.21s)
+=== RUN   TestE2E_GetCloudFormationLaunchStackLinkForSingleTenantWithResponse
+    client_e2e_test.go:1237: ステータスコード: 200
+    client_e2e_test.go:1245: CloudFormationスタック起動リンク: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/quickcreate?templateURL=https://saasus-core-singletenant-saasuscoresingletenantsin-w5nicgd9sajx.s3.ap-northeast-1.amazonaws.com/singletenant.template&stackName=SaaSusPlatform-will-AssumeRole-to-yourAccount&param_ExternalID=d75cac2e-31cd-4c11-987d-bb48e7c78519&param_SaasusAccountID=678020406725
+--- PASS: TestE2E_GetCloudFormationLaunchStackLinkForSingleTenantWithResponse (0.09s)
+=== RUN   TestE2E_ResetPlanWithResponse
+    client_e2e_test.go:1274: ステータスコード: 200
+    client_e2e_test.go:1278: プランリセットが成功しました
+--- PASS: TestE2E_ResetPlanWithResponse (0.35s)
+=== RUN   TestE2E_CreateTenantAndPricingWithResponse
+    client_e2e_test.go:1304: ステータスコード: 400
+    client_e2e_test.go:1315: 予期しないステータスコード: 400
+--- FAIL: TestE2E_CreateTenantAndPricingWithResponse (0.11s)
+=== RUN   TestE2E_DeleteStripeTenantAndPricingWithResponse
+    client_e2e_test.go:1334: ステータスコード: 400
+    client_e2e_test.go:1345: 予期しないステータスコード: 400
+--- FAIL: TestE2E_DeleteStripeTenantAndPricingWithResponse (0.07s)
+=== RUN   TestE2E_SignUpWithResponse
+    client_e2e_test.go:1373: ステータスコード: 400
+    client_e2e_test.go:1392: 予期しないステータスコード: 400
+    client_e2e_test.go:1404: 確認メール再送信ステータス: 200
+--- FAIL: TestE2E_SignUpWithResponse (3.75s)
+=== RUN   TestE2E_PerformanceBasic
+    client_e2e_test.go:1427: レスポンス時間: 35.982083ms
+    client_e2e_test.go:1428: ステータスコード: 200
+    client_e2e_test.go:1442: 基本情報取得成功
+--- PASS: TestE2E_PerformanceBasic (0.04s)
+=== RUN   TestE2E_PerformanceLoad
+=== RUN   TestE2E_PerformanceLoad/軽負荷テスト
+    client_e2e_test.go:1469: レスポンス時間: 249.561708ms
+    client_e2e_test.go:1470: ステータスコード: 200
+    client_e2e_test.go:1485: 取得したユーザー数: 1
+    client_e2e_test.go:1490: スループット: 4.01件/秒
+=== RUN   TestE2E_PerformanceLoad/中負荷テスト
+    client_e2e_test.go:1469: レスポンス時間: 242.113208ms
+    client_e2e_test.go:1470: ステータスコード: 200
+    client_e2e_test.go:1485: 取得したユーザー数: 1
+    client_e2e_test.go:1490: スループット: 4.13件/秒
+=== RUN   TestE2E_PerformanceLoad/高負荷テスト
+    client_e2e_test.go:1469: レスポンス時間: 275.171958ms
+    client_e2e_test.go:1470: ステータスコード: 200
+    client_e2e_test.go:1485: 取得したユーザー数: 1
+    client_e2e_test.go:1490: スループット: 3.63件/秒
+--- PASS: TestE2E_PerformanceLoad (0.77s)
+    --- PASS: TestE2E_PerformanceLoad/軽負荷テスト (0.25s)
+    --- PASS: TestE2E_PerformanceLoad/中負荷テスト (0.24s)
+    --- PASS: TestE2E_PerformanceLoad/高負荷テスト (0.28s)
+=== RUN   TestE2E_ConcurrentRequests
+    client_e2e_test.go:1550: リクエスト 1 成功: 36.243833ms
+    client_e2e_test.go:1550: リクエスト 2 成功: 40.766ms
+    client_e2e_test.go:1550: リクエスト 3 成功: 119.789916ms
+    client_e2e_test.go:1559: 同時実行結果:
+    client_e2e_test.go:1560:   - 同時実行数: 3
+    client_e2e_test.go:1561:   - 総実行時間: 119.921667ms
+    client_e2e_test.go:1562:   - 平均レスポンス時間: 65.599916ms
+    client_e2e_test.go:1563:   - 成功数: 3
+    client_e2e_test.go:1564:   - エラー数: 0
+    client_e2e_test.go:1568:   - 成功率: 100.0%
+--- PASS: TestE2E_ConcurrentRequests (0.12s)
+=== RUN   TestE2E_GetTenantWithResponse
+    client_e2e_test.go:1593: テスト対象のテナントID: 6dbb27d0-95ed-4740-8459-d7d24c353269
+    client_e2e_test.go:1605: ステータスコード: 200
+    client_e2e_test.go:1613: テナント詳細: ID=6dbb27d0-95ed-4740-8459-d7d24c353269, Name=A社 ResourceCloud
+=== RUN   TestE2E_GetTenantWithResponse/無効なテナントID_invalid-uuid
+    client_e2e_test.go:1643: 期待通りエラーレスポンス: 400
+=== RUN   TestE2E_GetTenantWithResponse/無効なテナントID_
+    client_e2e_test.go:1643: 期待通りエラーレスポンス: 404
+=== RUN   TestE2E_GetTenantWithResponse/無効なテナントID_00000000-0000-0000-0000-000000000000
+    client_e2e_test.go:1643: 期待通りエラーレスポンス: 404
+--- PASS: TestE2E_GetTenantWithResponse (0.24s)
+    --- PASS: TestE2E_GetTenantWithResponse/無効なテナントID_invalid-uuid (0.03s)
+    --- PASS: TestE2E_GetTenantWithResponse/無効なテナントID_ (0.02s)
+    --- PASS: TestE2E_GetTenantWithResponse/無効なテナントID_00000000-0000-0000-0000-000000000000 (0.04s)
+=== RUN   TestE2E_DeleteTenantWithResponse
+    client_e2e_test.go:1669: テスト用テナントの作成に失敗したため、削除テストをスキップします
+--- SKIP: TestE2E_DeleteTenantWithResponse (0.10s)
+=== RUN   TestE2E_GetTenantUsersWithResponse
+    client_e2e_test.go:1720: テスト対象のテナントID: 6dbb27d0-95ed-4740-8459-d7d24c353269
+    client_e2e_test.go:1732: ステータスコード: 200
+    client_e2e_test.go:1740: テナントユーザー数: 1
+    client_e2e_test.go:1746: ユーザー 1: ID=f2dd075c-5d38-4156-8ab6-ebfb9647c2b8, Email=tsukamoto+multi-product@anti-pattern.co.jp
+--- PASS: TestE2E_GetTenantUsersWithResponse (0.10s)
+=== RUN   TestE2E_CreateTenantUserWithResponse
+    client_e2e_test.go:1785: テスト対象のテナントID: 6dbb27d0-95ed-4740-8459-d7d24c353269
+    client_e2e_test.go:1806: ステータスコード: 400
+    client_e2e_test.go:1823: バリデーションエラーが発生しました（既存ユーザーの可能性）
+    client_e2e_test.go:1824: バリデーションエラーが発生しました（既存ユーザーの可能性）
+--- PASS: TestE2E_CreateTenantUserWithResponse (0.09s)
+=== RUN   TestE2E_GetRoleWithResponse
+    client_e2e_test.go:1854: 個別役割取得APIは存在しないため、役割一覧取得で代替します
+=== RUN   TestE2E_GetRoleWithResponse/無効な役割名削除_nonexistent_role
+    client_e2e_test.go:1867: 期待通りエラーレスポンス: 404
+=== RUN   TestE2E_GetRoleWithResponse/無効な役割名削除_
+    client_e2e_test.go:1867: 期待通りエラーレスポンス: 404
+=== RUN   TestE2E_GetRoleWithResponse/無効な役割名削除_invalid_role_name
+    client_e2e_test.go:1867: 期待通りエラーレスポンス: 404
+--- PASS: TestE2E_GetRoleWithResponse (0.15s)
+    --- PASS: TestE2E_GetRoleWithResponse/無効な役割名削除_nonexistent_role (0.05s)
+    --- PASS: TestE2E_GetRoleWithResponse/無効な役割名削除_ (0.02s)
+    --- PASS: TestE2E_GetRoleWithResponse/無効な役割名削除_invalid_role_name (0.05s)
+=== RUN   TestE2E_DeleteRoleWithResponse
+    client_e2e_test.go:1896: 削除対象の役割名: delete_test_role_�
+    client_e2e_test.go:1909: ステータスコード: 200
+    client_e2e_test.go:1913: 役割の削除が成功しました
+--- PASS: TestE2E_DeleteRoleWithResponse (0.10s)
+=== RUN   TestE2E_CreateUserAttributeWithResponse
+    client_e2e_test.go:1952: ステータスコード: 201
+    client_e2e_test.go:1960: 作成されたユーザー属性: Name=test_user_attr_�, DisplayName=Test Attribute, Type=string
+--- PASS: TestE2E_CreateUserAttributeWithResponse (0.05s)
+=== RUN   TestE2E_DeleteUserAttributeWithResponse
+    client_e2e_test.go:1998: 削除対象の属性名: delete_test_user_attr_�
+    client_e2e_test.go:2011: ステータスコード: 200
+    client_e2e_test.go:2015: ユーザー属性の削除が成功しました
+--- PASS: TestE2E_DeleteUserAttributeWithResponse (0.12s)
+=== RUN   TestE2E_CreateTenantAttributeWithResponse
+    client_e2e_test.go:2054: ステータスコード: 201
+    client_e2e_test.go:2062: 作成されたテナント属性: Name=test_tenant_attr_�, DisplayName=Test Tenant Attribute, Type=string
+--- PASS: TestE2E_CreateTenantAttributeWithResponse (0.05s)
+=== RUN   TestE2E_DeleteTenantAttributeWithResponse
+    client_e2e_test.go:2100: 削除対象の属性名: delete_test_tenant_attr_�
+    client_e2e_test.go:2113: ステータスコード: 200
+    client_e2e_test.go:2117: テナント属性の削除が成功しました
+--- PASS: TestE2E_DeleteTenantAttributeWithResponse (0.10s)
+=== RUN   TestE2E_CreateEnvWithResponse
+    client_e2e_test.go:2156: ステータスコード: 400
+    client_e2e_test.go:2175: 予期しないステータスコード: 400
+--- FAIL: TestE2E_CreateEnvWithResponse (0.04s)
+=== RUN   TestE2E_GetEnvWithResponse
+    client_e2e_test.go:2197: テスト対象の環境ID: 3
+    client_e2e_test.go:2209: ステータスコード: 200
+    client_e2e_test.go:2217: 環境詳細: ID=3, Name=test_env
+=== RUN   TestE2E_GetEnvWithResponse/無効な環境ID_𘚟
+    client_e2e_test.go:2247: 期待通りエラーレスポンス: 404
+=== RUN   TestE2E_GetEnvWithResponse/無効な環境ID_\U00015b38
+    client_e2e_test.go:2247: 期待通りエラーレスポンス: 404
+=== RUN   TestE2E_GetEnvWithResponse/無効な環境ID_𒿑
+    client_e2e_test.go:2247: 期待通りエラーレスポンス: 404
+--- PASS: TestE2E_GetEnvWithResponse (0.15s)
+    --- PASS: TestE2E_GetEnvWithResponse/無効な環境ID_𘚟 (0.03s)
+    --- PASS: TestE2E_GetEnvWithResponse/無効な環境ID_\U00015b38 (0.03s)
+    --- PASS: TestE2E_GetEnvWithResponse/無効な環境ID_𒿑 (0.03s)
+=== RUN   TestE2E_DeleteEnvWithResponse
+    client_e2e_test.go:2273: テスト用環境の作成に失敗したため、削除テストをスキップします
+--- SKIP: TestE2E_DeleteEnvWithResponse (0.05s)
+=== RUN   TestE2E_UpdateSignInSettingsWithResponse
+    client_e2e_test.go:2330: ステータスコード: 400
+    client_e2e_test.go:2341: 予期しないステータスコード: 400
+--- FAIL: TestE2E_UpdateSignInSettingsWithResponse (0.04s)
+=== RUN   TestE2E_UpdateCustomizePagesWithResponse
+    client_e2e_test.go:2367: ステータスコード: 200
+    client_e2e_test.go:2371: カスタマイズページの更新が成功しました
+--- PASS: TestE2E_UpdateCustomizePagesWithResponse (0.11s)
+=== RUN   TestE2E_UpdateCustomizePageSettingsWithResponse
+    client_e2e_test.go:2407: ステータスコード: 200
+    client_e2e_test.go:2411: ページ設定の更新が成功しました
+--- PASS: TestE2E_UpdateCustomizePageSettingsWithResponse (0.23s)
+=== RUN   TestE2E_UpdateNotificationMessagesWithResponse
+    client_e2e_test.go:2443: ステータスコード: 200
+    client_e2e_test.go:2447: 通知メッセージの更新が成功しました
+--- PASS: TestE2E_UpdateNotificationMessagesWithResponse (0.05s)
+=== RUN   TestE2E_UpdateSingleTenantSettingsWithResponse
+    client_e2e_test.go:2482: ステータスコード: 200
+    client_e2e_test.go:2486: シングルテナント設定の更新が成功しました
+--- PASS: TestE2E_UpdateSingleTenantSettingsWithResponse (0.38s)
+=== RUN   TestE2E_GetAuthCredentialsWithResponse
+=== RUN   TestE2E_GetAuthCredentialsWithResponse/認証情報取得_一時コード
+    client_e2e_test.go:2523: ステータスコード: 404
+    client_e2e_test.go:2540: 予期しないステータスコード: 404
+=== RUN   TestE2E_GetAuthCredentialsWithResponse/認証情報取得_リフレッシュトークン
+    client_e2e_test.go:2523: ステータスコード: 401
+    client_e2e_test.go:2533: 認証エラーが発生しました（期待される動作）
+=== RUN   TestE2E_GetAuthCredentialsWithResponse/EdgeCase_無効な一時コード
+=== RUN   TestE2E_GetAuthCredentialsWithResponse/EdgeCase_無効なリフレッシュトークン
+    client_e2e_test.go:2566: 期待通りエラーレスポンス: 401
+--- FAIL: TestE2E_GetAuthCredentialsWithResponse (0.24s)
+    --- FAIL: TestE2E_GetAuthCredentialsWithResponse/認証情報取得_一時コード (0.05s)
+    --- PASS: TestE2E_GetAuthCredentialsWithResponse/認証情報取得_リフレッシュトークン (0.08s)
+    --- PASS: TestE2E_GetAuthCredentialsWithResponse/EdgeCase_無効な一時コード (0.03s)
+    --- PASS: TestE2E_GetAuthCredentialsWithResponse/EdgeCase_無効なリフレッシュトークン (0.08s)
+=== RUN   TestE2E_CreateAuthCredentialsWithResponse
+    client_e2e_test.go:2594: ステータスコード: 401
+    client_e2e_test.go:2607: 予期しないステータスコード: 401
+--- FAIL: TestE2E_CreateAuthCredentialsWithResponse (0.07s)
+=== RUN   TestE2E_UpdateEnvWithResponse
+    client_e2e_test.go:2629: テスト対象の環境ID: 3
+    client_e2e_test.go:2646: ステータスコード: 200
+    client_e2e_test.go:2650: 環境の更新が成功しました
+--- PASS: TestE2E_UpdateEnvWithResponse (0.08s)
+=== RUN   TestE2E_LinkAwsMarketplaceWithResponse
+    client_e2e_test.go:2685: ステータスコード: 400
+    client_e2e_test.go:2691: バリデーションエラーが発生しました（無効なトークンの可能性）
+--- PASS: TestE2E_LinkAwsMarketplaceWithResponse (0.04s)
+=== RUN   TestE2E_SignUpWithAwsMarketplaceWithResponse
+    client_e2e_test.go:2726: ステータスコード: 400
+    client_e2e_test.go:2732: バリデーションエラーが発生しました
+--- PASS: TestE2E_SignUpWithAwsMarketplaceWithResponse (0.04s)
+=== RUN   TestE2E_ConfirmSignUpWithAwsMarketplaceWithResponse
+    client_e2e_test.go:2764: ステータスコード: 400
+    client_e2e_test.go:2770: バリデーションエラーが発生しました（無効な確認コードの可能性）
+--- PASS: TestE2E_ConfirmSignUpWithAwsMarketplaceWithResponse (0.06s)
+=== RUN   TestE2E_RequestExternalUserLinkWithResponse
+    client_e2e_test.go:2800: ステータスコード: 401
+    client_e2e_test.go:2813: 予期しないステータスコード: 401
+--- FAIL: TestE2E_RequestExternalUserLinkWithResponse (0.06s)
+=== RUN   TestE2E_ConfirmExternalUserLinkWithResponse
+    client_e2e_test.go:2836: ステータスコード: 401
+    client_e2e_test.go:2849: 予期しないステータスコード: 401
+--- FAIL: TestE2E_ConfirmExternalUserLinkWithResponse (0.05s)
+=== RUN   TestE2E_UpdateIdentityProviderWithResponse
+    client_e2e_test.go:2874: ステータスコード: 500
+    client_e2e_test.go:2881: サーバーエラー: Type=internal, Message=
+    client_e2e_test.go:2883: サーバーエラーが発生しました
+--- FAIL: TestE2E_UpdateIdentityProviderWithResponse (0.23s)
+=== RUN   TestE2E_GetAllTenantUsersWithResponse
+    client_e2e_test.go:2904: ステータスコード: 200
+    client_e2e_test.go:2912: 全テナントユーザー数: 7
+    client_e2e_test.go:2918: ユーザー 1: ID=a7c3349d-0de8-44f7-beb0-8b8ccebee19c, Email=tsukamoto+multi-product2@anti-pattern.co.jp
+    client_e2e_test.go:2918: ユーザー 2: ID=f2dd075c-5d38-4156-8ab6-ebfb9647c2b8, Email=tsukamoto+multi-product@anti-pattern.co.jp
+    client_e2e_test.go:2918: ユーザー 3: ID=f2dd075c-5d38-4156-8ab6-ebfb9647c2b8, Email=tsukamoto+multi-product@anti-pattern.co.jp
+--- PASS: TestE2E_GetAllTenantUsersWithResponse (0.10s)
+=== RUN   TestE2E_GetAllTenantUserWithResponse
+    client_e2e_test.go:2947: テスト対象のユーザーID: a7c3349d-0de8-44f7-beb0-8b8ccebee19c
+    client_e2e_test.go:2959: ステータスコード: 404
+    client_e2e_test.go:2979: ユーザーが見つかりませんでした
+--- PASS: TestE2E_GetAllTenantUserWithResponse (0.24s)
+=== RUN   TestE2E_UpdateTenantWithResponse
+    client_e2e_test.go:3008: テスト対象のテナントID: 6dbb27d0-95ed-4740-8459-d7d24c353269
+    client_e2e_test.go:3025: ステータスコード: 400
+    client_e2e_test.go:3038: 予期しないステータスコード: 400
+--- FAIL: TestE2E_UpdateTenantWithResponse (0.11s)
+=== RUN   TestE2E_GetTenantUserWithResponse
+    client_e2e_test.go:3070: テスト対象のテナントID: 6dbb27d0-95ed-4740-8459-d7d24c353269, ユーザーID: f2dd075c-5d38-4156-8ab6-ebfb9647c2b8
+    client_e2e_test.go:3082: ステータスコード: 200
+    client_e2e_test.go:3090: テナントユーザー詳細: ID=f2dd075c-5d38-4156-8ab6-ebfb9647c2b8, Email=tsukamoto+multi-product@anti-pattern.co.jp
+--- PASS: TestE2E_GetTenantUserWithResponse (0.13s)
+=== RUN   TestE2E_UpdateTenantUserWithResponse
+    client_e2e_test.go:3132: テスト対象のテナントID: 6dbb27d0-95ed-4740-8459-d7d24c353269, ユーザーID: f2dd075c-5d38-4156-8ab6-ebfb9647c2b8
+    client_e2e_test.go:3148: ステータスコード: 400
+    client_e2e_test.go:3161: 予期しないステータスコード: 400
+--- FAIL: TestE2E_UpdateTenantUserWithResponse (0.15s)
+=== RUN   TestE2E_DeleteTenantUserWithResponse
+    client_e2e_test.go:3194: テスト用テナントユーザーの作成に失敗したため、削除テストをスキップします
+--- SKIP: TestE2E_DeleteTenantUserWithResponse (0.08s)
+=== RUN   TestE2E_ValidateInvitationWithResponse
+    client_e2e_test.go:3252: ステータスコード: 404
+    client_e2e_test.go:3260: 招待が見つかりませんでした
+--- PASS: TestE2E_ValidateInvitationWithResponse (0.09s)
+=== RUN   TestE2E_GetInvitationValidityWithResponse
+    client_e2e_test.go:3289: ステータスコード: 404
+    client_e2e_test.go:3299: 招待が見つかりませんでした
+--- PASS: TestE2E_GetInvitationValidityWithResponse (0.06s)
+=== RUN   TestE2E_UpdateTenantBillingInfoWithResponse
+    client_e2e_test.go:3349: ステータスコード: 200
+    client_e2e_test.go:3353: テナント請求情報の更新が成功しました
+--- PASS: TestE2E_UpdateTenantBillingInfoWithResponse (0.12s)
+=== RUN   TestE2E_GetTenantIdentityProvidersWithResponse
+    client_e2e_test.go:3395: ステータスコード: 200
+    client_e2e_test.go:3403: テナントIDプロバイダー情報を取得しました
+--- PASS: TestE2E_GetTenantIdentityProvidersWithResponse (0.18s)
+=== RUN   TestE2E_UpdateTenantIdentityProviderWithResponse
+    client_e2e_test.go:3449: ステータスコード: 400
+    client_e2e_test.go:3460: 予期しないステータスコード: 400
+--- FAIL: TestE2E_UpdateTenantIdentityProviderWithResponse (0.10s)
+=== RUN   TestE2E_GetTenantInvitationsWithResponse
+    client_e2e_test.go:3491: ステータスコード: 200
+    client_e2e_test.go:3499: テナント招待数: 0
+--- PASS: TestE2E_GetTenantInvitationsWithResponse (0.10s)
+=== RUN   TestE2E_CreateTenantInvitationWithResponse
+    client_e2e_test.go:3568: ステータスコード: 400
+    client_e2e_test.go:3578: バリデーションエラーが発生しました
+--- PASS: TestE2E_CreateTenantInvitationWithResponse (0.10s)
+=== RUN   TestE2E_GetTenantInvitationWithResponse
+    client_e2e_test.go:3613: 利用可能なテナント招待がないため、個別招待取得テストをスキップします
+--- SKIP: TestE2E_GetTenantInvitationWithResponse (0.08s)
+=== RUN   TestE2E_DeleteTenantInvitationWithResponse
+    client_e2e_test.go:3680: ステータスコード: 404
+    client_e2e_test.go:3686: テナント招待が見つかりませんでした
+--- PASS: TestE2E_DeleteTenantInvitationWithResponse (0.09s)
+=== RUN   TestE2E_UpdateTenantPlanWithResponse
+    client_e2e_test.go:3732: ステータスコード: 400
+    client_e2e_test.go:3738: バリデーションエラーが発生しました
+--- PASS: TestE2E_UpdateTenantPlanWithResponse (0.13s)
+=== RUN   TestE2E_GetStripeCustomerWithResponse
+    client_e2e_test.go:3778: ステータスコード: 200
+    client_e2e_test.go:3786: Stripe顧客情報: CustomerID=
+--- PASS: TestE2E_GetStripeCustomerWithResponse (0.09s)
+=== RUN   TestE2E_CreateTenantUserRolesWithResponse
+    client_e2e_test.go:3848: ステータスコード: 404
+    client_e2e_test.go:3859: 予期しないステータスコード: 404
+--- FAIL: TestE2E_CreateTenantUserRolesWithResponse (0.19s)
+=== RUN   TestE2E_DeleteTenantUserRoleWithResponse
+    client_e2e_test.go:3911: ステータスコード: 400
+    client_e2e_test.go:3924: 予期しないステータスコード: 400
+--- FAIL: TestE2E_DeleteTenantUserRoleWithResponse (0.17s)
+=== RUN   TestE2E_GetUserInfoWithResponse
+=== RUN   TestE2E_GetUserInfoWithResponse/有効なIDトークン
+    client_e2e_test.go:3952: ステータスコード: 401
+    client_e2e_test.go:3962: 認証エラーが発生しました（期待される動作）
+=== RUN   TestE2E_GetUserInfoWithResponse/EdgeCase_無効なIDトークン
+    client_e2e_test.go:3993: 期待通りエラーレスポンス: 401
+=== RUN   TestE2E_GetUserInfoWithResponse/EdgeCase_空のIDトークン
+    client_e2e_test.go:3993: 期待通りエラーレスポンス: 401
+=== RUN   TestE2E_GetUserInfoWithResponse/EdgeCase_期限切れトークン
+    client_e2e_test.go:3993: 期待通りエラーレスポンス: 401
+--- PASS: TestE2E_GetUserInfoWithResponse (0.19s)
+    --- PASS: TestE2E_GetUserInfoWithResponse/有効なIDトークン (0.04s)
+    --- PASS: TestE2E_GetUserInfoWithResponse/EdgeCase_無効なIDトークン (0.05s)
+    --- PASS: TestE2E_GetUserInfoWithResponse/EdgeCase_空のIDトークン (0.05s)
+    --- PASS: TestE2E_GetUserInfoWithResponse/EdgeCase_期限切れトークン (0.05s)
+=== RUN   TestE2E_UpdateSaasUserAttributesWithResponse
+    client_e2e_test.go:4033: ステータスコード: 400
+    client_e2e_test.go:4044: 予期しないステータスコード: 400
+--- FAIL: TestE2E_UpdateSaasUserAttributesWithResponse (0.49s)
+=== RUN   TestE2E_UpdateSaasUserEmailWithResponse
+    client_e2e_test.go:4083: ステータスコード: 400
+    client_e2e_test.go:4094: 予期しないステータスコード: 400
+--- FAIL: TestE2E_UpdateSaasUserEmailWithResponse (0.30s)
+=== RUN   TestE2E_ConfirmEmailUpdateWithResponse
+    client_e2e_test.go:4130: ステータスコード: 401
+    client_e2e_test.go:4141: 予期しないステータスコード: 401
+--- FAIL: TestE2E_ConfirmEmailUpdateWithResponse (0.28s)
+=== RUN   TestE2E_RequestEmailUpdateWithResponse
+    client_e2e_test.go:4181: ステータスコード: 400
+    client_e2e_test.go:4192: 予期しないステータスコード: 400
+--- FAIL: TestE2E_RequestEmailUpdateWithResponse (0.32s)
+=== RUN   TestE2E_GetUserMfaPreferenceWithResponse
+    client_e2e_test.go:4223: ステータスコード: 200
+    client_e2e_test.go:4231: ユーザーMFA設定: Enabled=false
+--- PASS: TestE2E_GetUserMfaPreferenceWithResponse (0.43s)
+=== RUN   TestE2E_UpdateUserMfaPreferenceWithResponse
+    client_e2e_test.go:4278: ステータスコード: 400
+    client_e2e_test.go:4289: 予期しないステータスコード: 400
+--- FAIL: TestE2E_UpdateUserMfaPreferenceWithResponse (0.53s)
+=== RUN   TestE2E_UpdateSoftwareTokenWithResponse
+    client_e2e_test.go:4325: ステータスコード: 401
+    client_e2e_test.go:4336: 予期しないステータスコード: 401
+--- FAIL: TestE2E_UpdateSoftwareTokenWithResponse (0.36s)
+=== RUN   TestE2E_CreateSecretCodeWithResponse
+    client_e2e_test.go:4371: ステータスコード: 401
+    client_e2e_test.go:4386: 予期しないステータスコード: 401
+--- FAIL: TestE2E_CreateSecretCodeWithResponse (0.41s)
+=== RUN   TestE2E_UpdateSaasUserPasswordWithResponse
+    client_e2e_test.go:4421: ステータスコード: 200
+    client_e2e_test.go:4425: SaaSユーザーパスワードの更新が成功しました
+--- PASS: TestE2E_UpdateSaasUserPasswordWithResponse (0.87s)
+=== RUN   TestE2E_UnlinkProviderWithResponse
+    client_e2e_test.go:4464: ステータスコード: 404
+    client_e2e_test.go:4475: 予期しないステータスコード: 404
+--- FAIL: TestE2E_UnlinkProviderWithResponse (0.45s)
+=== RUN   TestE2E_CreateSaasUserAttributeWithResponse
+    client_e2e_test.go:4504: ステータスコード: 201
+    client_e2e_test.go:4512: 作成されたSaaSユーザー属性: Name=test_saas_user_attr_�, DisplayName=Test SaaS User Attribute, Type=string
+--- PASS: TestE2E_CreateSaasUserAttributeWithResponse (0.05s)
