@@ -96,7 +96,7 @@ func testFullSaaSSetupFlow(t *testing.T, client *common.ClientWrapper, testData 
 	t.Run("2. 環境作成", func(t *testing.T) {
 		// テスト用環境を作成
 		createParam := authapi.CreateEnvParam{
-			Id:          "integration-test-env",
+			Id:          authapi.Id(123), // uint64型のIDを使用
 			Name:        "統合テスト環境",
 			DisplayName: common.StringPtr("統合テスト用環境"),
 		}
@@ -113,7 +113,7 @@ func testFullSaaSSetupFlow(t *testing.T, client *common.ClientWrapper, testData 
 		assert.AssertStatusCode(201, resp.StatusCode(), "環境作成")
 
 		if resp.JSON201 != nil {
-			testEnvID = resp.JSON201.Id
+			testEnvID = fmt.Sprintf("%d", resp.JSON201.Id)
 			client.CreateTestResource(
 				common.ResourceTypeEnv,
 				testEnvID,
@@ -161,7 +161,7 @@ func testFullSaaSSetupFlow(t *testing.T, client *common.ClientWrapper, testData 
 		createParam := authapi.CreateTenantParam{
 			Name:                 "統合テスト用テナント",
 			BackOfficeStaffEmail: "admin@integration-test.example.com",
-			Attributes:           &map[string]interface{}{},
+			Attributes:           map[string]interface{}{},
 		}
 
 		startTime := time.Now()
@@ -195,8 +195,7 @@ func testFullSaaSSetupFlow(t *testing.T, client *common.ClientWrapper, testData 
 	t.Run("5. ユーザー作成", func(t *testing.T) {
 		// テスト用ユーザーを作成
 		createParam := authapi.CreateSaasUserParam{
-			Email:      "integration-test-user@example.com",
-			Attributes: &map[string]interface{}{},
+			Email: "integration-test-user@example.com",
 		}
 
 		startTime := time.Now()
@@ -231,9 +230,8 @@ func testFullSaaSSetupFlow(t *testing.T, client *common.ClientWrapper, testData 
 
 		// ユーザーをテナントに追加
 		createParam := authapi.CreateTenantUserParam{
-			UserId: testUserID,
-			Roles:  &[]string{},
-			Envs:   &[]string{testEnvID},
+			Email:      "integration-test-user@example.com",
+			Attributes: map[string]interface{}{},
 		}
 
 		startTime := time.Now()
@@ -267,8 +265,11 @@ func testFullSaaSSetupFlow(t *testing.T, client *common.ClientWrapper, testData 
 		}
 
 		// ユーザーにロールを割り当て
+		roleParam := authapi.CreateTenantUserRolesParam{
+			RoleNames: []string{testRoleName},
+		}
 		startTime := time.Now()
-		resp, err := client.Client.AttachRoleWithResponse(ctx, testTenantID, testUserID, testEnvID, testRoleName)
+		resp, err := client.Client.CreateTenantUserRolesWithResponse(ctx, testTenantID, testUserID, authapi.EnvId(123), roleParam)
 		duration := time.Since(startTime)
 
 		if err != nil {
@@ -288,9 +289,17 @@ func testFullSaaSSetupFlow(t *testing.T, client *common.ClientWrapper, testData 
 
 		// 新規ユーザーを招待
 		createParam := authapi.CreateTenantInvitationParam{
-			Email: "invited-user@integration-test.example.com",
-			Roles: &[]string{testRoleName},
-			Envs:  &[]string{testEnvID},
+			AccessToken: "test-access-token", // 実際のテストでは有効なアクセストークンを使用
+			Email:       "invited-user@integration-test.example.com",
+			Envs: []struct {
+				Id        authapi.Id `json:"id"`
+				RoleNames []string   `json:"role_names"`
+			}{
+				{
+					Id:        authapi.Id(123), // testEnvIDをuint64に変換
+					RoleNames: []string{testRoleName},
+				},
+			},
 		}
 
 		startTime := time.Now()
@@ -334,7 +343,7 @@ func testEndToEndScenarios(t *testing.T, client *common.ClientWrapper, testData 
 		tenantAParam := authapi.CreateTenantParam{
 			Name:                 "テナントA",
 			BackOfficeStaffEmail: "admin-a@example.com",
-			Attributes:           &map[string]interface{}{},
+			Attributes:           map[string]interface{}{},
 		}
 
 		tenantAResp, err := client.Client.CreateTenantWithResponse(ctx, tenantAParam)
@@ -347,7 +356,7 @@ func testEndToEndScenarios(t *testing.T, client *common.ClientWrapper, testData 
 		tenantBParam := authapi.CreateTenantParam{
 			Name:                 "テナントB",
 			BackOfficeStaffEmail: "admin-b@example.com",
-			Attributes:           &map[string]interface{}{},
+			Attributes:           map[string]interface{}{},
 		}
 
 		tenantBResp, err := client.Client.CreateTenantWithResponse(ctx, tenantBParam)
@@ -362,8 +371,7 @@ func testEndToEndScenarios(t *testing.T, client *common.ClientWrapper, testData 
 
 		// テナントAにユーザー1を作成
 		userAParam := authapi.CreateSaasUserParam{
-			Email:      "user-a@example.com",
-			Attributes: &map[string]interface{}{},
+			Email: "user-a@example.com",
 		}
 
 		userAResp, err := client.Client.CreateSaasUserWithResponse(ctx, userAParam)
@@ -374,8 +382,7 @@ func testEndToEndScenarios(t *testing.T, client *common.ClientWrapper, testData 
 
 		// テナントBにユーザー2を作成
 		userBParam := authapi.CreateSaasUserParam{
-			Email:      "user-b@example.com",
-			Attributes: &map[string]interface{}{},
+			Email: "user-b@example.com",
 		}
 
 		userBResp, err := client.Client.CreateSaasUserWithResponse(ctx, userBParam)
@@ -390,9 +397,8 @@ func testEndToEndScenarios(t *testing.T, client *common.ClientWrapper, testData 
 
 		// ユーザーAをテナントAに追加
 		tenantUserAParam := authapi.CreateTenantUserParam{
-			UserId: userAID,
-			Roles:  &[]string{},
-			Envs:   &[]string{},
+			Email:      "user-a@example.com",
+			Attributes: map[string]interface{}{},
 		}
 
 		_, err = client.Client.CreateTenantUserWithResponse(ctx, tenantAID, tenantUserAParam)
@@ -402,9 +408,8 @@ func testEndToEndScenarios(t *testing.T, client *common.ClientWrapper, testData 
 
 		// ユーザーBをテナントBに追加
 		tenantUserBParam := authapi.CreateTenantUserParam{
-			UserId: userBID,
-			Roles:  &[]string{},
-			Envs:   &[]string{},
+			Email:      "user-b@example.com",
+			Attributes: map[string]interface{}{},
 		}
 
 		_, err = client.Client.CreateTenantUserWithResponse(ctx, tenantBID, tenantUserBParam)
@@ -482,8 +487,7 @@ func testPerformanceScenarios(t *testing.T, client *common.ClientWrapper, testDa
 				defer wg.Done()
 
 				createParam := authapi.CreateSaasUserParam{
-					Email:      fmt.Sprintf("load-test-user-%d@example.com", index),
-					Attributes: &map[string]interface{}{},
+					Email: fmt.Sprintf("load-test-user-%d@example.com", index),
 				}
 
 				resp, err := client.Client.CreateSaasUserWithResponse(ctx, createParam)
@@ -577,8 +581,7 @@ func testFailureRecoveryScenarios(t *testing.T, client *common.ClientWrapper, te
 	t.Run("データ整合性確認", func(t *testing.T) {
 		// ユーザーを作成
 		createParam := authapi.CreateSaasUserParam{
-			Email:      "consistency-test@example.com",
-			Attributes: &map[string]interface{}{},
+			Email: "consistency-test@example.com",
 		}
 
 		createResp, err := client.Client.CreateSaasUserWithResponse(ctx, createParam)
@@ -610,7 +613,7 @@ func testFailureRecoveryScenarios(t *testing.T, client *common.ClientWrapper, te
 		tenantParam := authapi.CreateTenantParam{
 			Name:                 "トランザクションテスト用テナント",
 			BackOfficeStaffEmail: "transaction-test@example.com",
-			Attributes:           &map[string]interface{}{},
+			Attributes:           map[string]interface{}{},
 		}
 
 		tenantResp, err := client.Client.CreateTenantWithResponse(ctx, tenantParam)
@@ -623,8 +626,7 @@ func testFailureRecoveryScenarios(t *testing.T, client *common.ClientWrapper, te
 
 		// ユーザーを作成
 		userParam := authapi.CreateSaasUserParam{
-			Email:      "transaction-user@example.com",
-			Attributes: &map[string]interface{}{},
+			Email: "transaction-user@example.com",
 		}
 
 		userResp, err := client.Client.CreateSaasUserWithResponse(ctx, userParam)
@@ -637,9 +639,8 @@ func testFailureRecoveryScenarios(t *testing.T, client *common.ClientWrapper, te
 
 		// ユーザーをテナントに追加
 		tenantUserParam := authapi.CreateTenantUserParam{
-			UserId: userID,
-			Roles:  &[]string{},
-			Envs:   &[]string{},
+			Email:      "transaction-user@example.com",
+			Attributes: map[string]interface{}{},
 		}
 
 		tenantUserResp, err := client.Client.CreateTenantUserWithResponse(ctx, tenantID, tenantUserParam)

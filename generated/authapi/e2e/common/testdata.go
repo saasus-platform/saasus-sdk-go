@@ -15,8 +15,14 @@ type TestDataLoader struct {
 
 // NewTestDataLoader は新しいテストデータローダーを作成します
 func NewTestDataLoader() *TestDataLoader {
-	// 現在のディレクトリからtestdataディレクトリのパスを構築
-	basePath := filepath.Join("testdata")
+	// 実行時の作業ディレクトリからの相対パスで testdata ディレクトリを探す
+	basePath := "testdata"
+	
+	// stories ディレクトリから実行された場合、一つ上のディレクトリの testdata を参照
+	if _, err := os.Stat(basePath); os.IsNotExist(err) {
+		basePath = filepath.Join("..", "testdata")
+	}
+	
 	return &TestDataLoader{
 		basePath: basePath,
 	}

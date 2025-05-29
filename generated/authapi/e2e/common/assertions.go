@@ -250,7 +250,7 @@ func (ah *AssertionHelper) AssertEnvsResponse(resp *authapi.GetEnvsResponse) boo
 	success := true
 
 	for i, env := range envs {
-		success = ah.AssertNotEmpty(string(env.Id), fmt.Sprintf("環境[%d].ID", i)) && success
+		success = ah.AssertNotEmpty(fmt.Sprintf("%d", env.Id), fmt.Sprintf("環境[%d].ID", i)) && success
 		success = ah.AssertNotEmpty(env.Name, fmt.Sprintf("環境[%d].Name", i)) && success
 	}
 

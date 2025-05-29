@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/saasus-platform/saasus-sdk-go/generated/authapi"
 	"github.com/saasus-platform/saasus-sdk-go/generated/authapi/e2e/common"
 )
 
@@ -237,8 +238,9 @@ func testAuthenticationErrors(t *testing.T, client *common.ClientWrapper, testDa
 		
 		// 基本情報の更新を試行（管理者権限が必要と仮定）
 		startTime := time.Now()
-		resp, err := client.Client.UpdateBasicInfoWithResponse(ctx, map[string]interface{}{
-			"domain_name": "unauthorized-test.example.com",
+		resp, err := client.Client.UpdateBasicInfoWithResponse(ctx, authapi.UpdateBasicInfoJSONRequestBody{
+			DomainName: "unauthorized-test.example.com",
+			FromEmailAddress: "test@example.com",
 		})
 		duration := time.Since(startTime)
 
@@ -268,8 +270,8 @@ func testValidationErrors(t *testing.T, client *common.ClientWrapper, testData *
 		invalidEmail := "invalid-email-format"
 		
 		startTime := time.Now()
-		resp, err := client.Client.CreateSaasUserWithResponse(ctx, map[string]interface{}{
-			"email": invalidEmail,
+		resp, err := client.Client.CreateSaasUserWithResponse(ctx, authapi.CreateSaasUserJSONRequestBody{
+			Email: invalidEmail,
 		})
 		duration := time.Since(startTime)
 
@@ -291,8 +293,8 @@ func testValidationErrors(t *testing.T, client *common.ClientWrapper, testData *
 	t.Run("必須パラメータ不足エラー", func(t *testing.T) {
 		// 必須パラメータなしでテナント作成を試行
 		startTime := time.Now()
-		resp, err := client.Client.CreateTenantWithResponse(ctx, map[string]interface{}{
-			// nameとback_office_staff_emailが必須だが、空のパラメータで送信
+		resp, err := client.Client.CreateTenantWithResponse(ctx, authapi.CreateTenantJSONRequestBody{
+			Name: "", // 空の名前でバリデーションエラーを発生させる
 		})
 		duration := time.Since(startTime)
 
@@ -319,9 +321,9 @@ func testValidationErrors(t *testing.T, client *common.ClientWrapper, testData *
 		}
 
 		startTime := time.Now()
-		resp, err := client.Client.CreateRoleWithResponse(ctx, map[string]interface{}{
-			"role_name":    longRoleName,
-			"display_name": "テスト用長い名前ロール",
+		resp, err := client.Client.CreateRoleWithResponse(ctx, authapi.CreateRoleJSONRequestBody{
+			RoleName:    longRoleName,
+			DisplayName: "テスト用長い名前ロール",
 		})
 		duration := time.Since(startTime)
 
@@ -408,9 +410,9 @@ func testResourceNotFoundErrors(t *testing.T, client *common.ClientWrapper, test
 
 	t.Run("存在しない招待エラー", func(t *testing.T) {
 		// テスト用テナントを作成
-		testTenantResp, err := client.Client.CreateTenantWithResponse(ctx, map[string]interface{}{
-			"name":                     "エラーテスト用テナント",
-			"back_office_staff_email": "error-test@example.com",
+		testTenantResp, err := client.Client.CreateTenantWithResponse(ctx, authapi.CreateTenantJSONRequestBody{
+			Name:                   "エラーテスト用テナント",
+			BackOfficeStaffEmail: "error-test@example.com",
 		})
 		if err != nil || testTenantResp.JSON201 == nil {
 			t.Skip("テスト用テナントの作成に失敗")

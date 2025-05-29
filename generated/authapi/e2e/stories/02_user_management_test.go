@@ -156,7 +156,7 @@ func testSaasUserManagement(t *testing.T, client *common.ClientWrapper, testData
 
 	t.Run("SaaSユーザー一覧取得", func(t *testing.T) {
 		startTime := time.Now()
-		resp, err := client.Client.GetUsersWithResponse(ctx)
+		resp, err := client.Client.GetSaasUsersWithResponse(ctx)
 		duration := time.Since(startTime)
 
 		if err != nil {
@@ -173,13 +173,12 @@ func testSaasUserManagement(t *testing.T, client *common.ClientWrapper, testData
 	})
 
 	t.Run("SaaSユーザー作成", func(t *testing.T) {
-		for i, param := range testData.SaasUsers.Create.Params {
+		for _, param := range testData.SaasUsers.Create.Params {
 			t.Run(param.Email, func(t *testing.T) {
 				// 作成パラメータを準備
 				createParam := authapi.CreateSaasUserParam{
 					Email:      param.Email,
-					Attributes: &param.Attributes,
-				}
+					}
 
 				// SaaSユーザーを作成
 				startTime := time.Now()
@@ -315,9 +314,6 @@ func testUserInfoManagement(t *testing.T, client *common.ClientWrapper, testData
 	// テスト用ユーザーを作成
 	createParam := authapi.CreateSaasUserParam{
 		Email: "test-user-info@example.com",
-		Attributes: &map[string]interface{}{
-			"test": "value",
-		},
 	}
 
 	createResp, err := client.Client.CreateSaasUserWithResponse(ctx, createParam)

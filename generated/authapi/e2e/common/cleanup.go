@@ -422,11 +422,12 @@ func (cm *CleanupManager) forceCleanupTestEnvs(ctx context.Context) error {
 
 	for _, env := range resp.JSON200.Envs {
 		for _, pattern := range testEnvPatterns {
-			if len(string(env.Id)) > len(pattern) && string(env.Id)[:len(pattern)] == pattern {
-				if err := cm.cleanupEnv(ctx, string(env.Id)); err != nil {
-					log.Printf("テスト環境 %s の削除に失敗: %v", env.Id, err)
+			envIdStr := fmt.Sprintf("%d", env.Id)
+			if len(envIdStr) > len(pattern) && envIdStr[:len(pattern)] == pattern {
+				if err := cm.cleanupEnv(ctx, envIdStr); err != nil {
+					log.Printf("テスト環境 %d の削除に失敗: %v", env.Id, err)
 				} else if cm.verbose {
-					log.Printf("テスト環境 %s を削除しました", env.Id)
+					log.Printf("テスト環境 %d を削除しました", env.Id)
 				}
 				break
 			}

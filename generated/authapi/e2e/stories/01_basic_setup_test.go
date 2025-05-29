@@ -2,6 +2,7 @@ package stories
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"testing"
 	"time"
@@ -315,7 +316,7 @@ func testEnvManagement(t *testing.T, client *common.ClientWrapper, testData *com
 
 		if resp.JSON200 != nil {
 			// 環境情報をチェック
-			assert.AssertEquals(createdEnvID, string(resp.JSON200.Id), "環境ID")
+			assert.AssertEquals(createdEnvID, fmt.Sprintf("%d", resp.JSON200.Id), "環境ID")
 			assert.AssertEquals(testData.Envs.Create.Params.Name, resp.JSON200.Name, "環境名")
 		}
 
@@ -353,7 +354,7 @@ func testEnvManagement(t *testing.T, client *common.ClientWrapper, testData *com
 		assert.AssertStatusCode(200, updateResp.StatusCode(), "環境更新")
 
 		// 更新後の情報を確認
-		envIDUint, err := strconv.ParseUint(createdEnvID, 10, 64)
+		envIDUint, err = strconv.ParseUint(createdEnvID, 10, 64)
 		if err != nil {
 			t.Fatalf("環境ID変換エラー: %v", err)
 		}
@@ -398,7 +399,7 @@ func testEnvManagement(t *testing.T, client *common.ClientWrapper, testData *com
 		client.MarkResourceCleaned(createdEnvID, nil)
 
 		// 削除確認
-		envIDUint, err := strconv.ParseUint(createdEnvID, 10, 64)
+		envIDUint, err = strconv.ParseUint(createdEnvID, 10, 64)
 		if err != nil {
 			t.Fatalf("環境ID変換エラー: %v", err)
 		}

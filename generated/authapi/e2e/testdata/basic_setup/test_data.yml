@@ -121,7 +121,7 @@ envs:
           error:
             type: "validation_error"
     params:
-      id: "e2e-test-env"
+      id: "123"
       name: "E2E Test Environment"
       display_name: "E2Eテスト環境"
 
@@ -285,14 +285,14 @@ notification_messages:
 
 # テスト用リソースID
 test_env_ids:
-  - "e2e-test-env"
-  - "e2e-test-env-2"
-  - "temp-test-env"
+  - "123"
+  - "124"
+  - "125"
 
 invalid_env_ids:
-  - "non-existent-env"
-  - "invalid-env-id"
-  - ""
+  - "999999"
+  - "888888"
+  - "0"
 
 # セットアップ設定
 setup:

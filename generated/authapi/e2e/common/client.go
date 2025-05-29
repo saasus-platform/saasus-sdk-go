@@ -306,3 +306,39 @@ func ResetClient() {
 	defer clientMutex.Unlock()
 	globalClient = nil
 }
+
+// NewClientWithCustomAuth はカスタム認証トークンでクライアントを作成します（テスト用）
+func NewClientWithCustomAuth(customAuth string) (*ClientWrapper, error) {
+	// カスタム認証を設定するリクエストエディター
+	authEditor := func(ctx context.Context, req *http.Request) error {
+		req.Header.Set("Authorization", "Bearer "+customAuth)
+		client.SetReferer(ctx, req)
+		return nil
+	}
+
+	// カスタム認証付きクライアントを作成
+	clientWithAuth, err := authapi.NewClientWithResponses(
+		SaaSusAPIEndpoint,
+		authapi.WithRequestEditorFn(authEditor),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("カスタム認証付きクライアントの作成に失敗: %w", err)
+	}
+
+	// 設定を作成
+	config := &TestConfig{
+		APIEndpoint: SaaSusAPIEndpoint,
+		Timeout:     DefaultTimeout,
+		RetryCount:  DefaultRetryCount,
+		Verbose:     false,
+	}
+
+	// クライアントラッパーを作成
+	wrapper := &ClientWrapper{
+		Client:    clientWithAuth,
+		Config:    config,
+		Resources: make([]*TestResource, 0),
+	}
+
+	return wrapper, nil
+}
