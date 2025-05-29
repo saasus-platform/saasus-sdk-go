@@ -1,0 +1,190 @@
+# エラーハンドリングストーリーのテストデータ
+
+error_endpoints:
+  internal_server_error:
+    test_cases:
+      - name: "500エラーエンドポイントテスト"
+        description: "意図的に500エラーを発生させるテスト"
+        method: "GET"
+        endpoint: "/test/error/500"
+        expected:
+          status_code: 500
+          error:
+            type: "internal_server_error"
+            message: "内部サーバーエラーが発生しました"
+      - name: "500エラーレスポンス形式確認"
+        description: "500エラーのレスポンス形式が統一されていることを確認"
+        method: "GET"
+        endpoint: "/test/error/500"
+        expected:
+          status_code: 500
+
+  bad_request:
+    test_cases:
+      - name: "400エラーエンドポイントテスト"
+        description: "意図的に400エラーを発生させるテスト"
+        method: "POST"
+        endpoint: "/test/error/400"
+        expected:
+          status_code: 400
+          error:
+            type: "bad_request"
+            message: "リクエストが不正です"
+      - name: "無効なJSONフォーマットエラー"
+        description: "不正なJSON形式でのリクエストエラー"
+        method: "POST"
+        endpoint: "/users"
+        expected:
+          status_code: 400
+
+  unauthorized:
+    test_cases:
+      - name: "401エラーエンドポイントテスト"
+        description: "意図的に401エラーを発生させるテスト"
+        method: "GET"
+        endpoint: "/test/error/401"
+        expected:
+          status_code: 401
+          error:
+            type: "unauthorized"
+            message: "認証が必要です"
+      - name: "無効な認証トークンエラー"
+        description: "無効な認証トークンでのアクセスエラー"
+        method: "GET"
+        endpoint: "/users"
+        expected:
+          status_code: 401
+
+  forbidden:
+    test_cases:
+      - name: "403エラーエンドポイントテスト"
+        description: "意図的に403エラーを発生させるテスト"
+        method: "GET"
+        endpoint: "/test/error/403"
+        expected:
+          status_code: 403
+          error:
+            type: "forbidden"
+            message: "アクセスが禁止されています"
+      - name: "権限不足エラー"
+        description: "権限が不足している場合のエラー"
+        method: "DELETE"
+        endpoint: "/users/admin-user"
+        expected:
+          status_code: 403
+
+  not_found:
+    test_cases:
+      - name: "404エラーエンドポイントテスト"
+        description: "意図的に404エラーを発生させるテスト"
+        method: "GET"
+        endpoint: "/test/error/404"
+        expected:
+          status_code: 404
+          error:
+            type: "not_found"
+            message: "リソースが見つかりません"
+      - name: "存在しないリソースエラー"
+        description: "存在しないリソースへのアクセスエラー"
+        method: "GET"
+        endpoint: "/users/non-existent-user-id"
+        expected:
+          status_code: 404
+
+error_response_validation:
+  response_format:
+    test_cases:
+      - name: "エラーレスポンス形式統一性確認"
+        description: "全てのエラーレスポンスが統一された形式であることを確認"
+        method: "GET"
+        endpoint: "/test/error/500"
+        expected:
+          status_code: 500
+      - name: "エラーメッセージ必須フィールド確認"
+        description: "エラーレスポンスに必須フィールドが含まれることを確認"
+        method: "GET"
+        endpoint: "/test/error/400"
+        expected:
+          status_code: 400
+
+  error_messages:
+    test_cases:
+      - name: "日本語エラーメッセージ確認"
+        description: "エラーメッセージが適切な日本語で表示されることを確認"
+        method: "GET"
+        endpoint: "/test/error/500"
+        expected:
+          status_code: 500
+      - name: "エラーコード一意性確認"
+        description: "各エラーに一意のエラーコードが設定されていることを確認"
+        method: "GET"
+        endpoint: "/test/error/400"
+        expected:
+          status_code: 400
+
+network_errors:
+  timeout:
+    test_cases:
+      - name: "タイムアウトエラーテスト"
+        description: "リクエストタイムアウトのテスト"
+        method: "GET"
+        endpoint: "/test/timeout"
+        expected:
+          status_code: 408
+        timeout: 1s
+      - name: "長時間処理タイムアウト"
+        description: "長時間処理でのタイムアウトテスト"
+        method: "POST"
+        endpoint: "/test/long-process"
+        expected:
+          status_code: 408
+
+  connection_error:
+    test_cases:
+      - name: "接続エラーテスト"
+        description: "接続エラーのハンドリングテスト"
+        method: "GET"
+        endpoint: "/test/connection-error"
+        expected:
+          status_code: 503
+      - name: "サービス利用不可エラー"
+        description: "サービスが利用できない場合のエラー"
+        method: "GET"
+        endpoint: "/test/service-unavailable"
+        expected:
+          status_code: 503
+
+expected_errors:
+  - status_code: 400
+    type: "bad_request"
+    message: "リクエストが不正です"
+  - status_code: 401
+    type: "unauthorized"
+    message: "認証が必要です"
+  - status_code: 403
+    type: "forbidden"
+    message: "アクセスが禁止されています"
+  - status_code: 404
+    type: "not_found"
+    message: "リソースが見つかりません"
+  - status_code: 408
+    type: "timeout"
+    message: "リクエストがタイムアウトしました"
+  - status_code: 422
+    type: "validation_error"
+    message: "バリデーションエラーが発生しました"
+  - status_code: 429
+    type: "rate_limit_exceeded"
+    message: "レート制限を超過しました"
+  - status_code: 500
+    type: "internal_server_error"
+    message: "内部サーバーエラーが発生しました"
+  - status_code: 502
+    type: "bad_gateway"
+    message: "ゲートウェイエラーが発生しました"
+  - status_code: 503
+    type: "service_unavailable"
+    message: "サービスが利用できません"
+  - status_code: 504
+    type: "gateway_timeout"
+    message: "ゲートウェイタイムアウトが発生しました"

@@ -1,0 +1,136 @@
+# 招待管理ストーリーのテストデータ
+
+invitations:
+  list:
+    test_cases:
+      - name: "招待一覧取得"
+        description: "テナントの招待一覧を取得"
+        method: "GET"
+        endpoint: "/tenants/{tenant_id}/invitations"
+        expected:
+          status_code: 200
+
+  create:
+    test_cases:
+      - name: "招待作成"
+        description: "新しいユーザーをテナントに招待"
+        method: "POST"
+        endpoint: "/tenants/{tenant_id}/invitations"
+        expected:
+          status_code: 201
+      - name: "重複招待作成エラー"
+        description: "既に招待済みのメールアドレスで招待を試行してエラーを確認"
+        method: "POST"
+        endpoint: "/tenants/{tenant_id}/invitations"
+        expected:
+          status_code: 400
+    params:
+      - email: "invitation-test-1@example.com"
+        roles: ["user"]
+        envs: ["dev"]
+      - email: "invitation-test-2@example.com"
+        roles: ["admin", "user"]
+        envs: ["dev", "prod"]
+      - email: "invitation-test-3@example.com"
+        roles: ["viewer"]
+        envs: ["prod"]
+
+  get:
+    test_cases:
+      - name: "招待詳細取得"
+        description: "特定招待の詳細情報を取得"
+        method: "GET"
+        endpoint: "/tenants/{tenant_id}/invitations/{invitation_id}"
+        expected:
+          status_code: 200
+      - name: "存在しない招待取得エラー"
+        description: "存在しない招待IDで取得を試行してエラーを確認"
+        method: "GET"
+        endpoint: "/tenants/{tenant_id}/invitations/{invitation_id}"
+        expected:
+          status_code: 404
+
+  delete:
+    test_cases:
+      - name: "招待削除"
+        description: "招待を削除（キャンセル）"
+        method: "DELETE"
+        endpoint: "/tenants/{tenant_id}/invitations/{invitation_id}"
+        expected:
+          status_code: 200
+      - name: "存在しない招待削除エラー"
+        description: "存在しない招待IDで削除を試行してエラーを確認"
+        method: "DELETE"
+        endpoint: "/tenants/{tenant_id}/invitations/{invitation_id}"
+        expected:
+          status_code: 404
+
+invitation_validation:
+  validate_code:
+    test_cases:
+      - name: "招待コード検証"
+        description: "招待コードの有効性を検証"
+        method: "POST"
+        endpoint: "/invitations/{invitation_id}/validate-code"
+        expected:
+          status_code: 200
+      - name: "無効な招待コード検証エラー"
+        description: "無効な招待コードで検証を試行してエラーを確認"
+        method: "POST"
+        endpoint: "/invitations/{invitation_id}/validate-code"
+        expected:
+          status_code: 400
+    params:
+      invitation_id: "test-invitation-id"
+      code: "123456"
+
+  validate_invitation:
+    test_cases:
+      - name: "招待有効性確認"
+        description: "招待の有効性を確認"
+        method: "GET"
+        endpoint: "/invitations/{invitation_id}/validate"
+        expected:
+          status_code: 200
+      - name: "期限切れ招待確認エラー"
+        description: "期限切れの招待で確認を試行してエラーを確認"
+        method: "GET"
+        endpoint: "/invitations/{invitation_id}/validate"
+        expected:
+          status_code: 400
+    params:
+      invitation_id: "test-invitation-id"
+
+# テスト用データ
+test_invitation_emails:
+  - "invitation-test-1@example.com"
+  - "invitation-test-2@example.com"
+  - "invitation-test-3@example.com"
+  - "invitation-test-4@example.com"
+
+test_tenant_ids:
+  - "test-tenant-1"
+  - "test-tenant-2"
+
+test_env_ids:
+  - "dev"
+  - "staging"
+  - "prod"
+
+test_role_names:
+  - "admin"
+  - "user"
+  - "manager"
+  - "viewer"
+
+invalid_invitation_ids:
+  - "invalid-invitation-id"
+  - "00000000-0000-0000-0000-000000000000"
+  - "not-a-uuid"
+  - "expired-invitation-id"
+
+invalid_codes:
+  - "000000"
+  - "invalid-code"
+  - "expired-code"
+  - ""

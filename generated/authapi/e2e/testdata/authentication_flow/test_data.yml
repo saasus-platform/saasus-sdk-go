@@ -1,0 +1,106 @@
+# 認証フローストーリーのテストデータ
+
+credentials:
+  create:
+    test_cases:
+      - name: "認証情報保存成功"
+        description: "有効な認証情報を保存して一時コードを取得"
+        method: "POST"
+        endpoint: "/credentials"
+        expected:
+          status_code: 201
+      - name: "必須パラメータ不足エラー"
+        description: "IDトークンが不足している場合のエラー"
+        method: "POST"
+        endpoint: "/credentials"
+        expected:
+          status_code: 400
+          error:
+            type: "validation_error"
+            message: "必須パラメータが不足しています"
+    params:
+      id_token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.test-id-token"
+      access_token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.test-access-token"
+      refresh_token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.test-refresh-token"
+
+  get:
+    test_cases:
+      - name: "認証情報取得成功"
+        description: "一時コードまたはリフレッシュトークンで認証情報を取得"
+        method: "GET"
+        endpoint: "/credentials"
+        expected:
+          status_code: 200
+      - name: "無効な一時コードエラー"
+        description: "存在しない一時コードでのエラー"
+        method: "GET"
+        endpoint: "/credentials"
+        expected:
+          status_code: 404
+          error:
+            type: "not_found"
+            message: "一時コードが見つかりません"
+
+    temp_code_auth:
+      test_cases:
+        - name: "一時コード認証成功"
+          description: "有効な一時コードで認証情報を取得"
+          method: "GET"
+          endpoint: "/credentials"
+          expected:
+            status_code: 200
+        - name: "期限切れ一時コードエラー"
+          description: "期限切れの一時コードでのエラー"
+          method: "GET"
+          endpoint: "/credentials"
+          expected:
+            status_code: 404
+
+    refresh_token_auth:
+      test_cases:
+        - name: "リフレッシュトークン認証成功"
+          description: "有効なリフレッシュトークンで認証情報を取得"
+          method: "GET"
+          endpoint: "/credentials"
+          expected:
+            status_code: 200
+        - name: "無効なリフレッシュトークンエラー"
+          description: "無効なリフレッシュトークンでのエラー"
+          method: "GET"
+          endpoint: "/credentials"
+          expected:
+            status_code: 401
+
+error_handling:
+  invalid_tokens:
+    test_cases:
+      - name: "無効なIDトークンエラー"
+        description: "不正な形式のIDトークンでのエラー"
+        method: "POST"
+        endpoint: "/credentials"
+        expected:
+          status_code: 400
+      - name: "無効なアクセストークンエラー"
+        description: "不正な形式のアクセストークンでのエラー"
+        method: "POST"
+        endpoint: "/credentials"
+        expected:
+          status_code: 400
+    params:
+      invalid_id_token: "invalid.token.format"
+      invalid_access_token: "invalid.access.token"
+      invalid_refresh_token: "invalid.refresh.token"
+
+  expired_codes:
+    test_cases:
+      - name: "期限切れコード確認"
+        description: "10秒経過後の一時コード使用エラー"
+        method: "GET"
+        endpoint: "/credentials"
+        expected:
+          status_code: 404
+
+test_tokens:
+  valid_id_token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0LXVzZXItaWQiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJuYW1lIjoi44OG44K544OI44Om44O844K244O8IiwiaWF0IjoxNjAwMDAwMDAwLCJleHAiOjE2MDAwMDM2MDB9.test-valid-id-token"
+  valid_access_token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0LXVzZXItaWQiLCJzY29wZSI6InJlYWQgd3JpdGUiLCJpYXQiOjE2MDAwMDAwMDAsImV4cCI6MTYwMDAwMzYwMH0.test-valid-access-token"
+  valid_refresh_token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0LXVzZXItaWQiLCJ0eXBlIjoicmVmcmVzaCIsImlhdCI6MTYwMDAwMDAwMCwiZXhwIjoxNjAwMDg2NDAwfQ.test-valid-refresh-token"

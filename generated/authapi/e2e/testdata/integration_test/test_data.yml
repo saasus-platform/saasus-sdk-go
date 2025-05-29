@@ -1,0 +1,246 @@
+# 統合テストストーリーのテストデータ
+
+full_setup_flow:
+  basic_setup:
+    test_cases:
+      - name: "基本情報設定"
+        description: "SaaSの基本情報を設定"
+        method: "PATCH"
+        endpoint: "/basic-info"
+        expected:
+          status_code: 200
+      - name: "認証情報設定"
+        description: "認証設定を構成"
+        method: "PATCH"
+        endpoint: "/auth-info"
+        expected:
+          status_code: 200
+
+  user_creation:
+    test_cases:
+      - name: "管理者ユーザー作成"
+        description: "システム管理者ユーザーを作成"
+        method: "POST"
+        endpoint: "/users"
+        expected:
+          status_code: 201
+      - name: "一般ユーザー作成"
+        description: "一般ユーザーを作成"
+        method: "POST"
+        endpoint: "/users"
+        expected:
+          status_code: 201
+
+  tenant_creation:
+    test_cases:
+      - name: "メインテナント作成"
+        description: "メインテナントを作成"
+        method: "POST"
+        endpoint: "/tenants"
+        expected:
+          status_code: 201
+      - name: "サブテナント作成"
+        description: "サブテナントを作成"
+        method: "POST"
+        endpoint: "/tenants"
+        expected:
+          status_code: 201
+
+  role_assignment:
+    test_cases:
+      - name: "管理者ロール割り当て"
+        description: "管理者ユーザーに管理者ロールを割り当て"
+        method: "PUT"
+        endpoint: "/tenants/{tenant_id}/users/{user_id}/roles/{env_id}/{role_name}"
+        expected:
+          status_code: 200
+      - name: "一般ユーザーロール割り当て"
+        description: "一般ユーザーにユーザーロールを割り当て"
+        method: "PUT"
+        endpoint: "/tenants/{tenant_id}/users/{user_id}/roles/{env_id}/{role_name}"
+        expected:
+          status_code: 200
+
+  invitation_flow:
+    test_cases:
+      - name: "招待作成"
+        description: "新規ユーザーへの招待を作成"
+        method: "POST"
+        endpoint: "/tenants/{tenant_id}/invitations"
+        expected:
+          status_code: 201
+      - name: "招待検証"
+        description: "招待の有効性を検証"
+        method: "GET"
+        endpoint: "/invitations/{invitation_id}/validate"
+        expected:
+          status_code: 200
+
+end_to_end_scenarios:
+  user_journey:
+    test_cases:
+      - name: "ユーザー登録からログインまで"
+        description: "新規ユーザーの登録からログインまでの完全なフロー"
+        method: "SCENARIO"
+        endpoint: "multiple"
+        expected:
+          status_code: 200
+      - name: "テナント切り替えフロー"
+        description: "ユーザーが複数テナント間を切り替えるフロー"
+        method: "SCENARIO"
+        endpoint: "multiple"
+        expected:
+          status_code: 200
+
+  admin_workflow:
+    test_cases:
+      - name: "管理者による完全なユーザー管理"
+        description: "管理者がユーザーを作成・更新・削除する完全なワークフロー"
+        method: "SCENARIO"
+        endpoint: "multiple"
+        expected:
+          status_code: 200
+      - name: "テナント管理ワークフロー"
+        description: "テナントの作成から設定、ユーザー招待までの管理フロー"
+        method: "SCENARIO"
+        endpoint: "multiple"
+        expected:
+          status_code: 200
+
+  multi_tenant_scenario:
+    test_cases:
+      - name: "マルチテナント環境での分離確認"
+        description: "複数テナント間でのデータ分離を確認"
+        method: "SCENARIO"
+        endpoint: "multiple"
+        expected:
+          status_code: 200
+      - name: "クロステナントアクセス制御"
+        description: "テナント間のアクセス制御が適切に機能することを確認"
+        method: "SCENARIO"
+        endpoint: "multiple"
+        expected:
+          status_code: 403
+
+performance_tests:
+  load_test:
+    test_cases:
+      - name: "同時ユーザー作成負荷テスト"
+        description: "複数の同時ユーザー作成リクエストの処理"
+        method: "POST"
+        endpoint: "/users"
+        expected:
+          status_code: 201
+      - name: "認証情報取得負荷テスト"
+        description: "認証情報取得の負荷テスト"
+        method: "GET"
+        endpoint: "/credentials"
+        expected:
+          status_code: 200
+    params:
+      concurrent_users: 10
+      duration_seconds: 60
+
+  stress_test:
+    test_cases:
+      - name: "高負荷時のレスポンス確認"
+        description: "高負荷時でも適切なレスポンスが返されることを確認"
+        method: "GET"
+        endpoint: "/users"
+        expected:
+          status_code: 200
+      - name: "メモリ使用量監視"
+        description: "高負荷時のメモリ使用量を監視"
+        method: "MONITOR"
+        endpoint: "system"
+        expected:
+          status_code: 200
+
+failure_recovery:
+  service_recovery:
+    test_cases:
+      - name: "サービス復旧後の動作確認"
+        description: "サービス停止後の復旧動作を確認"
+        method: "GET"
+        endpoint: "/health"
+        expected:
+          status_code: 200
+      - name: "データ整合性確認"
+        description: "復旧後のデータ整合性を確認"
+        method: "GET"
+        endpoint: "/users"
+        expected:
+          status_code: 200
+
+  data_consistency:
+    test_cases:
+      - name: "トランザクション整合性確認"
+        description: "複数操作のトランザクション整合性を確認"
+        method: "SCENARIO"
+        endpoint: "multiple"
+        expected:
+          status_code: 200
+      - name: "ロールバック動作確認"
+        description: "エラー時のロールバック動作を確認"
+        method: "SCENARIO"
+        endpoint: "multiple"
+        expected:
+          status_code: 400
+
+test_scenarios:
+  - name: "完全なSaaSセットアップフロー"
+    description: "基本設定からユーザー招待までの完全なセットアップ"
+    steps:
+      - "基本情報を設定"
+      - "認証情報を設定"
+      - "環境を作成"
+      - "ロールを作成"
+      - "テナントを作成"
+      - "管理者ユーザーを作成"
+      - "ユーザーをテナントに追加"
+      - "ロールを割り当て"
+      - "新規ユーザーを招待"
+      - "招待を検証"
+    expected: "全ての手順が成功し、完全なSaaS環境が構築される"
+
+  - name: "マルチテナント分離確認シナリオ"
+    description: "複数テナント間でのデータ分離を確認"
+    steps:
+      - "テナントAを作成"
+      - "テナントBを作成"
+      - "テナントAにユーザー1を作成"
+      - "テナントBにユーザー2を作成"
+      - "ユーザー1でテナントBのデータアクセスを試行"
+      - "ユーザー2でテナントAのデータアクセスを試行"
+    expected: "各ユーザーは自分のテナントのデータのみアクセス可能"
+
+  - name: "認証フロー統合テスト"
+    description: "認証情報の保存から取得までの完全なフロー"
+    steps:
+      - "認証情報を保存"
+      - "一時コードを取得"
+      - "一時コードで認証情報を取得"
+      - "リフレッシュトークンで認証情報を更新"
+      - "期限切れコードでエラー確認"
+    expected: "認証フローが正常に動作し、適切なエラーハンドリングが行われる"
+
+  - name: "エラー処理統合テスト"
+    description: "様々なエラーケースでの統合的な動作確認"
+    steps:
+      - "無効なパラメータでAPI呼び出し"
+      - "存在しないリソースへのアクセス"
+      - "権限不足でのアクセス試行"
+      - "ネットワークエラーシミュレーション"
+      - "エラーレスポンス形式確認"
+    expected: "全てのエラーケースで適切なエラーレスポンスが返される"
+
+  - name: "パフォーマンス統合テスト"
+    description: "負荷状況下での全機能の動作確認"
+    steps:
+      - "負荷テスト環境を準備"
+      - "同時ユーザー作成"
+      - "同時認証処理"
+      - "同時テナント操作"
+      - "レスポンス時間測定"
+      - "エラー率確認"
+    expected: "高負荷時でも全機能が正常に動作し、許容範囲内のレスポンス時間を維持"

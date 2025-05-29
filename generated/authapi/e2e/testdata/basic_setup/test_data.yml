@@ -1,0 +1,307 @@
+# 基本セットアップストーリーのテストデータ
+story: "01_basic_setup"
+description: "SaaSus Auth APIの基本的なセットアップと設定を行うE2Eテスト"
+
+# 基本情報API
+basic_info:
+  get:
+    test_cases:
+      - name: "基本情報取得_正常系"
+        description: "基本設定情報を正常に取得できること"
+        method: "GET"
+        endpoint: "/basic-info"
+        expected:
+          status_code: 200
+          body:
+            domain_name: "string"
+            from_email_address: "string"
+            is_dns_validated: "boolean"
+            is_ses_sandbox_granted: "boolean"
+            certificate_dns_record: "object"
+            cloud_front_dns_record: "object"
+            dkim_dns_records: "array"
+            default_domain_name: "string"
+            reply_email_address: "string"
+
+  update:
+    test_cases:
+      - name: "基本情報更新_正常系"
+        description: "基本設定情報を正常に更新できること"
+        method: "PUT"
+        endpoint: "/basic-info"
+        expected:
+          status_code: 200
+      - name: "基本情報更新_必須項目不足"
+        description: "必須項目が不足している場合はエラーになること"
+        method: "PUT"
+        endpoint: "/basic-info"
+        body:
+          domain_name: ""
+        expected:
+          status_code: 400
+          error:
+            type: "validation_error"
+    params:
+      domain_name: "e2e-test.example.com"
+      from_email_address: "noreply@e2e-test.example.com"
+      reply_email_address: "support@e2e-test.example.com"
+
+# 認証情報API
+auth_info:
+  get:
+    test_cases:
+      - name: "認証情報取得_正常系"
+        description: "認証情報を正常に取得できること"
+        method: "GET"
+        endpoint: "/auth-info"
+        expected:
+          status_code: 200
+          body:
+            callback_url: "string"
+
+  update:
+    test_cases:
+      - name: "認証情報更新_正常系"
+        description: "認証情報を正常に更新できること"
+        method: "PUT"
+        endpoint: "/auth-info"
+        expected:
+          status_code: 200
+      - name: "認証情報更新_不正なURL"
+        description: "不正なURLの場合はエラーになること"
+        method: "PUT"
+        endpoint: "/auth-info"
+        body:
+          callback_url: "invalid-url"
+        expected:
+          status_code: 400
+          error:
+            type: "validation_error"
+    params:
+      callback_url: "https://e2e-test.example.com/auth/callback"
+
+# 環境管理API
+envs:
+  list:
+    test_cases:
+      - name: "環境一覧取得_正常系"
+        description: "環境一覧を正常に取得できること"
+        method: "GET"
+        endpoint: "/envs"
+        expected:
+          status_code: 200
+          body:
+            envs: "array"
+
+  create:
+    test_cases:
+      - name: "環境作成_正常系"
+        description: "新しい環境を正常に作成できること"
+        method: "POST"
+        endpoint: "/envs"
+        expected:
+          status_code: 201
+      - name: "環境作成_重複ID"
+        description: "既存のIDで環境を作成しようとするとエラーになること"
+        method: "POST"
+        endpoint: "/envs"
+        expected:
+          status_code: 409
+          error:
+            type: "conflict_error"
+      - name: "環境作成_必須項目不足"
+        description: "必須項目が不足している場合はエラーになること"
+        method: "POST"
+        endpoint: "/envs"
+        body:
+          id: ""
+          name: ""
+        expected:
+          status_code: 400
+          error:
+            type: "validation_error"
+    params:
+      id: "e2e-test-env"
+      name: "E2E Test Environment"
+      display_name: "E2Eテスト環境"
+
+  get:
+    test_cases:
+      - name: "環境詳細取得_正常系"
+        description: "特定環境の詳細を正常に取得できること"
+        method: "GET"
+        endpoint: "/envs/{env_id}"
+        expected:
+          status_code: 200
+          body:
+            id: "string"
+            name: "string"
+            display_name: "string"
+      - name: "環境詳細取得_存在しないID"
+        description: "存在しない環境IDの場合は404エラーになること"
+        method: "GET"
+        endpoint: "/envs/non-existent-env"
+        expected:
+          status_code: 404
+          error:
+            type: "not_found_error"
+
+  update:
+    test_cases:
+      - name: "環境更新_正常系"
+        description: "環境情報を正常に更新できること"
+        method: "PATCH"
+        endpoint: "/envs/{env_id}"
+        expected:
+          status_code: 200
+      - name: "環境更新_存在しないID"
+        description: "存在しない環境IDの場合は404エラーになること"
+        method: "PATCH"
+        endpoint: "/envs/non-existent-env"
+        expected:
+          status_code: 404
+          error:
+            type: "not_found_error"
+    params:
+      name: "Updated E2E Test Environment"
+      display_name: "更新されたE2Eテスト環境"
+
+  delete:
+    test_cases:
+      - name: "環境削除_正常系"
+        description: "環境を正常に削除できること"
+        method: "DELETE"
+        endpoint: "/envs/{env_id}"
+        expected:
+          status_code: 200
+      - name: "環境削除_存在しないID"
+        description: "存在しない環境IDの場合は404エラーになること"
+        method: "DELETE"
+        endpoint: "/envs/non-existent-env"
+        expected:
+          status_code: 404
+          error:
+            type: "not_found_error"
+
+# 外部IDプロバイダAPI
+identity_providers:
+  get:
+    test_cases:
+      - name: "外部IDプロバイダ取得_正常系"
+        description: "外部IDプロバイダ情報を正常に取得できること"
+        method: "GET"
+        endpoint: "/identity-providers"
+        expected:
+          status_code: 200
+
+  update:
+    test_cases:
+      - name: "外部IDプロバイダ更新_正常系"
+        description: "外部IDプロバイダ情報を正常に更新できること"
+        method: "PUT"
+        endpoint: "/identity-providers"
+        expected:
+          status_code: 200
+
+# サインイン設定API
+sign_in_settings:
+  get:
+    test_cases:
+      - name: "サインイン設定取得_正常系"
+        description: "サインイン設定を正常に取得できること"
+        method: "GET"
+        endpoint: "/sign-in-settings"
+        expected:
+          status_code: 200
+
+  update:
+    test_cases:
+      - name: "サインイン設定更新_正常系"
+        description: "サインイン設定を正常に更新できること"
+        method: "PUT"
+        endpoint: "/sign-in-settings"
+        expected:
+          status_code: 200
+
+# カスタマイズページ設定API
+customize_page_settings:
+  get:
+    test_cases:
+      - name: "カスタマイズページ設定取得_正常系"
+        description: "カスタマイズページ設定を正常に取得できること"
+        method: "GET"
+        endpoint: "/customize-page-settings"
+        expected:
+          status_code: 200
+
+  update:
+    test_cases:
+      - name: "カスタマイズページ設定更新_正常系"
+        description: "カスタマイズページ設定を正常に更新できること"
+        method: "PATCH"
+        endpoint: "/customize-page-settings"
+        expected:
+          status_code: 200
+
+# 認証画面設定API
+customize_pages:
+  get:
+    test_cases:
+      - name: "認証画面設定取得_正常系"
+        description: "認証画面設定を正常に取得できること"
+        method: "GET"
+        endpoint: "/customize-pages"
+        expected:
+          status_code: 200
+
+  update:
+    test_cases:
+      - name: "認証画面設定更新_正常系"
+        description: "認証画面設定を正常に更新できること"
+        method: "PATCH"
+        endpoint: "/customize-pages"
+        expected:
+          status_code: 200
+
+# 通知メールテンプレートAPI
+notification_messages:
+  get:
+    test_cases:
+      - name: "通知メールテンプレート取得_正常系"
+        description: "通知メールテンプレートを正常に取得できること"
+        method: "GET"
+        endpoint: "/notification-messages"
+        expected:
+          status_code: 200
+
+  update:
+    test_cases:
+      - name: "通知メールテンプレート更新_正常系"
+        description: "通知メールテンプレートを正常に更新できること"
+        method: "PUT"
+        endpoint: "/notification-messages"
+        expected:
+          status_code: 200
+
+# テスト用リソースID
+test_env_ids:
+  - "e2e-test-env"
+  - "e2e-test-env-2"
+  - "temp-test-env"
+
+invalid_env_ids:
+  - "non-existent-env"
+  - "invalid-env-id"
+  - ""
+
+# セットアップ設定
+setup:
+  timeout: "30s"
+  retry_count: 3
+  cleanup_on_failure: true
+
+# クリーンアップ設定
+cleanup:
+  delete_test_envs: true
+  restore_original_settings: true
+  timeout: "60s"

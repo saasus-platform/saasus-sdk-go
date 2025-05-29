@@ -1,0 +1,308 @@
+# ロール管理ストーリーのテストデータ
+story: "03_role_management"
+description: "システム内の役割(ロール)の作成、管理を行うE2Eテスト"
+
+# ロール管理API
+roles:
+  list:
+    test_cases:
+      - name: "ロール一覧取得_正常系"
+        description: "ロール一覧を正常に取得できること"
+        method: "GET"
+        endpoint: "/roles"
+        expected:
+          status_code: 200
+          body:
+            roles: "array"
+      - name: "ロール一覧取得_空の場合"
+        description: "ロールが存在しない場合でも正常にレスポンスが返ること"
+        method: "GET"
+        endpoint: "/roles"
+        expected:
+          status_code: 200
+          body:
+            roles: "array"
+
+  create:
+    test_cases:
+      - name: "ロール作成_管理者ロール"
+        description: "管理者ロールを正常に作成できること"
+        method: "POST"
+        endpoint: "/roles"
+        body:
+          role_name: "e2e_admin"
+          display_name: "E2E管理者"
+        expected:
+          status_code: 201
+      - name: "ロール作成_一般ユーザーロール"
+        description: "一般ユーザーロールを正常に作成できること"
+        method: "POST"
+        endpoint: "/roles"
+        body:
+          role_name: "e2e_user"
+          display_name: "E2E一般ユーザー"
+        expected:
+          status_code: 201
+      - name: "ロール作成_編集者ロール"
+        description: "編集者ロールを正常に作成できること"
+        method: "POST"
+        endpoint: "/roles"
+        body:
+          role_name: "e2e_editor"
+          display_name: "E2E編集者"
+        expected:
+          status_code: 201
+      - name: "ロール作成_閲覧者ロール"
+        description: "閲覧者ロールを正常に作成できること"
+        method: "POST"
+        endpoint: "/roles"
+        body:
+          role_name: "e2e_viewer"
+          display_name: "E2E閲覧者"
+        expected:
+          status_code: 201
+      - name: "ロール作成_重複ロール名"
+        description: "既存のロール名で作成しようとするとエラーになること"
+        method: "POST"
+        endpoint: "/roles"
+        body:
+          role_name: "e2e_admin"
+          display_name: "重複管理者"
+        expected:
+          status_code: 409
+          error:
+            type: "conflict_error"
+            message: "Role already exists"
+      - name: "ロール作成_必須項目不足_ロール名"
+        description: "ロール名が不足している場合はエラーになること"
+        method: "POST"
+        endpoint: "/roles"
+        body:
+          role_name: ""
+          display_name: "表示名のみ"
+        expected:
+          status_code: 400
+          error:
+            type: "validation_error"
+      - name: "ロール作成_必須項目不足_表示名"
+        description: "表示名が不足している場合はエラーになること"
+        method: "POST"
+        endpoint: "/roles"
+        body:
+          role_name: "role_name_only"
+          display_name: ""
+        expected:
+          status_code: 400
+          error:
+            type: "validation_error"
+      - name: "ロール作成_不正な文字_ロール名"
+        description: "ロール名に不正な文字が含まれている場合はエラーになること"
+        method: "POST"
+        endpoint: "/roles"
+        body:
+          role_name: "invalid@role#name"
+          display_name: "不正文字ロール"
+        expected:
+          status_code: 400
+          error:
+            type: "validation_error"
+      - name: "ロール作成_長すぎるロール名"
+        description: "ロール名が長すぎる場合はエラーになること"
+        method: "POST"
+        endpoint: "/roles"
+        body:
+          role_name: "very_long_role_name_that_exceeds_maximum_length_limit_for_role_names_in_the_system"
+          display_name: "長すぎるロール名"
+        expected:
+          status_code: 400
+          error:
+            type: "validation_error"
+
+    params:
+      - role_name: "e2e_admin"
+        display_name: "E2E管理者"
+      - role_name: "e2e_user"
+        display_name: "E2E一般ユーザー"
+      - role_name: "e2e_editor"
+        display_name: "E2E編集者"
+      - role_name: "e2e_viewer"
+        display_name: "E2E閲覧者"
+      - role_name: "e2e_moderator"
+        display_name: "E2Eモデレーター"
+      - role_name: "e2e_guest"
+        display_name: "E2Eゲスト"
+
+  get:
+    test_cases:
+      - name: "ロール詳細取得_正常系"
+        description: "特定ロールの詳細を正常に取得できること"
+        method: "GET"
+        endpoint: "/roles/{role_name}"
+        expected:
+          status_code: 200
+          body:
+            role_name: "string"
+            display_name: "string"
+      - name: "ロール詳細取得_存在しないロール"
+        description: "存在しないロール名の場合は404エラーになること"
+        method: "GET"
+        endpoint: "/roles/non_existent_role"
+        expected:
+          status_code: 404
+          error:
+            type: "not_found_error"
+
+  delete:
+    test_cases:
+      - name: "ロール削除_正常系"
+        description: "ロールを正常に削除できること"
+        method: "DELETE"
+        endpoint: "/roles/{role_name}"
+        expected:
+          status_code: 200
+      - name: "ロール削除_存在しないロール"
+        description: "存在しないロール名の場合は404エラーになること"
+        method: "DELETE"
+        endpoint: "/roles/non_existent_role"
+        expected:
+          status_code: 404
+          error:
+            type: "not_found_error"
+      - name: "ロール削除_使用中のロール"
+        description: "使用中のロールを削除しようとするとエラーになること"
+        method: "DELETE"
+        endpoint: "/roles/{role_name}"
+        expected:
+          status_code: 409
+          error:
+            type: "conflict_error"
+            message: "Role is in use"
+
+# テスト用ロール名
+test_role_names:
+  - "e2e_admin"
+  - "e2e_user"
+  - "e2e_editor"
+  - "e2e_viewer"
+  - "e2e_moderator"
+  - "e2e_guest"
+  - "temp_role_1"
+  - "temp_role_2"
+  - "test_role_cleanup"
+
+invalid_role_names:
+  - "non_existent_role"
+  - "invalid@role"
+  - ""
+  - "very_long_role_name_that_exceeds_maximum_length_limit_for_role_names_in_the_system"
+
+# ロール階層テスト用データ
+role_hierarchy:
+  admin:
+    role_name: "e2e_admin"
+    display_name: "E2E管理者"
+    permissions:
+      - "read"
+      - "write"
+      - "delete"
+      - "admin"
+  editor:
+    role_name: "e2e_editor"
+    display_name: "E2E編集者"
+    permissions:
+      - "read"
+      - "write"
+  viewer:
+    role_name: "e2e_viewer"
+    display_name: "E2E閲覧者"
+    permissions:
+      - "read"
+  guest:
+    role_name: "e2e_guest"
+    display_name: "E2Eゲスト"
+    permissions: []
+
+# パフォーマンステスト用データ
+performance_test:
+  bulk_create:
+    count: 10
+    role_name_prefix: "perf_test_role_"
+    display_name_prefix: "パフォーマンステストロール "
+  concurrent_operations:
+    thread_count: 5
+    operations_per_thread: 3
+
+# エラーケーステスト用データ
+error_cases:
+  invalid_characters:
+    - "@"
+    - "#"
+    - "$"
+    - "%"
+    - "^"
+    - "&"
+    - "*"
+    - "("
+    - ")"
+    - "+"
+    - "="
+    - "{"
+    - "}"
+    - "["
+    - "]"
+    - "|"
+    - "\\"
+    - ":"
+    - ";"
+    - "'"
+    - "\""
+    - "<"
+    - ">"
+    - ","
+    - "."
+    - "?"
+    - "/"
+  reserved_names:
+    - "admin"
+    - "root"
+    - "system"
+    - "default"
+    - "anonymous"
+    - "guest"
+    - "user"
+    - "role"
+  max_length: 64
+  min_length: 1
+
+# セットアップ設定
+setup:
+  timeout: "30s"
+  retry_count: 3
+  cleanup_on_failure: true
+  create_test_roles: true
+  role_creation_delay: "1s"
+
+# クリーンアップ設定
+cleanup:
+  delete_test_roles: true
+  force_delete: false
+  timeout: "60s"
+  ignore_not_found: true
+  cleanup_order:
+    - "temp_role_*"
+    - "e2e_*"
+    - "test_*"
+    - "perf_test_*"
+
+# 依存関係設定
+dependencies:
+  requires_basic_setup: true
+  requires_admin_permissions: true
+  cleanup_after_tenant_tests: true
+
+# 検証設定
+validation:
+  check_role_uniqueness: true
+  verify_role_creation: true
+  validate_role_deletion: true
+  check_role_permissions: false  # 権限機能は別ストーリーでテスト

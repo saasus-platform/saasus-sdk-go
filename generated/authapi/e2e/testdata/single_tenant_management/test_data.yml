@@ -1,0 +1,127 @@
+# シングルテナント管理ストーリーのテストデータ
+
+single_tenant_settings:
+  get:
+    test_cases:
+      - name: "シングルテナント設定取得成功"
+        description: "現在のシングルテナント設定を取得"
+        method: "GET"
+        endpoint: "/single-tenant-settings"
+        expected:
+          status_code: 200
+      - name: "設定未設定時の取得"
+        description: "設定が未設定の場合のデフォルト値取得"
+        method: "GET"
+        endpoint: "/single-tenant-settings"
+        expected:
+          status_code: 200
+
+  update:
+    test_cases:
+      - name: "シングルテナント設定更新成功"
+        description: "シングルテナント設定を更新"
+        method: "PATCH"
+        endpoint: "/single-tenant-settings"
+        expected:
+          status_code: 200
+      - name: "部分更新成功"
+        description: "一部の設定項目のみを更新"
+        method: "PATCH"
+        endpoint: "/single-tenant-settings"
+        expected:
+          status_code: 200
+      - name: "無効なURL形式エラー"
+        description: "不正なURL形式での更新エラー"
+        method: "PATCH"
+        endpoint: "/single-tenant-settings"
+        expected:
+          status_code: 400
+    params:
+      customize_page_title: "カスタムSaaSアプリケーション"
+      customize_page_url: "https://custom.example.com"
+      customize_css_url: "https://cdn.example.com/custom.css"
+      customize_icon_url: "https://cdn.example.com/icon.png"
+      customize_logo_url: "https://cdn.example.com/logo.png"
+      privacy_policy_url: "https://example.com/privacy"
+      terms_of_service_url: "https://example.com/terms"
+
+cloudformation_template:
+  get:
+    test_cases:
+      - name: "CloudFormationテンプレート取得成功"
+        description: "シングルテナント用CloudFormationテンプレートを取得"
+        method: "GET"
+        endpoint: "/single-tenant-settings/aws/cloudformation-template"
+        expected:
+          status_code: 200
+      - name: "テンプレート形式確認"
+        description: "取得したテンプレートがJSON形式であることを確認"
+        method: "GET"
+        endpoint: "/single-tenant-settings/aws/cloudformation-template"
+        expected:
+          status_code: 200
+
+ddl_template:
+  get:
+    test_cases:
+      - name: "DDLテンプレート取得成功"
+        description: "シングルテナント用DDLテンプレートを取得"
+        method: "GET"
+        endpoint: "/single-tenant-settings/aws/ddl-template"
+        expected:
+          status_code: 200
+      - name: "DDL形式確認"
+        description: "取得したDDLがSQL形式であることを確認"
+        method: "GET"
+        endpoint: "/single-tenant-settings/aws/ddl-template"
+        expected:
+          status_code: 200
+
+aws_integration:
+  iam_role:
+    test_cases:
+      - name: "IAMロール設定成功"
+        description: "AWS IAMロールを設定"
+        method: "PUT"
+        endpoint: "/single-tenant-settings/aws/iam-role"
+        expected:
+          status_code: 200
+      - name: "無効なロールARNエラー"
+        description: "不正な形式のロールARNでのエラー"
+        method: "PUT"
+        endpoint: "/single-tenant-settings/aws/iam-role"
+        expected:
+          status_code: 400
+      - name: "IAMロール取得成功"
+        description: "設定されたIAMロールを取得"
+        method: "GET"
+        endpoint: "/single-tenant-settings/aws/iam-role"
+        expected:
+          status_code: 200
+    params:
+      role_arn: "arn:aws:iam::123456789012:role/SaaSusTestRole"
+      external_id: "test-external-id-12345"
+
+  external_id:
+    test_cases:
+      - name: "ExternalID取得成功"
+        description: "AWS連携用のExternalIDを取得"
+        method: "GET"
+        endpoint: "/single-tenant-settings/aws/external-id"
+        expected:
+          status_code: 200
+      - name: "ExternalID形式確認"
+        description: "取得したExternalIDが適切な形式であることを確認"
+        method: "GET"
+        endpoint: "/single-tenant-settings/aws/external-id"
+        expected:
+          status_code: 200
+
+test_settings:
+  page_title: "テスト用SaaSアプリケーション"
+  page_url: "https://test.saasus.example.com"
+  css_url: "https://cdn.test.example.com/styles.css"
+  icon_url: "https://cdn.test.example.com/favicon.ico"
+  logo_url: "https://cdn.test.example.com/logo.svg"
+  privacy_url: "https://test.example.com/privacy-policy"
+  terms_url: "https://test.example.com/terms-of-service"

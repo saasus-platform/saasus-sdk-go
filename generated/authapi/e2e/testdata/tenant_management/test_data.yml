@@ -1,0 +1,196 @@
+# テナント管理ストーリーのテストデータ
+
+tenant_attributes:
+  list:
+    test_cases:
+      - name: "テナント属性一覧取得"
+        description: "既存のテナント属性定義の一覧を取得"
+        method: "GET"
+        endpoint: "/tenant-attributes"
+        expected:
+          status_code: 200
+
+  create:
+    test_cases:
+      - name: "テナント属性作成"
+        description: "新しいテナント属性定義を作成"
+        method: "POST"
+        endpoint: "/tenant-attributes"
+        expected:
+          status_code: 201
+      - name: "重複テナント属性作成エラー"
+        description: "既存の属性名で作成を試行してエラーを確認"
+        method: "POST"
+        endpoint: "/tenant-attributes"
+        expected:
+          status_code: 400
+    params:
+      - attribute_name: "company_size"
+        display_name: "会社規模"
+      - attribute_name: "industry"
+        display_name: "業界"
+      - attribute_name: "contract_type"
+        display_name: "契約タイプ"
+
+  delete:
+    test_cases:
+      - name: "テナント属性削除"
+        description: "不要なテナント属性定義を削除"
+        method: "DELETE"
+        endpoint: "/tenant-attributes/{attribute_name}"
+        expected:
+          status_code: 200
+      - name: "存在しないテナント属性削除エラー"
+        description: "存在しない属性名で削除を試行してエラーを確認"
+        method: "DELETE"
+        endpoint: "/tenant-attributes/{attribute_name}"
+        expected:
+          status_code: 404
+
+tenants:
+  list:
+    test_cases:
+      - name: "テナント一覧取得"
+        description: "全テナントの一覧を取得"
+        method: "GET"
+        endpoint: "/tenants"
+        expected:
+          status_code: 200
+
+  create:
+    test_cases:
+      - name: "テナント作成"
+        description: "新しいテナントを作成"
+        method: "POST"
+        endpoint: "/tenants"
+        expected:
+          status_code: 201
+      - name: "重複テナント名エラー"
+        description: "既存のテナント名で作成を試行してエラーを確認"
+        method: "POST"
+        endpoint: "/tenants"
+        expected:
+          status_code: 400
+    params:
+      - name: "テストテナント1"
+        back_office_staff_email: "admin1@test-tenant-1.com"
+        attributes:
+          company_size: "50-100"
+          industry: "IT"
+      - name: "テストテナント2"
+        back_office_staff_email: "admin2@test-tenant-2.com"
+        attributes:
+          company_size: "100-500"
+          industry: "製造業"
+
+  get:
+    test_cases:
+      - name: "テナント詳細取得"
+        description: "特定テナントの詳細情報を取得"
+        method: "GET"
+        endpoint: "/tenants/{tenant_id}"
+        expected:
+          status_code: 200
+      - name: "存在しないテナント取得エラー"
+        description: "存在しないテナントIDで取得を試行してエラーを確認"
+        method: "GET"
+        endpoint: "/tenants/{tenant_id}"
+        expected:
+          status_code: 404
+
+  update:
+    test_cases:
+      - name: "テナント情報更新"
+        description: "テナントの基本情報を更新"
+        method: "PATCH"
+        endpoint: "/tenants/{tenant_id}"
+        expected:
+          status_code: 200
+      - name: "存在しないテナント更新エラー"
+        description: "存在しないテナントIDで更新を試行してエラーを確認"
+        method: "PATCH"
+        endpoint: "/tenants/{tenant_id}"
+        expected:
+          status_code: 404
+    params:
+      name: "更新されたテナント名"
+      back_office_staff_email: "updated-admin@test-tenant.com"
+      attributes:
+        company_size: "500-1000"
+        industry: "金融"
+        contract_type: "enterprise"
+
+  delete:
+    test_cases:
+      - name: "テナント削除"
+        description: "テナントの完全削除"
+        method: "DELETE"
+        endpoint: "/tenants/{tenant_id}"
+        expected:
+          status_code: 200
+      - name: "存在しないテナント削除エラー"
+        description: "存在しないテナントIDで削除を試行してエラーを確認"
+        method: "DELETE"
+        endpoint: "/tenants/{tenant_id}"
+        expected:
+          status_code: 404
+
+billing_info:
+  get:
+    test_cases:
+      - name: "請求情報取得"
+        description: "テナントの請求情報を取得"
+        method: "GET"
+        endpoint: "/tenants/{tenant_id}/billing-info"
+        expected:
+          status_code: 200
+      - name: "存在しないテナント請求情報取得エラー"
+        description: "存在しないテナントIDで請求情報取得を試行してエラーを確認"
+        method: "GET"
+        endpoint: "/tenants/{tenant_id}/billing-info"
+        expected:
+          status_code: 404
+
+  update:
+    test_cases:
+      - name: "請求情報更新"
+        description: "テナントの請求情報を更新"
+        method: "PUT"
+        endpoint: "/tenants/{tenant_id}/billing-info"
+        expected:
+          status_code: 200
+      - name: "無効な請求情報更新エラー"
+        description: "無効な請求情報で更新を試行してエラーを確認"
+        method: "PUT"
+        endpoint: "/tenants/{tenant_id}/billing-info"
+        expected:
+          status_code: 400
+    params:
+      name: "株式会社テストテナント"
+      street: "神宮前1-1-1"
+      city: "渋谷区"
+      state: "東京都"
+      country: "JP"
+      postal_code: "150-0001"
+      invoice_language: "ja-JP"
+
+# テスト用データ
+test_tenant_names:
+  - "テストテナント1"
+  - "テストテナント2"
+  - "テストテナント3"
+
+test_attribute_names:
+  - "company_size"
+  - "industry"
+  - "contract_type"
+
+invalid_tenant_ids:
+  - "invalid-tenant-id"
+  - "00000000-0000-0000-0000-000000000000"
+  - "not-a-uuid"
+
+invalid_attribute_names:
+  - "non_existent_attribute"
+  - "invalid-attribute"
+  - ""
