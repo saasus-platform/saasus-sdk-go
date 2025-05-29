@@ -1,0 +1,1131 @@
+info:
+  contact:
+    name: Anti-Pattern
+  description: Schema
+  title: SaaSus Auth API Schema
+  version: 1.0.0
+  x-description-i18n:
+    jpn: スキーマ
+openapi: 3.0.0
+paths:
+  /basic-info:
+    get:
+      description: |
+        Get the domain name and CNAME record based on the SaaS ID.
+        By setting the CNAME record on the DNS the login screen will be generated.
+      operationId: GetBasicInfo
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  certificate_dns_record:
+                    properties:
+                      name:
+                        description: Record Name
+                        example: _k90jaskdfawehro.domain-of-saasus-client.com.
+                        type: string
+                        x-description-i18n:
+                          jpn: レコード名
+                      type:
+                        description: CNAME Resource Record
+                        enum:
+                        - CNAME
+                        example: CNAME
+                        type: string
+                        x-description-i18n:
+                          jpn: CNAMEリソースレコード
+                      value:
+                        description: Value
+                        example: _cmojwc239j102mosd9.acm-validations.aws.
+                        type: string
+                        x-description-i18n:
+                          jpn: 値
+                    required:
+                    - type
+                    - name
+                    - value
+                    title: DNS Record
+                    type: object
+                    x-title-i18n:
+                      jpn: DNSレコード
+                  cloud_front_dns_record:
+                    properties:
+                      name:
+                        description: Record Name
+                        example: _k90jaskdfawehro.domain-of-saasus-client.com.
+                        type: string
+                        x-description-i18n:
+                          jpn: レコード名
+                      type:
+                        description: CNAME Resource Record
+                        enum:
+                        - CNAME
+                        example: CNAME
+                        type: string
+                        x-description-i18n:
+                          jpn: CNAMEリソースレコード
+                      value:
+                        description: Value
+                        example: _cmojwc239j102mosd9.acm-validations.aws.
+                        type: string
+                        x-description-i18n:
+                          jpn: 値
+                    required:
+                    - type
+                    - name
+                    - value
+                    title: DNS Record
+                    type: object
+                    x-title-i18n:
+                      jpn: DNSレコード
+                  default_domain_name:
+                    description: Default Domain Name
+                    example: d78bh0l3saarv.cloudfront.net
+                    type: string
+                    x-description-i18n:
+                      jpn: デフォルトドメイン名
+                  dkim_dns_records:
+                    description: DKIM DNS Records
+                    items:
+                      properties:
+                        name:
+                          description: Record Name
+                          example: _k90jaskdfawehro.domain-of-saasus-client.com.
+                          type: string
+                          x-description-i18n:
+                            jpn: レコード名
+                        type:
+                          description: CNAME Resource Record
+                          enum:
+                          - CNAME
+                          example: CNAME
+                          type: string
+                          x-description-i18n:
+                            jpn: CNAMEリソースレコード
+                        value:
+                          description: Value
+                          example: _cmojwc239j102mosd9.acm-validations.aws.
+                          type: string
+                          x-description-i18n:
+                            jpn: 値
+                      required:
+                      - type
+                      - name
+                      - value
+                      title: DNS Record
+                      type: object
+                      x-title-i18n:
+                        jpn: DNSレコード
+                    type: array
+                    x-description-i18n:
+                      jpn: DKIM DNS レコード
+                  domain_name:
+                    description: Domain Name
+                    example: dev.saasus.io
+                    type: string
+                    x-description-i18n:
+                      jpn: ドメイン名
+                  from_email_address:
+                    description: Sender Email for Authentication Email
+                    example: test@example.com
+                    type: string
+                    x-description-i18n:
+                      jpn: 認証メールの送信元メールアドレス
+                  is_dns_validated:
+                    description: DNS Record Verification Results
+                    example: false
+                    type: boolean
+                    x-description-i18n:
+                      jpn: DNSレコードの検証結果
+                  is_ses_sandbox_granted:
+                    description: SES sandbox release and Cognito SES configuration
+                      results
+                    example: false
+                    type: boolean
+                    x-description-i18n:
+                      jpn: SESのサンドボックス解除及びCognitoのSES設定結果
+                  reply_email_address:
+                    description: Reply-from email address of authentication email
+                    example: test@example.com
+                    type: string
+                    x-description-i18n:
+                      jpn: 認証メールの返信元メールアドレス
+                required:
+                - domain_name
+                - is_dns_validated
+                - certificate_dns_record
+                - cloud_front_dns_record
+                - dkim_dns_records
+                - default_domain_name
+                - from_email_address
+                - reply_email_address
+                - is_ses_sandbox_granted
+                title: Basic Setting Info
+                type: object
+                x-title-i18n:
+                  jpn: 基本設定情報
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get Basic Configurations
+      tags:
+      - basicInfo
+      x-description-i18n:
+        jpn: |
+          SaaS ID を元に設定されているドメイン名と CNAME レコードを取得します。
+          取得した CNAME レコードを DNS に設定することで、ログイン画面を生成します。
+      x-summary-i18n:
+        jpn: 基本設定情報の取得
+    put:
+      description: |
+        Update the domain name that was set as a parameter based on the SaaS ID.
+        After the CNAME record is generated, set it in your DNS.
+        If it is set on a SaaS application that is already running, it will affect the behavior.
+      operationId: UpdateBasicInfo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                domain_name:
+                  description: Domain Name
+                  example: dev.saasus.io
+                  type: string
+                  x-description-i18n:
+                    jpn: ドメイン名
+                from_email_address:
+                  description: Sender email of authentication email
+                  example: test@example.com
+                  type: string
+                  x-description-i18n:
+                    jpn: 認証メールの送信元メールアドレス
+                reply_email_address:
+                  description: Reply-from email address of authentication email
+                  example: test@example.com
+                  type: string
+                  x-description-i18n:
+                    jpn: 認証メールの返信元メールアドレス
+              required:
+              - domain_name
+              - from_email_address
+              title: Update Basic Setting Parameter
+              type: object
+              x-title-i18n:
+                jpn: 基本設定の更新パラメータ
+      responses:
+        "200":
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Update Basic Configurations
+      tags:
+      - basicInfo
+      x-description-i18n:
+        jpn: |
+          SaaS ID を元にパラメータとして設定したドメイン名を設定更新します。
+          CNAME レコードが生成されますので、 DNS に設定して下さい。
+          既に稼働中の SaaS アプリケーションに設定している場合には、動作に影響があります。
+      x-summary-i18n:
+        jpn: 基本設定情報の更新
+  /customize-page-settings:
+    get:
+      description: |
+        Get authentication authorization basic information.
+      operationId: GetCustomizePageSettings
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - properties:
+                    favicon:
+                      description: favicon
+                      example: http://icon.example.com
+                      type: string
+                      x-description-i18n:
+                        jpn: ファビコン
+                    icon:
+                      description: service icon
+                      example: http://icon.example.com
+                      type: string
+                      x-description-i18n:
+                        jpn: サービスアイコン
+                  required:
+                  - icon
+                  - favicon
+                - properties:
+                    google_tag_manager_container_id:
+                      description: Google Tag Manager container ID
+                      example: GTM-XXXXXXX
+                      type: string
+                      x-description-i18n:
+                        jpn: Google Tag Manager コンテナ ID
+                    privacy_policy_url:
+                      description: privacy policy URL
+                      example: http://dev.example.com/privacy
+                      type: string
+                      x-description-i18n:
+                        jpn: プライバシーポリシーURL
+                    terms_of_service_url:
+                      description: terms of service URL
+                      example: http://dev.example.com/terms
+                      type: string
+                      x-description-i18n:
+                        jpn: 利用規約URL
+                    title:
+                      description: service name
+                      example: SaaSus
+                      type: string
+                      x-description-i18n:
+                        jpn: サービス名
+                  required:
+                  - title
+                  - terms_of_service_url
+                  - privacy_policy_url
+                  - google_tag_manager_container_id
+                  type: object
+                type: object
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get Authentication Authorization Basic Information
+      tags:
+      - basicInfo
+      x-description-i18n:
+        jpn: |
+          認証認可基本情報を取得します。
+      x-summary-i18n:
+        jpn: 認証認可基本情報取得
+    patch:
+      description: |
+        Update authentication authorization basic information.
+      operationId: UpdateCustomizePageSettings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+              - properties:
+                  favicon:
+                    description: favicon
+                    example: data:image/png;base64,ZDMiIHN0UmVmOmRvY3VtZW50SUQ9Inhtc==
+                    format: base64
+                    type: string
+                    x-description-i18n:
+                      jpn: ファビコン
+                  icon:
+                    description: service icon
+                    example: data:image/png;base64,ZDMiIHN0UmVmOmRvY3VtZW50SUQ9Inhtc==
+                    format: base64
+                    type: string
+                    x-description-i18n:
+                      jpn: サービスアイコン
+                required:
+                - icon
+                - favicon
+              - properties:
+                  google_tag_manager_container_id:
+                    description: Google Tag Manager container ID
+                    example: GTM-XXXXXXX
+                    type: string
+                    x-description-i18n:
+                      jpn: Google Tag Manager コンテナ ID
+                  privacy_policy_url:
+                    description: privacy policy URL
+                    example: http://dev.example.com/privacy
+                    type: string
+                    x-description-i18n:
+                      jpn: プライバシーポリシーURL
+                  terms_of_service_url:
+                    description: terms of service URL
+                    example: http://dev.example.com/terms
+                    type: string
+                    x-description-i18n:
+                      jpn: 利用規約URL
+                  title:
+                    description: service name
+                    example: SaaSus
+                    type: string
+                    x-description-i18n:
+                      jpn: サービス名
+                required:
+                - title
+                - terms_of_service_url
+                - privacy_policy_url
+                - google_tag_manager_container_id
+                type: object
+              type: object
+      responses:
+        "200":
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Update Authentication Authorization Basic Information
+      tags:
+      - basicInfo
+      x-description-i18n:
+        jpn: |
+          認証認可基本情報を更新します。
+      x-summary-i18n:
+        jpn: 認証認可基本情報更新
+  /customize-pages:
+    get:
+      description: |
+        Get the authentication screen setting information (new registration, login, password reset, etc.).
+      operationId: GetCustomizePages
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  password_reset_page:
+                    properties:
+                      html_contents:
+                        description: |
+                          Edit page HTML
+                          ※ This function is not yet provided, so it cannot be changed or saved.
+                        example: <html><div>画面内容</div></html>
+                        type: string
+                        x-description-i18n:
+                          jpn: |
+                            画面のHTMLを編集できます
+                            ※ 未提供の機能のため、変更・保存はできません
+                      is_privacy_policy:
+                        description: show the privacy policy checkbox
+                        example: true
+                        type: boolean
+                        x-description-i18n:
+                          jpn: プライバシーポリシーチェックボックスを表示するが設定されているか
+                      is_terms_of_service:
+                        description: display the terms of use agreement check box
+                        example: true
+                        type: boolean
+                        x-description-i18n:
+                          jpn: 利用規約の同意チェックボックスを表示するが設定されているか
+                    required:
+                    - html_contents
+                    - is_terms_of_service
+                    - is_privacy_policy
+                    type: object
+                  sign_in_page:
+                    properties:
+                      html_contents:
+                        description: |
+                          Edit page HTML
+                          ※ This function is not yet provided, so it cannot be changed or saved.
+                        example: <html><div>画面内容</div></html>
+                        type: string
+                        x-description-i18n:
+                          jpn: |
+                            画面のHTMLを編集できます
+                            ※ 未提供の機能のため、変更・保存はできません
+                      is_privacy_policy:
+                        description: show the privacy policy checkbox
+                        example: true
+                        type: boolean
+                        x-description-i18n:
+                          jpn: プライバシーポリシーチェックボックスを表示するが設定されているか
+                      is_terms_of_service:
+                        description: display the terms of use agreement check box
+                        example: true
+                        type: boolean
+                        x-description-i18n:
+                          jpn: 利用規約の同意チェックボックスを表示するが設定されているか
+                    required:
+                    - html_contents
+                    - is_terms_of_service
+                    - is_privacy_policy
+                    type: object
+                  sign_up_page:
+                    properties:
+                      html_contents:
+                        description: |
+                          Edit page HTML
+                          ※ This function is not yet provided, so it cannot be changed or saved.
+                        example: <html><div>画面内容</div></html>
+                        type: string
+                        x-description-i18n:
+                          jpn: |
+                            画面のHTMLを編集できます
+                            ※ 未提供の機能のため、変更・保存はできません
+                      is_privacy_policy:
+                        description: show the privacy policy checkbox
+                        example: true
+                        type: boolean
+                        x-description-i18n:
+                          jpn: プライバシーポリシーチェックボックスを表示するが設定されているか
+                      is_terms_of_service:
+                        description: display the terms of use agreement check box
+                        example: true
+                        type: boolean
+                        x-description-i18n:
+                          jpn: 利用規約の同意チェックボックスを表示するが設定されているか
+                    required:
+                    - html_contents
+                    - is_terms_of_service
+                    - is_privacy_policy
+                    type: object
+                required:
+                - sign_up_page
+                - sign_in_page
+                - password_reset_page
+                type: object
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get Authentication Page Setting
+      tags:
+      - basicInfo
+      x-description-i18n:
+        jpn: |
+          認証系画面設定情報（新規登録・ログイン・パスワードリセット等）を取得します。
+      x-summary-i18n:
+        jpn: 認証系画面設定情報取得
+    patch:
+      description: |
+        Update the authentication page setting information (new registration, login, password reset, etc.).
+      operationId: UpdateCustomizePages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                password_reset_page:
+                  properties:
+                    html_contents:
+                      description: |
+                        Edit page HTML
+                        ※ This function is not yet provided, so it cannot be changed or saved.
+                      example: <html><div>画面内容</div></html>
+                      type: string
+                      x-description-i18n:
+                        jpn: |
+                          画面のHTMLを編集できます
+                          ※ 未提供の機能のため、変更・保存はできません
+                    is_privacy_policy:
+                      description: show the privacy policy checkbox
+                      example: true
+                      type: boolean
+                      x-description-i18n:
+                        jpn: プライバシーポリシーチェックボックスを表示するが設定されているか
+                    is_terms_of_service:
+                      description: display the terms of use agreement check box
+                      example: true
+                      type: boolean
+                      x-description-i18n:
+                        jpn: 利用規約の同意チェックボックスを表示するが設定されているか
+                  required:
+                  - html_contents
+                  - is_terms_of_service
+                  - is_privacy_policy
+                  type: object
+                sign_in_page:
+                  properties:
+                    html_contents:
+                      description: |
+                        Edit page HTML
+                        ※ This function is not yet provided, so it cannot be changed or saved.
+                      example: <html><div>画面内容</div></html>
+                      type: string
+                      x-description-i18n:
+                        jpn: |
+                          画面のHTMLを編集できます
+                          ※ 未提供の機能のため、変更・保存はできません
+                    is_privacy_policy:
+                      description: show the privacy policy checkbox
+                      example: true
+                      type: boolean
+                      x-description-i18n:
+                        jpn: プライバシーポリシーチェックボックスを表示するが設定されているか
+                    is_terms_of_service:
+                      description: display the terms of use agreement check box
+                      example: true
+                      type: boolean
+                      x-description-i18n:
+                        jpn: 利用規約の同意チェックボックスを表示するが設定されているか
+                  required:
+                  - html_contents
+                  - is_terms_of_service
+                  - is_privacy_policy
+                  type: object
+                sign_up_page:
+                  properties:
+                    html_contents:
+                      description: |
+                        Edit page HTML
+                        ※ This function is not yet provided, so it cannot be changed or saved.
+                      example: <html><div>画面内容</div></html>
+                      type: string
+                      x-description-i18n:
+                        jpn: |
+                          画面のHTMLを編集できます
+                          ※ 未提供の機能のため、変更・保存はできません
+                    is_privacy_policy:
+                      description: show the privacy policy checkbox
+                      example: true
+                      type: boolean
+                      x-description-i18n:
+                        jpn: プライバシーポリシーチェックボックスを表示するが設定されているか
+                    is_terms_of_service:
+                      description: display the terms of use agreement check box
+                      example: true
+                      type: boolean
+                      x-description-i18n:
+                        jpn: 利用規約の同意チェックボックスを表示するが設定されているか
+                  required:
+                  - html_contents
+                  - is_terms_of_service
+                  - is_privacy_policy
+                  type: object
+              type: object
+      responses:
+        "200":
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Authentication Page Setting
+      tags:
+      - basicInfo
+      x-description-i18n:
+        jpn: |
+          認証系画面設定情報（新規登録・ログイン・パスワードリセット等）を更新します。
+      x-summary-i18n:
+        jpn: 認証系画面設定情報設定
+  /notification-messages:
+    get:
+      description: |
+        Get notification email templates.
+      operationId: FindNotificationMessages
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  authentication_mfa:
+                    properties:
+                      message:
+                        description: Message
+                        example: The verification code to your new account is {####}
+                        type: string
+                        x-description-i18n:
+                          jpn: メッセージ
+                      subject:
+                        description: Title
+                        example: Verify your new account
+                        type: string
+                        x-description-i18n:
+                          jpn: タイトル
+                    required:
+                    - subject
+                    - message
+                    type: object
+                  create_user:
+                    properties:
+                      message:
+                        description: Message
+                        example: The verification code to your new account is {####}
+                        type: string
+                        x-description-i18n:
+                          jpn: メッセージ
+                      subject:
+                        description: Title
+                        example: Verify your new account
+                        type: string
+                        x-description-i18n:
+                          jpn: タイトル
+                    required:
+                    - subject
+                    - message
+                    type: object
+                  forgot_password:
+                    properties:
+                      message:
+                        description: Message
+                        example: The verification code to your new account is {####}
+                        type: string
+                        x-description-i18n:
+                          jpn: メッセージ
+                      subject:
+                        description: Title
+                        example: Verify your new account
+                        type: string
+                        x-description-i18n:
+                          jpn: タイトル
+                    required:
+                    - subject
+                    - message
+                    type: object
+                  invite_tenant_user:
+                    properties:
+                      message:
+                        description: Message
+                        example: The verification code to your new account is {####}
+                        type: string
+                        x-description-i18n:
+                          jpn: メッセージ
+                      subject:
+                        description: Title
+                        example: Verify your new account
+                        type: string
+                        x-description-i18n:
+                          jpn: タイトル
+                    required:
+                    - subject
+                    - message
+                    type: object
+                  resend_code:
+                    properties:
+                      message:
+                        description: Message
+                        example: The verification code to your new account is {####}
+                        type: string
+                        x-description-i18n:
+                          jpn: メッセージ
+                      subject:
+                        description: Title
+                        example: Verify your new account
+                        type: string
+                        x-description-i18n:
+                          jpn: タイトル
+                    required:
+                    - subject
+                    - message
+                    type: object
+                  sign_up:
+                    properties:
+                      message:
+                        description: Message
+                        example: The verification code to your new account is {####}
+                        type: string
+                        x-description-i18n:
+                          jpn: メッセージ
+                      subject:
+                        description: Title
+                        example: Verify your new account
+                        type: string
+                        x-description-i18n:
+                          jpn: タイトル
+                    required:
+                    - subject
+                    - message
+                    type: object
+                  update_user_attribute:
+                    properties:
+                      message:
+                        description: Message
+                        example: The verification code to your new account is {####}
+                        type: string
+                        x-description-i18n:
+                          jpn: メッセージ
+                      subject:
+                        description: Title
+                        example: Verify your new account
+                        type: string
+                        x-description-i18n:
+                          jpn: タイトル
+                    required:
+                    - subject
+                    - message
+                    type: object
+                  verify_external_user:
+                    properties:
+                      message:
+                        description: Message
+                        example: The verification code to your new account is {####}
+                        type: string
+                        x-description-i18n:
+                          jpn: メッセージ
+                      subject:
+                        description: Title
+                        example: Verify your new account
+                        type: string
+                        x-description-i18n:
+                          jpn: タイトル
+                    required:
+                    - subject
+                    - message
+                    type: object
+                  verify_user_attribute:
+                    properties:
+                      message:
+                        description: Message
+                        example: The verification code to your new account is {####}
+                        type: string
+                        x-description-i18n:
+                          jpn: メッセージ
+                      subject:
+                        description: Title
+                        example: Verify your new account
+                        type: string
+                        x-description-i18n:
+                          jpn: タイトル
+                    required:
+                    - subject
+                    - message
+                    type: object
+                required:
+                - sign_up
+                - create_user
+                - resend_code
+                - forgot_password
+                - update_user_attribute
+                - verify_user_attribute
+                - authentication_mfa
+                - invite_tenant_user
+                - verify_external_user
+                type: object
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get Notification Email Templates
+      tags:
+      - basicInfo
+      x-description-i18n:
+        jpn: |
+          各種通知メールテンプレートを取得します。
+      x-summary-i18n:
+        jpn: 通知メールテンプレートを取得
+    put:
+      description: |
+        Update notification email template.
+      operationId: UpdateNotificationMessages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                authentication_mfa:
+                  properties:
+                    message:
+                      description: Message
+                      example: The verification code to your new account is {####}
+                      type: string
+                      x-description-i18n:
+                        jpn: メッセージ
+                    subject:
+                      description: Title
+                      example: Verify your new account
+                      type: string
+                      x-description-i18n:
+                        jpn: タイトル
+                  required:
+                  - subject
+                  - message
+                  type: object
+                create_user:
+                  properties:
+                    message:
+                      description: Message
+                      example: The verification code to your new account is {####}
+                      type: string
+                      x-description-i18n:
+                        jpn: メッセージ
+                    subject:
+                      description: Title
+                      example: Verify your new account
+                      type: string
+                      x-description-i18n:
+                        jpn: タイトル
+                  required:
+                  - subject
+                  - message
+                  type: object
+                forgot_password:
+                  properties:
+                    message:
+                      description: Message
+                      example: The verification code to your new account is {####}
+                      type: string
+                      x-description-i18n:
+                        jpn: メッセージ
+                    subject:
+                      description: Title
+                      example: Verify your new account
+                      type: string
+                      x-description-i18n:
+                        jpn: タイトル
+                  required:
+                  - subject
+                  - message
+                  type: object
+                invite_tenant_user:
+                  properties:
+                    message:
+                      description: Message
+                      example: The verification code to your new account is {####}
+                      type: string
+                      x-description-i18n:
+                        jpn: メッセージ
+                    subject:
+                      description: Title
+                      example: Verify your new account
+                      type: string
+                      x-description-i18n:
+                        jpn: タイトル
+                  required:
+                  - subject
+                  - message
+                  type: object
+                resend_code:
+                  properties:
+                    message:
+                      description: Message
+                      example: The verification code to your new account is {####}
+                      type: string
+                      x-description-i18n:
+                        jpn: メッセージ
+                    subject:
+                      description: Title
+                      example: Verify your new account
+                      type: string
+                      x-description-i18n:
+                        jpn: タイトル
+                  required:
+                  - subject
+                  - message
+                  type: object
+                sign_up:
+                  properties:
+                    message:
+                      description: Message
+                      example: The verification code to your new account is {####}
+                      type: string
+                      x-description-i18n:
+                        jpn: メッセージ
+                    subject:
+                      description: Title
+                      example: Verify your new account
+                      type: string
+                      x-description-i18n:
+                        jpn: タイトル
+                  required:
+                  - subject
+                  - message
+                  type: object
+                update_user_attribute:
+                  properties:
+                    message:
+                      description: Message
+                      example: The verification code to your new account is {####}
+                      type: string
+                      x-description-i18n:
+                        jpn: メッセージ
+                    subject:
+                      description: Title
+                      example: Verify your new account
+                      type: string
+                      x-description-i18n:
+                        jpn: タイトル
+                  required:
+                  - subject
+                  - message
+                  type: object
+                verify_external_user:
+                  properties:
+                    message:
+                      description: Message
+                      example: The verification code to your new account is {####}
+                      type: string
+                      x-description-i18n:
+                        jpn: メッセージ
+                    subject:
+                      description: Title
+                      example: Verify your new account
+                      type: string
+                      x-description-i18n:
+                        jpn: タイトル
+                  required:
+                  - subject
+                  - message
+                  type: object
+                verify_user_attribute:
+                  properties:
+                    message:
+                      description: Message
+                      example: The verification code to your new account is {####}
+                      type: string
+                      x-description-i18n:
+                        jpn: メッセージ
+                    subject:
+                      description: Title
+                      example: Verify your new account
+                      type: string
+                      x-description-i18n:
+                        jpn: タイトル
+                  required:
+                  - subject
+                  - message
+                  type: object
+              type: object
+      responses:
+        "200":
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Update Notification Email Template
+      tags:
+      - basicInfo
+      x-description-i18n:
+        jpn: |
+          各種通知メールテンプレート更新します。
+      x-summary-i18n:
+        jpn: 通知メールテンプレートを更新
+security:
+- Bearer: []
+servers:
+- description: Production API Server
+  url: https://api.saasus.io/v1/auth
+tags:
+- description: Basic Info
+  name: basicInfo
+  x-description-i18n:
+    jpn: 基本情報

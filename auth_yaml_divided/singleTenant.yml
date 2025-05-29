@@ -1,0 +1,277 @@
+info:
+  contact:
+    name: Anti-Pattern
+  description: Schema
+  title: SaaSus Auth API Schema
+  version: 1.0.0
+  x-description-i18n:
+    jpn: スキーマ
+openapi: 3.0.0
+paths:
+  /single-tenant/cloudformation-launch-stack-link:
+    get:
+      description: |
+        Get the CloudFormation stack activation link for Single Tenant.
+      operationId: GetCloudFormationLaunchStackLinkForSingleTenant
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  link:
+                    example: https://us-west-2.console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/create?stackName=sample&templateURL=https://s3.us-west-2.amazonaws.com/cloudformation-templates-sample.template
+                    title: cloud formation launch dtack link
+                    type: string
+                    x-title-i18n:
+                      jpn: cloud formation launch dtack link
+                required:
+                - link
+                title: AWS CloudFormation Stack Launch Link
+                type: object
+                x-title-i18n:
+                  jpn: AWS CloudFormationスタック作成リンク
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get CloudFormation Stack Launch Link For Single Tenant
+      tags:
+      - singleTenant
+      x-description-i18n:
+        jpn: |
+          SingleTenant用CloudFormationスタック起動リンクを取得します。
+      x-summary-i18n:
+        jpn: SingleTenant用CloudFormationスタック起動リンク取得
+  /single-tenant/settings:
+    get:
+      operationId: GetSingleTenantSettings
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  cloudformation_template_url:
+                    description: S3 URL where the CloudFormationTemplate to be executed
+                      in the SaaS environment is stored
+                    example: https://presigned-url-test.s3.ap-northeast-1.amazonaws.com/test.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=xxxxxx%2F20230710%2Fap-northeast-1%2Fs3%2Faws4_request&X-Amz-Date=20230710T054140Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=xxxxxxxxxxxxxxxx
+                    title: CloudFormation template URL
+                    type: string
+                    x-description-i18n:
+                      jpn: SaaS環境で実行するCloudFormationTemplateが格納されているS3のURL
+                    x-title-i18n:
+                      jpn: CloudFormationテンプレートURL
+                  ddl_template_url:
+                    description: S3 URL where the CloudFormationTemplate to be executed
+                      in the SaaS environment is stored
+                    example: https://presigned-url-test.s3.ap-northeast-1.amazonaws.com/test.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=xxxxxx%2F20230710%2Fap-northeast-1%2Fs3%2Faws4_request&X-Amz-Date=20230710T054140Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=xxxxxxxxxxxxxxxx
+                    title: ddl template URL
+                    type: string
+                    x-description-i18n:
+                      jpn: S3 URL where the ddlTemplate to be executed in the SaaS
+                        environment is stored
+                    x-title-i18n:
+                      jpn: ddlテンプレートURL
+                  enabled:
+                    description: enable Single Tenant settings or not
+                    title: Enable Single Tenant settings or Not
+                    type: boolean
+                    x-description-i18n:
+                      jpn: シングルテナント設定を有効にするか否か
+                    x-title-i18n:
+                      jpn: シングルテナント設定を有効にするか否か
+                  role_arn:
+                    description: ARN of the role for SaaS Platform to AssumeRole
+                    example: arn:aws:iam::123456789012:role/role-name
+                    title: ARN of the role to be AssumeRole
+                    type: string
+                    x-description-i18n:
+                      jpn: SaaS PlatformがAssumeRoleするためのロールのARN
+                    x-title-i18n:
+                      jpn: AssumeRoleするためのロールのARN
+                  role_external_id:
+                    description: External id used by SaaSus when AssumeRole to operate
+                      SaaS
+                    example: 1234567890
+                    title: External id to use when AssumeRole
+                    type: string
+                    x-description-i18n:
+                      jpn: SaaSusがSaaSを操作するためにAssumeRoleする時に使用するexternal id
+                    x-title-i18n:
+                      jpn: AssumeRoleする時に使用するExternalID
+                required:
+                - enabled
+                - role_arn
+                - cloudformation_template_url
+                - ddl_template_url
+                - role_external_id
+                title: Single Tenant settings
+                type: object
+                x-title-i18n:
+                  jpn: シングルテナント設定
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Retrieve the settings of the single tenant.
+      tags:
+      - singleTenant
+      x-summary-i18n:
+        jpn: シングルテナント機能の設定情報を取得する
+    patch:
+      description: |
+        Updates configuration information for single-tenant functionality
+        Returns error if single tenant feature cannot be enabled.
+      operationId: UpdateSingleTenantSettings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                cloudformation_template:
+                  description: CloudFormation template file
+                  example: U3dhZ2dlciByb2Nrcw==
+                  format: base64
+                  title: CloudFormation template file
+                  type: string
+                  x-description-i18n:
+                    jpn: SaaS環境で実行するCloudFormationTemplateファイル
+                  x-title-i18n:
+                    jpn: CloudFormationテンプレートファイル
+                ddl_template:
+                  description: ddl file to run in SaaS environment
+                  example: U3dhZ2dlciByb2Nrcw==
+                  format: base64
+                  title: ddl template file
+                  type: string
+                  x-description-i18n:
+                    jpn: SaaS環境で実行するddlファイル
+                  x-title-i18n:
+                    jpn: ddlテンプレートファイル
+                enabled:
+                  description: enable Single Tenant settings or not
+                  title: Enable Single Tenant settings or Not
+                  type: boolean
+                  x-description-i18n:
+                    jpn: シングルテナント設定を有効にするか否か
+                  x-title-i18n:
+                    jpn: シングルテナント設定を有効にするか否か
+                role_arn:
+                  description: ARN of the role for SaaS Platform to AssumeRole
+                  example: arn:aws:iam::123456789012:role/role-name
+                  title: ARN of the role to be AssumeRole
+                  type: string
+                  x-description-i18n:
+                    jpn: SaaS PlatformがAssumeRoleするためのロールのARN
+                  x-title-i18n:
+                    jpn: AssumeRoleするためのロールのARN
+                role_external_id:
+                  description: External id used by SaaSus when AssumeRole to operate
+                    SaaS
+                  example: 1234567890
+                  title: External id to use when AssumeRole
+                  type: string
+                  x-description-i18n:
+                    jpn: SaaSusがSaaSを操作するためにAssumeRoleする時に使用するexternal id
+                  x-title-i18n:
+                    jpn: AssumeRoleする時に使用するExternalID
+              title: Single Tenant settings update parameters
+              x-title-i18n:
+                jpn: シングルテナント設定更新パラメータ
+      responses:
+        "200":
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Bad Request
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Update configuration information for single-tenant functionality
+      tags:
+      - singleTenant
+      x-description-i18n:
+        jpn: |
+          シングルテナント機能の設定情報を更新します。
+          シングルテナント機能の有効化ができない場合はエラーを返します。
+      x-summary-i18n:
+        jpn: シングルテナント機能の設定情報を更新する
+security:
+- Bearer: []
+servers:
+- description: Production API Server
+  url: https://api.saasus.io/v1/auth
+tags:
+- description: Single Tenant Management
+  name: singleTenant
+  x-description-i18n:
+    jpn: シングルテナント管理

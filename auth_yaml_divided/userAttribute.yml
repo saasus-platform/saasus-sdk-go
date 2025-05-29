@@ -1,0 +1,385 @@
+info:
+  contact:
+    name: Anti-Pattern
+  description: Schema
+  title: SaaSus Auth API Schema
+  version: 1.0.0
+  x-description-i18n:
+    jpn: スキーマ
+openapi: 3.0.0
+paths:
+  /saas-user-attributes:
+    post:
+      description: |
+        Create additional SaaS user attributes to be kept on the SaaSus Platform.
+        You can give common values to all tenants.
+      operationId: CreateSaasUserAttribute
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                attribute_name:
+                  description: Attribute Name
+                  example: birthday
+                  type: string
+                  x-description-i18n:
+                    jpn: 属性名
+                attribute_type:
+                  description: |
+                    Type (date can be set to YYYY-MM-DD format.)
+                  enum:
+                  - string
+                  - number
+                  - bool
+                  - date
+                  type: string
+                  x-description-i18n:
+                    jpn: |
+                      型（dateはYYYY-MM-DDの形式で使用する事ができます。）
+                display_name:
+                  description: Display Name
+                  example: Birthday
+                  type: string
+                  x-description-i18n:
+                    jpn: 表示名
+              required:
+              - attribute_name
+              - display_name
+              - attribute_type
+              type: object
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                properties:
+                  attribute_name:
+                    description: Attribute Name
+                    example: birthday
+                    type: string
+                    x-description-i18n:
+                      jpn: 属性名
+                  attribute_type:
+                    description: |
+                      Type (date can be set to YYYY-MM-DD format.)
+                    enum:
+                    - string
+                    - number
+                    - bool
+                    - date
+                    type: string
+                    x-description-i18n:
+                      jpn: |
+                        型（dateはYYYY-MM-DDの形式で使用する事ができます。）
+                  display_name:
+                    description: Display Name
+                    example: Birthday
+                    type: string
+                    x-description-i18n:
+                      jpn: 表示名
+                required:
+                - attribute_name
+                - display_name
+                - attribute_type
+                type: object
+          description: Created
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Create SaaS User Attributes
+      tags:
+      - userAttribute
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform にて保持するSaaSユーザーの追加属性を登録します。
+          すべてのテナントに対して共通の値を持たせることができます。
+      x-summary-i18n:
+        jpn: SaaSユーザー属性の作成
+  /user-attributes:
+    get:
+      description: |
+        Get additional attributes of the user saved in the SaaSus Platform.
+        For example, you can define items associated with a user, such as user name, birthday, etc.
+        If you don't want personal information on the SaaS Platform side, personal information can be kept on the SaaS side without user attribute definition.
+      operationId: GetUserAttributes
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  user_attributes:
+                    description: User Attribute Definition
+                    items:
+                      properties:
+                        attribute_name:
+                          description: Attribute Name
+                          example: birthday
+                          type: string
+                          x-description-i18n:
+                            jpn: 属性名
+                        attribute_type:
+                          description: |
+                            Type (date can be set to YYYY-MM-DD format.)
+                          enum:
+                          - string
+                          - number
+                          - bool
+                          - date
+                          type: string
+                          x-description-i18n:
+                            jpn: |
+                              型（dateはYYYY-MM-DDの形式で使用する事ができます。）
+                        display_name:
+                          description: Display Name
+                          example: Birthday
+                          type: string
+                          x-description-i18n:
+                            jpn: 表示名
+                      required:
+                      - attribute_name
+                      - display_name
+                      - attribute_type
+                      type: object
+                    type: array
+                    x-description-i18n:
+                      jpn: ユーザー属性定義
+                required:
+                - user_attributes
+                title: User Attributes
+                type: object
+                x-title-i18n:
+                  jpn: ユーザー属性一覧
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get User Attributes
+      tags:
+      - userAttribute
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform にて保持するユーザーの追加属性を取得します。
+          例えば、ユーザー名を持たせる、誕生日を持たせるなど、ユーザーに紐付いた項目の定義を行うことができます。
+          一方で、個人情報を SaaSus Platform 側に持たせたくない場合は、このユーザー属性定義を行わずに SaaS 側で個人情報を持つことを検討してください。
+      x-summary-i18n:
+        jpn: ユーザー属性の一覧を取得
+    post:
+      description: |
+        Create additional user attributes to be kept on the SaaSus Platform.
+        You can give different values to each tenant.
+        For example, you can define items associated with a user, such as user name, birthday, etc.
+        If you don't want personal information on the SaaS Platform side, personal information can be kept on the SaaS side without user attribute definition.
+      operationId: CreateUserAttribute
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                attribute_name:
+                  description: Attribute Name
+                  example: birthday
+                  type: string
+                  x-description-i18n:
+                    jpn: 属性名
+                attribute_type:
+                  description: |
+                    Type (date can be set to YYYY-MM-DD format.)
+                  enum:
+                  - string
+                  - number
+                  - bool
+                  - date
+                  type: string
+                  x-description-i18n:
+                    jpn: |
+                      型（dateはYYYY-MM-DDの形式で使用する事ができます。）
+                display_name:
+                  description: Display Name
+                  example: Birthday
+                  type: string
+                  x-description-i18n:
+                    jpn: 表示名
+              required:
+              - attribute_name
+              - display_name
+              - attribute_type
+              type: object
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                properties:
+                  attribute_name:
+                    description: Attribute Name
+                    example: birthday
+                    type: string
+                    x-description-i18n:
+                      jpn: 属性名
+                  attribute_type:
+                    description: |
+                      Type (date can be set to YYYY-MM-DD format.)
+                    enum:
+                    - string
+                    - number
+                    - bool
+                    - date
+                    type: string
+                    x-description-i18n:
+                      jpn: |
+                        型（dateはYYYY-MM-DDの形式で使用する事ができます。）
+                  display_name:
+                    description: Display Name
+                    example: Birthday
+                    type: string
+                    x-description-i18n:
+                      jpn: 表示名
+                required:
+                - attribute_name
+                - display_name
+                - attribute_type
+                type: object
+          description: Created
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Create User Attributes
+      tags:
+      - userAttribute
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform にて保持するユーザーの追加属性を登録します。
+          テナント毎に異なる値を持たせることができます。
+          例えば、ユーザー名を持たせる、誕生日を持たせるなど、ユーザーに紐付いた項目の定義を行うことができます。
+          一方で、個人情報を SaaSus Platform 側に持たせたくない場合は、このユーザー属性定義を行わずに SaaS 側で個人情報を持つことを検討してください。
+      x-summary-i18n:
+        jpn: ユーザー属性の作成
+  /user-attributes/{attribute_name}:
+    delete:
+      description: |
+        Delete user attributes kept on the SaaSus Platform.
+      operationId: DeleteUserAttribute
+      parameters:
+      - description: Attribute Name
+        in: path
+        name: attribute_name
+        required: true
+        schema:
+          example: birthday
+          type: string
+        x-description-i18n:
+          jpn: 属性名
+      responses:
+        "200":
+          description: OK
+        "404":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Delete User Attribute
+      tags:
+      - userAttribute
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform にて保持するユーザーの追加属性を削除します。
+      x-summary-i18n:
+        jpn: ユーザー属性の削除
+security:
+- Bearer: []
+servers:
+- description: Production API Server
+  url: https://api.saasus.io/v1/auth
+tags:
+- description: Additional User Attributes
+  name: userAttribute
+  x-description-i18n:
+    jpn: ユーザーの追加属性

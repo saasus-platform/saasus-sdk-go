@@ -1,0 +1,1217 @@
+info:
+  contact:
+    name: Anti-Pattern
+  description: Schema
+  title: SaaSus Auth API Schema
+  version: 1.0.0
+  x-description-i18n:
+    jpn: スキーマ
+openapi: 3.0.0
+paths:
+  /tenants/{tenant_id}/users:
+    get:
+      description: |
+        Get all the users belonging to the tenant.
+        Id is unique.
+      operationId: GetTenantUsers
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: テナントID
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  users:
+                    items:
+                      properties:
+                        attributes:
+                          additionalProperties: true
+                          description: |
+                            Attribute information (Get information set by defining user attributes in the SaaS development console)
+                          example:
+                            address: 東京都
+                            birthday: 19940925
+                            sex: 男
+                          type: object
+                          x-description-i18n:
+                            jpn: |
+                              属性情報（SaaS 開発コンソールでユーザー属性定義を行い設定された情報を取得します）
+                        email:
+                          description: E-mail
+                          example: hoge@example.com
+                          type: string
+                          x-description-i18n:
+                            jpn: メールアドレス
+                        envs:
+                          items:
+                            properties:
+                              display_name:
+                                description: env display name
+                                example: SaaSus dev
+                                type: string
+                                x-description-i18n:
+                                  jpn: 環境表示名
+                              id:
+                                example: 1
+                                type: integer
+                                x-go-type: uint64
+                              name:
+                                description: env name
+                                example: SaaSus dev
+                                type: string
+                                x-description-i18n:
+                                  jpn: 環境名
+                              roles:
+                                description: role info
+                                items:
+                                  description: role info
+                                  properties:
+                                    display_name:
+                                      description: role display name
+                                      example: 管理者
+                                      type: string
+                                      x-description-i18n:
+                                        jpn: 役割(ロール)表示名
+                                    role_name:
+                                      description: role name
+                                      example: admin
+                                      type: string
+                                      x-description-i18n:
+                                        jpn: 役割(ロール)名
+                                  required:
+                                  - role_name
+                                  - display_name
+                                  title: Role
+                                  type: object
+                                  x-description-i18n:
+                                    jpn: 役割(ロール)情報
+                                  x-title-i18n:
+                                    jpn: 役割(ロール)
+                                type: array
+                                x-description-i18n:
+                                  jpn: 役割(ロール)情報
+                            required:
+                            - id
+                            - name
+                            - roles
+                            type: object
+                          type: array
+                        id:
+                          description: User ID
+                          example: f94bfffc-8be2-11ec-b41a-0242ac120004
+                          type: string
+                          x-description-i18n:
+                            jpn: ユーザーID
+                        tenant_id:
+                          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                          type: string
+                        tenant_name:
+                          description: Tenant Name
+                          example: saasus
+                          type: string
+                          x-description-i18n:
+                            jpn: テナント名
+                      required:
+                      - id
+                      - tenant_id
+                      - tenant_name
+                      - email
+                      - attributes
+                      - envs
+                      title: User
+                      type: object
+                      x-title-i18n:
+                        jpn: ユーザー
+                    type: array
+                required:
+                - users
+                title: Users
+                type: object
+                x-title-i18n:
+                  jpn: ユーザー一覧
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get Tenant Users
+      tags:
+      - tenantUser
+      x-description-i18n:
+        jpn: |
+          テナントに所属するユーザーを全件取得します。
+          idは一意です。
+      x-summary-i18n:
+        jpn: テナントのユーザー一覧を取得
+    post:
+      description: |
+        Create a tenant user.
+        If attributes is empty, the additional attributes will be created empty.
+      operationId: CreateTenantUser
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: テナントID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                attributes:
+                  additionalProperties: true
+                  description: |
+                    Attribute information (Get information set by defining user attributes in the SaaS development console)
+                  example:
+                    address: 東京都
+                    birthday: 19940925
+                    sex: 男
+                  type: object
+                  x-description-i18n:
+                    jpn: |
+                      属性情報（SaaS 開発コンソールでユーザー属性定義を行い設定された情報を取得します）
+                email:
+                  description: E-mail
+                  example: hoge@example.com
+                  type: string
+                  x-description-i18n:
+                    jpn: メールアドレス
+              required:
+              - email
+              - attributes
+              title: User Creation Parameters
+              type: object
+              x-title-i18n:
+                jpn: ユーザーの作成パラメータ
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                properties:
+                  attributes:
+                    additionalProperties: true
+                    description: |
+                      Attribute information (Get information set by defining user attributes in the SaaS development console)
+                    example:
+                      address: 東京都
+                      birthday: 19940925
+                      sex: 男
+                    type: object
+                    x-description-i18n:
+                      jpn: |
+                        属性情報（SaaS 開発コンソールでユーザー属性定義を行い設定された情報を取得します）
+                  email:
+                    description: E-mail
+                    example: hoge@example.com
+                    type: string
+                    x-description-i18n:
+                      jpn: メールアドレス
+                  envs:
+                    items:
+                      properties:
+                        display_name:
+                          description: env display name
+                          example: SaaSus dev
+                          type: string
+                          x-description-i18n:
+                            jpn: 環境表示名
+                        id:
+                          example: 1
+                          type: integer
+                          x-go-type: uint64
+                        name:
+                          description: env name
+                          example: SaaSus dev
+                          type: string
+                          x-description-i18n:
+                            jpn: 環境名
+                        roles:
+                          description: role info
+                          items:
+                            description: role info
+                            properties:
+                              display_name:
+                                description: role display name
+                                example: 管理者
+                                type: string
+                                x-description-i18n:
+                                  jpn: 役割(ロール)表示名
+                              role_name:
+                                description: role name
+                                example: admin
+                                type: string
+                                x-description-i18n:
+                                  jpn: 役割(ロール)名
+                            required:
+                            - role_name
+                            - display_name
+                            title: Role
+                            type: object
+                            x-description-i18n:
+                              jpn: 役割(ロール)情報
+                            x-title-i18n:
+                              jpn: 役割(ロール)
+                          type: array
+                          x-description-i18n:
+                            jpn: 役割(ロール)情報
+                      required:
+                      - id
+                      - name
+                      - roles
+                      type: object
+                    type: array
+                  id:
+                    description: User ID
+                    example: f94bfffc-8be2-11ec-b41a-0242ac120004
+                    type: string
+                    x-description-i18n:
+                      jpn: ユーザーID
+                  tenant_id:
+                    example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                    type: string
+                  tenant_name:
+                    description: Tenant Name
+                    example: saasus
+                    type: string
+                    x-description-i18n:
+                      jpn: テナント名
+                required:
+                - id
+                - tenant_id
+                - tenant_name
+                - email
+                - attributes
+                - envs
+                title: User
+                type: object
+                x-title-i18n:
+                  jpn: ユーザー
+          description: Created
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Create Tenant User
+      tags:
+      - tenantUser
+      x-description-i18n:
+        jpn: |
+          テナントにユーザーを作成します。
+          attributesを空のオブジェクトにした場合、追加属性は空で作成されます。
+      x-summary-i18n:
+        jpn: テナントにユーザーを作成
+  /tenants/{tenant_id}/users/{user_id}:
+    delete:
+      description: |
+        Delete a user from the tenant.
+      operationId: DeleteTenantUser
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: テナントID
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        schema:
+          example: f94bfffc-8be2-11ec-b41a-0242ac120004
+          type: string
+        x-description-i18n:
+          jpn: ユーザーID
+      responses:
+        "200":
+          description: OK
+        "404":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Delete Tenant User
+      tags:
+      - tenantUser
+      x-description-i18n:
+        jpn: |
+          テナントからユーザーを削除します。
+      x-summary-i18n:
+        jpn: テナントのユーザー情報を削除
+    get:
+      description: |
+        Get one tenant user by specific ID.
+      operationId: GetTenantUser
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: テナントID
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        schema:
+          example: f94bfffc-8be2-11ec-b41a-0242ac120004
+          type: string
+        x-description-i18n:
+          jpn: ユーザーID
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  attributes:
+                    additionalProperties: true
+                    description: |
+                      Attribute information (Get information set by defining user attributes in the SaaS development console)
+                    example:
+                      address: 東京都
+                      birthday: 19940925
+                      sex: 男
+                    type: object
+                    x-description-i18n:
+                      jpn: |
+                        属性情報（SaaS 開発コンソールでユーザー属性定義を行い設定された情報を取得します）
+                  email:
+                    description: E-mail
+                    example: hoge@example.com
+                    type: string
+                    x-description-i18n:
+                      jpn: メールアドレス
+                  envs:
+                    items:
+                      properties:
+                        display_name:
+                          description: env display name
+                          example: SaaSus dev
+                          type: string
+                          x-description-i18n:
+                            jpn: 環境表示名
+                        id:
+                          example: 1
+                          type: integer
+                          x-go-type: uint64
+                        name:
+                          description: env name
+                          example: SaaSus dev
+                          type: string
+                          x-description-i18n:
+                            jpn: 環境名
+                        roles:
+                          description: role info
+                          items:
+                            description: role info
+                            properties:
+                              display_name:
+                                description: role display name
+                                example: 管理者
+                                type: string
+                                x-description-i18n:
+                                  jpn: 役割(ロール)表示名
+                              role_name:
+                                description: role name
+                                example: admin
+                                type: string
+                                x-description-i18n:
+                                  jpn: 役割(ロール)名
+                            required:
+                            - role_name
+                            - display_name
+                            title: Role
+                            type: object
+                            x-description-i18n:
+                              jpn: 役割(ロール)情報
+                            x-title-i18n:
+                              jpn: 役割(ロール)
+                          type: array
+                          x-description-i18n:
+                            jpn: 役割(ロール)情報
+                      required:
+                      - id
+                      - name
+                      - roles
+                      type: object
+                    type: array
+                  id:
+                    description: User ID
+                    example: f94bfffc-8be2-11ec-b41a-0242ac120004
+                    type: string
+                    x-description-i18n:
+                      jpn: ユーザーID
+                  tenant_id:
+                    example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                    type: string
+                  tenant_name:
+                    description: Tenant Name
+                    example: saasus
+                    type: string
+                    x-description-i18n:
+                      jpn: テナント名
+                required:
+                - id
+                - tenant_id
+                - tenant_name
+                - email
+                - attributes
+                - envs
+                title: User
+                type: object
+                x-title-i18n:
+                  jpn: ユーザー
+          description: OK
+        "404":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get Tenant User
+      tags:
+      - tenantUser
+      x-description-i18n:
+        jpn: |
+          テナントのユーザーをIDから一件取得します。
+      x-summary-i18n:
+        jpn: テナントのユーザー情報を取得
+    patch:
+      description: |
+        Update tenant user attributes.
+      operationId: UpdateTenantUser
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: テナントID
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        schema:
+          example: f94bfffc-8be2-11ec-b41a-0242ac120004
+          type: string
+        x-description-i18n:
+          jpn: ユーザーID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                attributes:
+                  additionalProperties: true
+                  description: |
+                    Attribute information (Get information set by defining user attributes in the SaaS development console)
+                  example:
+                    address: 東京都
+                    birthday: 19940925
+                    sex: 男
+                  type: object
+                  x-description-i18n:
+                    jpn: |
+                      属性情報（SaaS 開発コンソールでユーザー属性定義を行い設定された情報を取得します）
+              required:
+              - attributes
+              title: Update User Parameters
+              type: object
+              x-title-i18n:
+                jpn: ユーザーの更新パラメータ
+      responses:
+        "200":
+          description: OK
+        "404":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Update Tenant User Attribute
+      tags:
+      - tenantUser
+      x-description-i18n:
+        jpn: |
+          テナントのユーザー属性情報を更新します。
+      x-summary-i18n:
+        jpn: テナントのユーザー属性情報を更新
+  /tenants/{tenant_id}/users/{user_id}/envs/{env_id}/roles:
+    post:
+      description: |
+        Create roles on tenant users.
+      operationId: CreateTenantUserRoles
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: テナントID
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        schema:
+          example: f94bfffc-8be2-11ec-b41a-0242ac120004
+          type: string
+        x-description-i18n:
+          jpn: ユーザーID
+      - description: Env ID
+        in: path
+        name: env_id
+        required: true
+        schema:
+          example: 1
+          type: integer
+          x-go-type: uint64
+        x-description-i18n:
+          jpn: 環境ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                role_names:
+                  description: Role Info
+                  items:
+                    example: admin
+                    type: string
+                  type: array
+                  x-description-i18n:
+                    jpn: 役割(ロール)情報
+              required:
+              - role_names
+              title: Add Role to User Parameter
+              type: object
+              x-title-i18n:
+                jpn: ユーザーの役割(ロール)追加パラメータ
+      responses:
+        "201":
+          description: Created
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Create Tenant User Role
+      tags:
+      - tenantUser
+      x-description-i18n:
+        jpn: |
+          テナントのユーザーに役割(ロール)を作成します。
+      x-summary-i18n:
+        jpn: テナントのユーザー情報に役割(ロール)を作成
+  /tenants/{tenant_id}/users/{user_id}/envs/{env_id}/roles/{role_name}:
+    delete:
+      description: |
+        Remove a role from a tenant user.
+      operationId: DeleteTenantUserRole
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: テナントID
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        schema:
+          example: f94bfffc-8be2-11ec-b41a-0242ac120004
+          type: string
+        x-description-i18n:
+          jpn: ユーザーID
+      - description: Env ID
+        in: path
+        name: env_id
+        required: true
+        schema:
+          example: 1
+          type: integer
+          x-go-type: uint64
+        x-description-i18n:
+          jpn: 環境ID
+      - description: Role name
+        in: path
+        name: role_name
+        required: true
+        schema:
+          example: admin
+          type: string
+        x-description-i18n:
+          jpn: 役割(ロール)名
+      responses:
+        "200":
+          description: OK
+        "404":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Remove Role From Tenant User
+      tags:
+      - tenantUser
+      x-description-i18n:
+        jpn: |
+          テナントのユーザーから役割(ロール)を削除します。
+      x-summary-i18n:
+        jpn: テナントのユーザーから役割(ロール)を削除
+  /tenants/all/users:
+    get:
+      description: |
+        Get all users belonging to the tenant.
+        The same user belonging to multiple tenants will be returned as a different object.
+        Id is not unique.
+      operationId: GetAllTenantUsers
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  users:
+                    items:
+                      properties:
+                        attributes:
+                          additionalProperties: true
+                          description: |
+                            Attribute information (Get information set by defining user attributes in the SaaS development console)
+                          example:
+                            address: 東京都
+                            birthday: 19940925
+                            sex: 男
+                          type: object
+                          x-description-i18n:
+                            jpn: |
+                              属性情報（SaaS 開発コンソールでユーザー属性定義を行い設定された情報を取得します）
+                        email:
+                          description: E-mail
+                          example: hoge@example.com
+                          type: string
+                          x-description-i18n:
+                            jpn: メールアドレス
+                        envs:
+                          items:
+                            properties:
+                              display_name:
+                                description: env display name
+                                example: SaaSus dev
+                                type: string
+                                x-description-i18n:
+                                  jpn: 環境表示名
+                              id:
+                                example: 1
+                                type: integer
+                                x-go-type: uint64
+                              name:
+                                description: env name
+                                example: SaaSus dev
+                                type: string
+                                x-description-i18n:
+                                  jpn: 環境名
+                              roles:
+                                description: role info
+                                items:
+                                  description: role info
+                                  properties:
+                                    display_name:
+                                      description: role display name
+                                      example: 管理者
+                                      type: string
+                                      x-description-i18n:
+                                        jpn: 役割(ロール)表示名
+                                    role_name:
+                                      description: role name
+                                      example: admin
+                                      type: string
+                                      x-description-i18n:
+                                        jpn: 役割(ロール)名
+                                  required:
+                                  - role_name
+                                  - display_name
+                                  title: Role
+                                  type: object
+                                  x-description-i18n:
+                                    jpn: 役割(ロール)情報
+                                  x-title-i18n:
+                                    jpn: 役割(ロール)
+                                type: array
+                                x-description-i18n:
+                                  jpn: 役割(ロール)情報
+                            required:
+                            - id
+                            - name
+                            - roles
+                            type: object
+                          type: array
+                        id:
+                          description: User ID
+                          example: f94bfffc-8be2-11ec-b41a-0242ac120004
+                          type: string
+                          x-description-i18n:
+                            jpn: ユーザーID
+                        tenant_id:
+                          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                          type: string
+                        tenant_name:
+                          description: Tenant Name
+                          example: saasus
+                          type: string
+                          x-description-i18n:
+                            jpn: テナント名
+                      required:
+                      - id
+                      - tenant_id
+                      - tenant_name
+                      - email
+                      - attributes
+                      - envs
+                      title: User
+                      type: object
+                      x-title-i18n:
+                        jpn: ユーザー
+                    type: array
+                required:
+                - users
+                title: Users
+                type: object
+                x-title-i18n:
+                  jpn: ユーザー一覧
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get Users
+      tags:
+      - tenantUser
+      x-description-i18n:
+        jpn: |
+          テナントに所属しているユーザー全件を取得します。
+          複数テナントに所属する同一ユーザーは別のオブジェクトとして返却されます。
+          idは一意ではありません。
+      x-summary-i18n:
+        jpn: ユーザー一覧を取得
+  /tenants/all/users/{user_id}:
+    get:
+      description: |
+        Get information on user belonging to the tenant from the user ID.
+        If the user belongs to multiple tenants, it will be returned as another object.
+      operationId: GetAllTenantUser
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        schema:
+          example: f94bfffc-8be2-11ec-b41a-0242ac120004
+          type: string
+        x-description-i18n:
+          jpn: ユーザーID
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  users:
+                    items:
+                      properties:
+                        attributes:
+                          additionalProperties: true
+                          description: |
+                            Attribute information (Get information set by defining user attributes in the SaaS development console)
+                          example:
+                            address: 東京都
+                            birthday: 19940925
+                            sex: 男
+                          type: object
+                          x-description-i18n:
+                            jpn: |
+                              属性情報（SaaS 開発コンソールでユーザー属性定義を行い設定された情報を取得します）
+                        email:
+                          description: E-mail
+                          example: hoge@example.com
+                          type: string
+                          x-description-i18n:
+                            jpn: メールアドレス
+                        envs:
+                          items:
+                            properties:
+                              display_name:
+                                description: env display name
+                                example: SaaSus dev
+                                type: string
+                                x-description-i18n:
+                                  jpn: 環境表示名
+                              id:
+                                example: 1
+                                type: integer
+                                x-go-type: uint64
+                              name:
+                                description: env name
+                                example: SaaSus dev
+                                type: string
+                                x-description-i18n:
+                                  jpn: 環境名
+                              roles:
+                                description: role info
+                                items:
+                                  description: role info
+                                  properties:
+                                    display_name:
+                                      description: role display name
+                                      example: 管理者
+                                      type: string
+                                      x-description-i18n:
+                                        jpn: 役割(ロール)表示名
+                                    role_name:
+                                      description: role name
+                                      example: admin
+                                      type: string
+                                      x-description-i18n:
+                                        jpn: 役割(ロール)名
+                                  required:
+                                  - role_name
+                                  - display_name
+                                  title: Role
+                                  type: object
+                                  x-description-i18n:
+                                    jpn: 役割(ロール)情報
+                                  x-title-i18n:
+                                    jpn: 役割(ロール)
+                                type: array
+                                x-description-i18n:
+                                  jpn: 役割(ロール)情報
+                            required:
+                            - id
+                            - name
+                            - roles
+                            type: object
+                          type: array
+                        id:
+                          description: User ID
+                          example: f94bfffc-8be2-11ec-b41a-0242ac120004
+                          type: string
+                          x-description-i18n:
+                            jpn: ユーザーID
+                        tenant_id:
+                          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                          type: string
+                        tenant_name:
+                          description: Tenant Name
+                          example: saasus
+                          type: string
+                          x-description-i18n:
+                            jpn: テナント名
+                      required:
+                      - id
+                      - tenant_id
+                      - tenant_name
+                      - email
+                      - attributes
+                      - envs
+                      title: User
+                      type: object
+                      x-title-i18n:
+                        jpn: ユーザー
+                    type: array
+                required:
+                - users
+                title: Users
+                type: object
+                x-title-i18n:
+                  jpn: ユーザー一覧
+          description: OK
+        "404":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get User Info
+      tags:
+      - tenantUser
+      x-description-i18n:
+        jpn: |
+          ユーザーIDからテナントに所属しているユーザー情報を取得します。
+          複数テナントに所属している場合は別のオブジェクトとして返却されます。
+      x-summary-i18n:
+        jpn: ユーザー情報を取得
+security:
+- Bearer: []
+servers:
+- description: Production API Server
+  url: https://api.saasus.io/v1/auth
+tags:
+- description: Tenant User
+  name: tenantUser
+  x-description-i18n:
+    jpn: Tenant単位のユーザー

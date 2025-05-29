@@ -1,0 +1,274 @@
+info:
+  contact:
+    name: Anti-Pattern
+  description: Schema
+  title: SaaSus Auth API Schema
+  version: 1.0.0
+  x-description-i18n:
+    jpn: スキーマ
+openapi: 3.0.0
+paths:
+  /tenant-attributes:
+    get:
+      description: |
+        Get definitions for additional tenant attributes managed by the SaaSus Platform.
+        For example, tenant name, memo, etc., then get the attributes from SaaS using the SaaSus SDK/API.
+      operationId: GetTenantAttributes
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  tenant_attributes:
+                    description: Tenant Attribute Definition
+                    items:
+                      properties:
+                        attribute_name:
+                          description: Attribute Name
+                          example: birthday
+                          type: string
+                          x-description-i18n:
+                            jpn: 属性名
+                        attribute_type:
+                          description: |
+                            Type (date can be set to YYYY-MM-DD format.)
+                          enum:
+                          - string
+                          - number
+                          - bool
+                          - date
+                          type: string
+                          x-description-i18n:
+                            jpn: |
+                              型（dateはYYYY-MM-DDの形式で使用する事ができます。）
+                        display_name:
+                          description: Display Name
+                          example: Birthday
+                          type: string
+                          x-description-i18n:
+                            jpn: 表示名
+                      required:
+                      - attribute_name
+                      - display_name
+                      - attribute_type
+                      type: object
+                    type: array
+                    x-description-i18n:
+                      jpn: テナント属性定義
+                required:
+                - tenant_attributes
+                title: Tenant Additional Attributes
+                type: object
+                x-title-i18n:
+                  jpn: テナントの追加属性一覧
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get Tenant Attributes
+      tags:
+      - tenantAttribute
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform で管理する、テナントの追加属性の定義を取得します。
+          例えばテナントの呼び名やメモなどをを持たせることができ、SaaSからSaaSus SDK/APIを利用して取得することができます。
+      x-summary-i18n:
+        jpn: テナント属性の一覧を取得
+    post:
+      description: |
+        Register additional tenant attributes to be managed by SaaSus Platform.
+        For example, tenant name, memo, etc., then get the attributes from SaaS using the SaaSus SDK/API.
+      operationId: CreateTenantAttribute
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                attribute_name:
+                  description: Attribute Name
+                  example: birthday
+                  type: string
+                  x-description-i18n:
+                    jpn: 属性名
+                attribute_type:
+                  description: |
+                    Type (date can be set to YYYY-MM-DD format.)
+                  enum:
+                  - string
+                  - number
+                  - bool
+                  - date
+                  type: string
+                  x-description-i18n:
+                    jpn: |
+                      型（dateはYYYY-MM-DDの形式で使用する事ができます。）
+                display_name:
+                  description: Display Name
+                  example: Birthday
+                  type: string
+                  x-description-i18n:
+                    jpn: 表示名
+              required:
+              - attribute_name
+              - display_name
+              - attribute_type
+              type: object
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                properties:
+                  attribute_name:
+                    description: Attribute Name
+                    example: birthday
+                    type: string
+                    x-description-i18n:
+                      jpn: 属性名
+                  attribute_type:
+                    description: |
+                      Type (date can be set to YYYY-MM-DD format.)
+                    enum:
+                    - string
+                    - number
+                    - bool
+                    - date
+                    type: string
+                    x-description-i18n:
+                      jpn: |
+                        型（dateはYYYY-MM-DDの形式で使用する事ができます。）
+                  display_name:
+                    description: Display Name
+                    example: Birthday
+                    type: string
+                    x-description-i18n:
+                      jpn: 表示名
+                required:
+                - attribute_name
+                - display_name
+                - attribute_type
+                type: object
+          description: Created
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Create Tenant Attribute
+      tags:
+      - tenantAttribute
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform で管理する、テナントの追加属性の登録を行います。
+          例えばテナントの呼び名やメモなどをを持たせることができ、SaaSからSaaSus SDK/APIを利用して取得することができます。
+      x-summary-i18n:
+        jpn: テナント属性の作成
+  /tenant-attributes/{attribute_name}:
+    delete:
+      description: |
+        Deletes tenant attributes managed by SaaSus Platform.
+      operationId: DeleteTenantAttribute
+      parameters:
+      - description: Attribute Name
+        in: path
+        name: attribute_name
+        required: true
+        schema:
+          example: birthday
+          type: string
+        x-description-i18n:
+          jpn: 属性名
+      responses:
+        "200":
+          description: OK
+        "404":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Delete Tenant Attribute
+      tags:
+      - tenantAttribute
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform で管理する、テナントの追加属性の削除を行います。
+      x-summary-i18n:
+        jpn: テナント属性の削除
+security:
+- Bearer: []
+servers:
+- description: Production API Server
+  url: https://api.saasus.io/v1/auth
+tags:
+- description: Additional Tenant Attributes
+  name: tenantAttribute
+  x-description-i18n:
+    jpn: テナントの追加属性

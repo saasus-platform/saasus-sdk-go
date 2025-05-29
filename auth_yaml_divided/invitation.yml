@@ -1,0 +1,885 @@
+info:
+  contact:
+    name: Anti-Pattern
+  description: Schema
+  title: SaaSus Auth API Schema
+  version: 1.0.0
+  x-description-i18n:
+    jpn: スキーマ
+openapi: 3.0.0
+paths:
+  /invitations/{invitation_id}/validate:
+    patch:
+      description: |
+        Validate an invitation to the tenant.
+      operationId: ValidateInvitation
+      parameters:
+      - description: Invitation ID
+        in: path
+        name: invitation_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: 招待ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: |
+                Access token is required for existing users, and email and password is required for new users.
+              properties:
+                access_token:
+                  description: Access token of the invited user
+                  title: Access Token
+                  type: string
+                  x-description-i18n:
+                    jpn: 招待されたユーザーのアクセストークン
+                  x-title-i18n:
+                    jpn: アクセストークン
+                email:
+                  description: Email address of the invited user
+                  example: test@example.com
+                  title: Email Address
+                  type: string
+                  x-description-i18n:
+                    jpn: 招待されたユーザーのメールアドレス
+                  x-title-i18n:
+                    jpn: メールアドレス
+                password:
+                  description: Password of the invited user
+                  title: Password
+                  type: string
+                  x-description-i18n:
+                    jpn: 招待されたユーザーのパスワード
+                  x-title-i18n:
+                    jpn: パスワード
+              title: Invitation Validation Parameters
+              type: object
+              x-description-i18n:
+                jpn: |
+                  既存ユーザーの場合はアクセストークン、新規ユーザーの場合はメールアドレスとパスワードが必須です。
+              x-title-i18n:
+                jpn: 招待の検証パラメータ
+      responses:
+        "200":
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Validate Invitation
+      tags:
+      - invitation
+      x-description-i18n:
+        jpn: |
+          テナントへの招待を検証します。
+      x-summary-i18n:
+        jpn: テナントへの招待を検証
+  /invitations/{invitation_id}/validity:
+    get:
+      description: |
+        Get the validity of an invitation to the tenant.
+      operationId: GetInvitationValidity
+      parameters:
+      - description: Invitation ID
+        in: path
+        name: invitation_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: 招待ID
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                description: Invitation validity
+                properties:
+                  is_valid:
+                    description: Whether the validation is valid or not
+                    title: Whether the validation is valid or not
+                    type: boolean
+                    x-description-i18n:
+                      jpn: 招待が有効か否か
+                    x-title-i18n:
+                      jpn: 招待が有効か否か
+                required:
+                - is_valid
+                title: Invitation Validity
+                type: object
+                x-description-i18n:
+                  jpn: 招待の有効性
+                x-title-i18n:
+                  jpn: 招待の有効性
+          description: OK
+        "404":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get Invitation Validity
+      tags:
+      - invitation
+      x-description-i18n:
+        jpn: |
+          テナントへの招待の有効性を取得します。
+      x-summary-i18n:
+        jpn: テナントへの招待の有効性を取得
+  /tenants/{tenant_id}/invitations:
+    get:
+      description: |
+        Get a list of invitations to the tenant.
+      operationId: GetTenantInvitations
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: テナントID
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  invitations:
+                    description: Invitation list
+                    items:
+                      properties:
+                        email:
+                          description: Email address of the invited user
+                          example: test@example.com
+                          title: Email Address
+                          type: string
+                          x-description-i18n:
+                            jpn: 招待されたユーザーのメールアドレス
+                          x-title-i18n:
+                            jpn: メールアドレス
+                        envs:
+                          items:
+                            properties:
+                              display_name:
+                                description: env display name
+                                example: SaaSus dev
+                                type: string
+                                x-description-i18n:
+                                  jpn: 環境表示名
+                              id:
+                                example: 1
+                                type: integer
+                                x-go-type: uint64
+                              name:
+                                description: env name
+                                example: SaaSus dev
+                                type: string
+                                x-description-i18n:
+                                  jpn: 環境名
+                              roles:
+                                description: role info
+                                items:
+                                  description: role info
+                                  properties:
+                                    display_name:
+                                      description: role display name
+                                      example: 管理者
+                                      type: string
+                                      x-description-i18n:
+                                        jpn: 役割(ロール)表示名
+                                    role_name:
+                                      description: role name
+                                      example: admin
+                                      type: string
+                                      x-description-i18n:
+                                        jpn: 役割(ロール)名
+                                  required:
+                                  - role_name
+                                  - display_name
+                                  title: Role
+                                  type: object
+                                  x-description-i18n:
+                                    jpn: 役割(ロール)情報
+                                  x-title-i18n:
+                                    jpn: 役割(ロール)
+                                type: array
+                                x-description-i18n:
+                                  jpn: 役割(ロール)情報
+                            required:
+                            - id
+                            - name
+                            - roles
+                            type: object
+                          type: array
+                        expired_at:
+                          description: Expiration date of the invitation
+                          example: 1640995200
+                          title: Expiration Date
+                          type: integer
+                          x-description-i18n:
+                            jpn: 招待の有効期限
+                          x-title-i18n:
+                            jpn: 有効期限
+                        id:
+                          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                          type: string
+                        invitation_url:
+                          description: Invitation URL
+                          example: https://auth.dev.saasus.io/invite?id=69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                          title: Invitation URL
+                          type: string
+                          x-description-i18n:
+                            jpn: 招待URL
+                          x-title-i18n:
+                            jpn: 招待URL
+                        status:
+                          enum:
+                          - pending
+                          - accepted
+                          - expired
+                          title: Invitation Status
+                          type: string
+                          x-title-i18n:
+                            jpn: 招待ステータス
+                      required:
+                      - id
+                      - email
+                      - invitation_url
+                      - envs
+                      - expired_at
+                      - status
+                      title: Invitation
+                      type: object
+                      x-title-i18n:
+                        jpn: 招待
+                    type: array
+                    x-description-i18n:
+                      jpn: 招待一覧
+                required:
+                - invitations
+                title: Invitation List
+                type: object
+                x-title-i18n:
+                  jpn: 招待一覧
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get Tenant Invitations
+      tags:
+      - invitation
+      x-description-i18n:
+        jpn: |
+          テナントへの招待一覧を取得します。
+      x-summary-i18n:
+        jpn: テナントの招待一覧を取得
+    post:
+      description: |
+        Create an invitation to the tenant.
+      operationId: CreateTenantInvitation
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: テナントID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                access_token:
+                  description: Access token of the user who creates an invitation
+                  title: Access Token
+                  type: string
+                  x-description-i18n:
+                    jpn: 招待を作成するユーザーのアクセストークン
+                  x-title-i18n:
+                    jpn: アクセストークン
+                email:
+                  description: Email address of the user to be invited
+                  example: test@example.com
+                  title: Email Address
+                  type: string
+                  x-description-i18n:
+                    jpn: 招待するユーザーのメールアドレス
+                  x-title-i18n:
+                    jpn: メールアドレス
+                envs:
+                  items:
+                    properties:
+                      id:
+                        example: 1
+                        type: integer
+                        x-go-type: uint64
+                      role_names:
+                        description: Role name
+                        items:
+                          example: admin
+                          type: string
+                        title: Role Name
+                        type: array
+                        x-description-i18n:
+                          jpn: 役割名
+                        x-title-i18n:
+                          jpn: 役割名
+                    required:
+                    - id
+                    - role_names
+                    type: object
+                  title: Invited User Environment Information
+                  type: array
+                  x-title-i18n:
+                    jpn: 招待するユーザーの環境情報
+              required:
+              - email
+              - access_token
+              - envs
+              title: Invitation Creation Parameters
+              type: object
+              x-title-i18n:
+                jpn: 招待の作成パラメータ
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                properties:
+                  email:
+                    description: Email address of the invited user
+                    example: test@example.com
+                    title: Email Address
+                    type: string
+                    x-description-i18n:
+                      jpn: 招待されたユーザーのメールアドレス
+                    x-title-i18n:
+                      jpn: メールアドレス
+                  envs:
+                    items:
+                      properties:
+                        display_name:
+                          description: env display name
+                          example: SaaSus dev
+                          type: string
+                          x-description-i18n:
+                            jpn: 環境表示名
+                        id:
+                          example: 1
+                          type: integer
+                          x-go-type: uint64
+                        name:
+                          description: env name
+                          example: SaaSus dev
+                          type: string
+                          x-description-i18n:
+                            jpn: 環境名
+                        roles:
+                          description: role info
+                          items:
+                            description: role info
+                            properties:
+                              display_name:
+                                description: role display name
+                                example: 管理者
+                                type: string
+                                x-description-i18n:
+                                  jpn: 役割(ロール)表示名
+                              role_name:
+                                description: role name
+                                example: admin
+                                type: string
+                                x-description-i18n:
+                                  jpn: 役割(ロール)名
+                            required:
+                            - role_name
+                            - display_name
+                            title: Role
+                            type: object
+                            x-description-i18n:
+                              jpn: 役割(ロール)情報
+                            x-title-i18n:
+                              jpn: 役割(ロール)
+                          type: array
+                          x-description-i18n:
+                            jpn: 役割(ロール)情報
+                      required:
+                      - id
+                      - name
+                      - roles
+                      type: object
+                    type: array
+                  expired_at:
+                    description: Expiration date of the invitation
+                    example: 1640995200
+                    title: Expiration Date
+                    type: integer
+                    x-description-i18n:
+                      jpn: 招待の有効期限
+                    x-title-i18n:
+                      jpn: 有効期限
+                  id:
+                    example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                    type: string
+                  invitation_url:
+                    description: Invitation URL
+                    example: https://auth.dev.saasus.io/invite?id=69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                    title: Invitation URL
+                    type: string
+                    x-description-i18n:
+                      jpn: 招待URL
+                    x-title-i18n:
+                      jpn: 招待URL
+                  status:
+                    enum:
+                    - pending
+                    - accepted
+                    - expired
+                    title: Invitation Status
+                    type: string
+                    x-title-i18n:
+                      jpn: 招待ステータス
+                required:
+                - id
+                - email
+                - invitation_url
+                - envs
+                - expired_at
+                - status
+                title: Invitation
+                type: object
+                x-title-i18n:
+                  jpn: 招待
+          description: Created
+        "400":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Bad Request
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Create Tenant Invitation
+      tags:
+      - invitation
+      x-description-i18n:
+        jpn: |
+          テナントへの招待を作成します。
+      x-summary-i18n:
+        jpn: テナントへの招待を作成
+  /tenants/{tenant_id}/invitations/{invitation_id}:
+    delete:
+      description: |
+        Delete an invitation for the tenant.
+      operationId: DeleteTenantInvitation
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: テナントID
+      - description: Invitation ID
+        in: path
+        name: invitation_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: 招待ID
+      responses:
+        "200":
+          description: OK
+        "404":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Delete Tenant Invitation
+      tags:
+      - invitation
+      x-description-i18n:
+        jpn: |
+          テナントへの招待を削除します。
+      x-summary-i18n:
+        jpn: テナントへの招待を削除
+    get:
+      description: |
+        Get invitation information for the tenant.
+      operationId: GetTenantInvitation
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: テナントID
+      - description: Invitation ID
+        in: path
+        name: invitation_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: 招待ID
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  email:
+                    description: Email address of the invited user
+                    example: test@example.com
+                    title: Email Address
+                    type: string
+                    x-description-i18n:
+                      jpn: 招待されたユーザーのメールアドレス
+                    x-title-i18n:
+                      jpn: メールアドレス
+                  envs:
+                    items:
+                      properties:
+                        display_name:
+                          description: env display name
+                          example: SaaSus dev
+                          type: string
+                          x-description-i18n:
+                            jpn: 環境表示名
+                        id:
+                          example: 1
+                          type: integer
+                          x-go-type: uint64
+                        name:
+                          description: env name
+                          example: SaaSus dev
+                          type: string
+                          x-description-i18n:
+                            jpn: 環境名
+                        roles:
+                          description: role info
+                          items:
+                            description: role info
+                            properties:
+                              display_name:
+                                description: role display name
+                                example: 管理者
+                                type: string
+                                x-description-i18n:
+                                  jpn: 役割(ロール)表示名
+                              role_name:
+                                description: role name
+                                example: admin
+                                type: string
+                                x-description-i18n:
+                                  jpn: 役割(ロール)名
+                            required:
+                            - role_name
+                            - display_name
+                            title: Role
+                            type: object
+                            x-description-i18n:
+                              jpn: 役割(ロール)情報
+                            x-title-i18n:
+                              jpn: 役割(ロール)
+                          type: array
+                          x-description-i18n:
+                            jpn: 役割(ロール)情報
+                      required:
+                      - id
+                      - name
+                      - roles
+                      type: object
+                    type: array
+                  expired_at:
+                    description: Expiration date of the invitation
+                    example: 1640995200
+                    title: Expiration Date
+                    type: integer
+                    x-description-i18n:
+                      jpn: 招待の有効期限
+                    x-title-i18n:
+                      jpn: 有効期限
+                  id:
+                    example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                    type: string
+                  invitation_url:
+                    description: Invitation URL
+                    example: https://auth.dev.saasus.io/invite?id=69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                    title: Invitation URL
+                    type: string
+                    x-description-i18n:
+                      jpn: 招待URL
+                    x-title-i18n:
+                      jpn: 招待URL
+                  status:
+                    enum:
+                    - pending
+                    - accepted
+                    - expired
+                    title: Invitation Status
+                    type: string
+                    x-title-i18n:
+                      jpn: 招待ステータス
+                required:
+                - id
+                - email
+                - invitation_url
+                - envs
+                - expired_at
+                - status
+                title: Invitation
+                type: object
+                x-title-i18n:
+                  jpn: 招待
+          description: OK
+        "404":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get Tenant Invitation
+      tags:
+      - invitation
+      x-description-i18n:
+        jpn: |
+          テナントへの招待情報を取得します。
+      x-summary-i18n:
+        jpn: テナントの招待情報を取得
+security:
+- Bearer: []
+servers:
+- description: Production API Server
+  url: https://api.saasus.io/v1/auth
+tags:
+- description: Invitation
+  name: invitation
+  x-description-i18n:
+    jpn: 招待

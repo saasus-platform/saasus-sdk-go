@@ -1,0 +1,1688 @@
+info:
+  contact:
+    name: Anti-Pattern
+  description: Schema
+  title: SaaSus Auth API Schema
+  version: 1.0.0
+  x-description-i18n:
+    jpn: スキーマ
+openapi: 3.0.0
+paths:
+  /plans/reset:
+    put:
+      description: |
+        Delete all information related to rate plans.
+        Delete plans linked to tenants and plan definitions.
+        If you are using the Stripe linkage, the linkage will be removed.
+      operationId: ResetPlan
+      responses:
+        "200":
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Delete all information related to rate plans
+      tags:
+      - tenant
+      x-description-i18n:
+        jpn: |
+          料金プランに関わる情報を全削除します。
+          テナントに連携されたプランとプラン定義を削除します。
+          Stripe連携している場合、連携が解除されます。
+      x-summary-i18n:
+        jpn: プランに関わる情報を全削除
+  /stripe:
+    delete:
+      description: |
+        Delete customer and product from Stripe.
+      operationId: DeleteStripeTenantAndPricing
+      responses:
+        "200":
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Delete Customer and Product From Stripe
+      tags:
+      - tenant
+      x-description-i18n:
+        jpn: |
+          stripe上の顧客情報・商品情報を削除します
+      x-summary-i18n:
+        jpn: stripe上の顧客情報・商品情報の削除
+  /stripe/init:
+    patch:
+      description: |
+        Set Stripe initial information via billing
+      operationId: CreateTenantAndPricing
+      responses:
+        "200":
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Stripe Initial Setting
+      tags:
+      - tenant
+      x-description-i18n:
+        jpn: |
+          billing経由でstripeへ初期情報を設定
+      x-summary-i18n:
+        jpn: stripe初期設定
+  /tenants:
+    get:
+      description: |
+        Get tenants managed by SaaSus Platform.
+      operationId: GetTenants
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                description: Tenant Info
+                properties:
+                  tenants:
+                    items:
+                      allOf:
+                      - properties:
+                          billing_info:
+                            properties:
+                              address:
+                                properties:
+                                  additional_address_info:
+                                    description: Additional information about the
+                                      address, such as a building name, floor, or
+                                      department name.
+                                    example: オフィスビル3階
+                                    type: string
+                                    x-description-i18n:
+                                      jpn: 建物名・部屋番号などの住所に関する追加情報
+                                  city:
+                                    description: City, district, suburb, town, or
+                                      village.
+                                    example: 渋谷区
+                                    type: string
+                                    x-description-i18n:
+                                      jpn: 住所の市区町村
+                                  country:
+                                    description: Country of the address using ISO
+                                      3166-1 alpha-2 code.
+                                    example: JP
+                                    pattern: ^[A-Z]{2}$
+                                    type: string
+                                    x-description-i18n:
+                                      jpn: 住所の国を ISO 3166-1 alpha-2 コードで指定します。
+                                  postal_code:
+                                    description: ZIP or postal code.
+                                    example: 123-4567
+                                    type: string
+                                    x-description-i18n:
+                                      jpn: 郵便番号
+                                  state:
+                                    description: State name or abbreviation.
+                                    example: 東京都
+                                    type: string
+                                    x-description-i18n:
+                                      jpn: 住所の都道府県または州
+                                  street:
+                                    description: Street address, apartment or suite
+                                      number.
+                                    example: 神宮前1-1-1
+                                    type: string
+                                    x-description-i18n:
+                                      jpn: 住所の通りの名前や番地を含めた部分
+                                required:
+                                - street
+                                - city
+                                - state
+                                - country
+                                - postal_code
+                                title: Tenant Billing Address
+                                x-title-i18n:
+                                  jpn: テナントの請求先住所
+                              invoice_language:
+                                description: Language of invoice
+                                enum:
+                                - ja-JP
+                                - en-US
+                                type: string
+                                x-description-i18n:
+                                  jpn: 請求書の言語
+                              name:
+                                description: Tenant name for billing
+                                example: 株式会社テストテナント
+                                type: string
+                                x-description-i18n:
+                                  jpn: 請求用のテナント名
+                            required:
+                            - name
+                            - address
+                            - invoice_language
+                            title: Tenant Billing Info
+                            type: object
+                            x-title-i18n:
+                              jpn: テナント請求情報
+                          id:
+                            example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                            type: string
+                          plan_id:
+                            example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                            type: string
+                        required:
+                        - id
+                      - properties:
+                          attributes:
+                            additionalProperties: true
+                            description: attribute info
+                            example:
+                              address: 東京都
+                              employee_number: 100
+                            type: object
+                            x-description-i18n:
+                              jpn: 属性情報
+                          back_office_staff_email:
+                            description: administrative staff email address
+                            example: hoge@example.com
+                            type: string
+                            x-description-i18n:
+                              jpn: 事務管理部門スタッフメールアドレス
+                          name:
+                            description: tenant name
+                            example: Anti-Pattern Inc.
+                            type: string
+                            x-description-i18n:
+                              jpn: テナント名
+                        required:
+                        - name
+                        - attributes
+                        - back_office_staff_email
+                        type: object
+                      - properties:
+                          delete_usage:
+                            description: |
+                              If you have a stripe linkage,  you can set whether to delete pay-as-you-go items when changing plans.
+                              When you change plan, you can remove all pay-as-you-go items included in your current subscription to stop being billed based on pay-as-you-go items.
+                              The recorded usage is cleared immediately. Since it cannot be restored, please note that plan change reservations with delete_usage set to true cannot be canceled.
+                            title: Proration Behavior When Changing Plans
+                            type: boolean
+                            x-description-i18n:
+                              jpn: |
+                                stripe連携している場合で、プラン変更時に従量課金アイテムを削除するか設定できます。
+                                プラン変更した場合に、現在のサブスクリプションに含まれる従量課金アイテムを全て削除して、従量課金アイテムに基づく請求の発生を止めることができます。
+                                即時に記録している使用量がクリアされます。それらは復元できないため、delete_usageをtrueにしたプラン変更予約は取り消しできません。
+                            x-title-i18n:
+                              jpn: プラン変更時の従量課金アイテムの削除
+                          next_plan_id:
+                            example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                            type: string
+                          next_plan_tax_rate_id:
+                            example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                            type: string
+                          proration_behavior:
+                            description: |
+                              If you have a strine linkage, you can set the behavior of the proportional allocation when changing plans.
+                              When a plan is changed, you can set whether to prorate the billing amount and reflect it on the next invoice, to issue a prorated invoice immediately, or not to prorate at all.
+                            enum:
+                            - create_prorations
+                            - none
+                            - always_invoice
+                            title: Proration Behavior When Changing Plans
+                            type: string
+                            x-description-i18n:
+                              jpn: |
+                                stripe連携している場合で、プラン変更時の比例配分の挙動を設定できます。
+                                プラン変更した場合に、請求金額を日割り計算し次回請求書に反映させるか、日割り計算した請求を即時に発行する、日割り計算をしないを設定できます。
+                            x-title-i18n:
+                              jpn: プラン変更時の比例配分の挙動
+                          using_next_plan_from:
+                            description: |
+                              Next billing plan start time (When using stripe, you can create a subscription that starts at the beginning of the current month by specifying 00:00 (UTC) at the beginning of the current month. Ex. 1672531200 for January 2023.)
+                            example: 1640995200
+                            type: integer
+                            x-description-i18n:
+                              jpn: |
+                                次回料金プラン開始日時（stripe連携時、当月月初の0時（UTC）を指定すると当月月初開始のサブスクリプションを作成できます。ex. 2023年1月の場合は、1672531200 ）
+                        title: Tenant Plan Reservation Information
+                        type: object
+                        x-title-i18n:
+                          jpn: テナントのプラン予約情報
+                      - properties:
+                          plan_histories:
+                            description: Plan History
+                            items:
+                              properties:
+                                delete_usage:
+                                  description: |
+                                    If you have a stripe linkage,  you can set whether to delete pay-as-you-go items when changing plans.
+                                    When you change plan, you can remove all pay-as-you-go items included in your current subscription to stop being billed based on pay-as-you-go items.
+                                    The recorded usage is cleared immediately. Since it cannot be restored, please note that plan change reservations with delete_usage set to true cannot be canceled.
+                                  title: Proration Behavior When Changing Plans
+                                  type: boolean
+                                  x-description-i18n:
+                                    jpn: |
+                                      stripe連携している場合で、プラン変更時に従量課金アイテムを削除するか設定できます。
+                                      プラン変更した場合に、現在のサブスクリプションに含まれる従量課金アイテムを全て削除して、従量課金アイテムに基づく請求の発生を止めることができます。
+                                      即時に記録している使用量がクリアされます。それらは復元できないため、delete_usageをtrueにしたプラン変更予約は取り消しできません。
+                                  x-title-i18n:
+                                    jpn: プラン変更時の従量課金アイテムの削除
+                                plan_applied_at:
+                                  description: Registration date
+                                  example: 1640995200
+                                  type: integer
+                                  x-description-i18n:
+                                    jpn: 登録日時
+                                plan_id:
+                                  example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                                  type: string
+                                proration_behavior:
+                                  description: |
+                                    If you have a strine linkage, you can set the behavior of the proportional allocation when changing plans.
+                                    When a plan is changed, you can set whether to prorate the billing amount and reflect it on the next invoice, to issue a prorated invoice immediately, or not to prorate at all.
+                                  enum:
+                                  - create_prorations
+                                  - none
+                                  - always_invoice
+                                  title: Proration Behavior When Changing Plans
+                                  type: string
+                                  x-description-i18n:
+                                    jpn: |
+                                      stripe連携している場合で、プラン変更時の比例配分の挙動を設定できます。
+                                      プラン変更した場合に、請求金額を日割り計算し次回請求書に反映させるか、日割り計算した請求を即時に発行する、日割り計算をしないを設定できます。
+                                  x-title-i18n:
+                                    jpn: プラン変更時の比例配分の挙動
+                                tax_rate_id:
+                                  example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                                  type: string
+                              required:
+                              - plan_id
+                              - plan_applied_at
+                              type: object
+                            type: array
+                            x-description-i18n:
+                              jpn: 料金プラン履歴
+                        required:
+                        - plan_histories
+                        type: object
+                      title: Tenants
+                      type: object
+                      x-title-i18n:
+                        jpn: テナント情報
+                    type: array
+                required:
+                - tenants
+                title: Tenants
+                type: object
+                x-description-i18n:
+                  jpn: テナント情報
+                x-title-i18n:
+                  jpn: テナント一覧
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get Tenants
+      tags:
+      - tenant
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform で管理する、テナント情報の取得を行います。
+      x-summary-i18n:
+        jpn: テナント一覧取得
+    post:
+      description: |
+        Create a tenant managed by the SaaSus Platform.
+      operationId: CreateTenant
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                attributes:
+                  additionalProperties: true
+                  description: attribute info
+                  example:
+                    address: 東京都
+                    employee_number: 100
+                  type: object
+                  x-description-i18n:
+                    jpn: 属性情報
+                back_office_staff_email:
+                  description: administrative staff email address
+                  example: hoge@example.com
+                  type: string
+                  x-description-i18n:
+                    jpn: 事務管理部門スタッフメールアドレス
+                name:
+                  description: tenant name
+                  example: Anti-Pattern Inc.
+                  type: string
+                  x-description-i18n:
+                    jpn: テナント名
+              required:
+              - name
+              - attributes
+              - back_office_staff_email
+              type: object
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - properties:
+                    billing_info:
+                      properties:
+                        address:
+                          properties:
+                            additional_address_info:
+                              description: Additional information about the address,
+                                such as a building name, floor, or department name.
+                              example: オフィスビル3階
+                              type: string
+                              x-description-i18n:
+                                jpn: 建物名・部屋番号などの住所に関する追加情報
+                            city:
+                              description: City, district, suburb, town, or village.
+                              example: 渋谷区
+                              type: string
+                              x-description-i18n:
+                                jpn: 住所の市区町村
+                            country:
+                              description: Country of the address using ISO 3166-1
+                                alpha-2 code.
+                              example: JP
+                              pattern: ^[A-Z]{2}$
+                              type: string
+                              x-description-i18n:
+                                jpn: 住所の国を ISO 3166-1 alpha-2 コードで指定します。
+                            postal_code:
+                              description: ZIP or postal code.
+                              example: 123-4567
+                              type: string
+                              x-description-i18n:
+                                jpn: 郵便番号
+                            state:
+                              description: State name or abbreviation.
+                              example: 東京都
+                              type: string
+                              x-description-i18n:
+                                jpn: 住所の都道府県または州
+                            street:
+                              description: Street address, apartment or suite number.
+                              example: 神宮前1-1-1
+                              type: string
+                              x-description-i18n:
+                                jpn: 住所の通りの名前や番地を含めた部分
+                          required:
+                          - street
+                          - city
+                          - state
+                          - country
+                          - postal_code
+                          title: Tenant Billing Address
+                          x-title-i18n:
+                            jpn: テナントの請求先住所
+                        invoice_language:
+                          description: Language of invoice
+                          enum:
+                          - ja-JP
+                          - en-US
+                          type: string
+                          x-description-i18n:
+                            jpn: 請求書の言語
+                        name:
+                          description: Tenant name for billing
+                          example: 株式会社テストテナント
+                          type: string
+                          x-description-i18n:
+                            jpn: 請求用のテナント名
+                      required:
+                      - name
+                      - address
+                      - invoice_language
+                      title: Tenant Billing Info
+                      type: object
+                      x-title-i18n:
+                        jpn: テナント請求情報
+                    id:
+                      example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                      type: string
+                    plan_id:
+                      example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                      type: string
+                  required:
+                  - id
+                - properties:
+                    attributes:
+                      additionalProperties: true
+                      description: attribute info
+                      example:
+                        address: 東京都
+                        employee_number: 100
+                      type: object
+                      x-description-i18n:
+                        jpn: 属性情報
+                    back_office_staff_email:
+                      description: administrative staff email address
+                      example: hoge@example.com
+                      type: string
+                      x-description-i18n:
+                        jpn: 事務管理部門スタッフメールアドレス
+                    name:
+                      description: tenant name
+                      example: Anti-Pattern Inc.
+                      type: string
+                      x-description-i18n:
+                        jpn: テナント名
+                  required:
+                  - name
+                  - attributes
+                  - back_office_staff_email
+                  type: object
+                - properties:
+                    delete_usage:
+                      description: |
+                        If you have a stripe linkage,  you can set whether to delete pay-as-you-go items when changing plans.
+                        When you change plan, you can remove all pay-as-you-go items included in your current subscription to stop being billed based on pay-as-you-go items.
+                        The recorded usage is cleared immediately. Since it cannot be restored, please note that plan change reservations with delete_usage set to true cannot be canceled.
+                      title: Proration Behavior When Changing Plans
+                      type: boolean
+                      x-description-i18n:
+                        jpn: |
+                          stripe連携している場合で、プラン変更時に従量課金アイテムを削除するか設定できます。
+                          プラン変更した場合に、現在のサブスクリプションに含まれる従量課金アイテムを全て削除して、従量課金アイテムに基づく請求の発生を止めることができます。
+                          即時に記録している使用量がクリアされます。それらは復元できないため、delete_usageをtrueにしたプラン変更予約は取り消しできません。
+                      x-title-i18n:
+                        jpn: プラン変更時の従量課金アイテムの削除
+                    next_plan_id:
+                      example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                      type: string
+                    next_plan_tax_rate_id:
+                      example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                      type: string
+                    proration_behavior:
+                      description: |
+                        If you have a strine linkage, you can set the behavior of the proportional allocation when changing plans.
+                        When a plan is changed, you can set whether to prorate the billing amount and reflect it on the next invoice, to issue a prorated invoice immediately, or not to prorate at all.
+                      enum:
+                      - create_prorations
+                      - none
+                      - always_invoice
+                      title: Proration Behavior When Changing Plans
+                      type: string
+                      x-description-i18n:
+                        jpn: |
+                          stripe連携している場合で、プラン変更時の比例配分の挙動を設定できます。
+                          プラン変更した場合に、請求金額を日割り計算し次回請求書に反映させるか、日割り計算した請求を即時に発行する、日割り計算をしないを設定できます。
+                      x-title-i18n:
+                        jpn: プラン変更時の比例配分の挙動
+                    using_next_plan_from:
+                      description: |
+                        Next billing plan start time (When using stripe, you can create a subscription that starts at the beginning of the current month by specifying 00:00 (UTC) at the beginning of the current month. Ex. 1672531200 for January 2023.)
+                      example: 1640995200
+                      type: integer
+                      x-description-i18n:
+                        jpn: |
+                          次回料金プラン開始日時（stripe連携時、当月月初の0時（UTC）を指定すると当月月初開始のサブスクリプションを作成できます。ex. 2023年1月の場合は、1672531200 ）
+                  title: Tenant Plan Reservation Information
+                  type: object
+                  x-title-i18n:
+                    jpn: テナントのプラン予約情報
+                - properties:
+                    plan_histories:
+                      description: Plan History
+                      items:
+                        properties:
+                          delete_usage:
+                            description: |
+                              If you have a stripe linkage,  you can set whether to delete pay-as-you-go items when changing plans.
+                              When you change plan, you can remove all pay-as-you-go items included in your current subscription to stop being billed based on pay-as-you-go items.
+                              The recorded usage is cleared immediately. Since it cannot be restored, please note that plan change reservations with delete_usage set to true cannot be canceled.
+                            title: Proration Behavior When Changing Plans
+                            type: boolean
+                            x-description-i18n:
+                              jpn: |
+                                stripe連携している場合で、プラン変更時に従量課金アイテムを削除するか設定できます。
+                                プラン変更した場合に、現在のサブスクリプションに含まれる従量課金アイテムを全て削除して、従量課金アイテムに基づく請求の発生を止めることができます。
+                                即時に記録している使用量がクリアされます。それらは復元できないため、delete_usageをtrueにしたプラン変更予約は取り消しできません。
+                            x-title-i18n:
+                              jpn: プラン変更時の従量課金アイテムの削除
+                          plan_applied_at:
+                            description: Registration date
+                            example: 1640995200
+                            type: integer
+                            x-description-i18n:
+                              jpn: 登録日時
+                          plan_id:
+                            example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                            type: string
+                          proration_behavior:
+                            description: |
+                              If you have a strine linkage, you can set the behavior of the proportional allocation when changing plans.
+                              When a plan is changed, you can set whether to prorate the billing amount and reflect it on the next invoice, to issue a prorated invoice immediately, or not to prorate at all.
+                            enum:
+                            - create_prorations
+                            - none
+                            - always_invoice
+                            title: Proration Behavior When Changing Plans
+                            type: string
+                            x-description-i18n:
+                              jpn: |
+                                stripe連携している場合で、プラン変更時の比例配分の挙動を設定できます。
+                                プラン変更した場合に、請求金額を日割り計算し次回請求書に反映させるか、日割り計算した請求を即時に発行する、日割り計算をしないを設定できます。
+                            x-title-i18n:
+                              jpn: プラン変更時の比例配分の挙動
+                          tax_rate_id:
+                            example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                            type: string
+                        required:
+                        - plan_id
+                        - plan_applied_at
+                        type: object
+                      type: array
+                      x-description-i18n:
+                        jpn: 料金プラン履歴
+                  required:
+                  - plan_histories
+                  type: object
+                title: Tenants
+                type: object
+                x-title-i18n:
+                  jpn: テナント情報
+          description: Created
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Create Tenant
+      tags:
+      - tenant
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform で管理する、テナント情報を作成します。
+      x-summary-i18n:
+        jpn: テナントを作成
+  /tenants/{tenant_id}:
+    delete:
+      description: |
+        Delete SaaSus Platform tenant.
+      operationId: DeleteTenant
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: テナントID
+      responses:
+        "200":
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Delete Tenant
+      tags:
+      - tenant
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform で管理する、テナントの詳細情報を削除します。
+      x-summary-i18n:
+        jpn: テナント情報を削除
+    get:
+      description: |
+        Get the details of tenant managed on the SaaSus Platform.
+      operationId: GetTenant
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: テナントID
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - properties:
+                    current_plan_period_end:
+                      description: current plan period end
+                      example: 1675209600
+                      type: integer
+                      x-description-i18n:
+                        jpn: 現在のプランの終了日時
+                    current_plan_period_start:
+                      description: current plan period start
+                      example: 1672531200
+                      type: integer
+                      x-description-i18n:
+                        jpn: 現在のプランの開始日時
+                - allOf:
+                  - properties:
+                      billing_info:
+                        properties:
+                          address:
+                            properties:
+                              additional_address_info:
+                                description: Additional information about the address,
+                                  such as a building name, floor, or department name.
+                                example: オフィスビル3階
+                                type: string
+                                x-description-i18n:
+                                  jpn: 建物名・部屋番号などの住所に関する追加情報
+                              city:
+                                description: City, district, suburb, town, or village.
+                                example: 渋谷区
+                                type: string
+                                x-description-i18n:
+                                  jpn: 住所の市区町村
+                              country:
+                                description: Country of the address using ISO 3166-1
+                                  alpha-2 code.
+                                example: JP
+                                pattern: ^[A-Z]{2}$
+                                type: string
+                                x-description-i18n:
+                                  jpn: 住所の国を ISO 3166-1 alpha-2 コードで指定します。
+                              postal_code:
+                                description: ZIP or postal code.
+                                example: 123-4567
+                                type: string
+                                x-description-i18n:
+                                  jpn: 郵便番号
+                              state:
+                                description: State name or abbreviation.
+                                example: 東京都
+                                type: string
+                                x-description-i18n:
+                                  jpn: 住所の都道府県または州
+                              street:
+                                description: Street address, apartment or suite number.
+                                example: 神宮前1-1-1
+                                type: string
+                                x-description-i18n:
+                                  jpn: 住所の通りの名前や番地を含めた部分
+                            required:
+                            - street
+                            - city
+                            - state
+                            - country
+                            - postal_code
+                            title: Tenant Billing Address
+                            x-title-i18n:
+                              jpn: テナントの請求先住所
+                          invoice_language:
+                            description: Language of invoice
+                            enum:
+                            - ja-JP
+                            - en-US
+                            type: string
+                            x-description-i18n:
+                              jpn: 請求書の言語
+                          name:
+                            description: Tenant name for billing
+                            example: 株式会社テストテナント
+                            type: string
+                            x-description-i18n:
+                              jpn: 請求用のテナント名
+                        required:
+                        - name
+                        - address
+                        - invoice_language
+                        title: Tenant Billing Info
+                        type: object
+                        x-title-i18n:
+                          jpn: テナント請求情報
+                      id:
+                        example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                        type: string
+                      plan_id:
+                        example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                        type: string
+                    required:
+                    - id
+                  - properties:
+                      attributes:
+                        additionalProperties: true
+                        description: attribute info
+                        example:
+                          address: 東京都
+                          employee_number: 100
+                        type: object
+                        x-description-i18n:
+                          jpn: 属性情報
+                      back_office_staff_email:
+                        description: administrative staff email address
+                        example: hoge@example.com
+                        type: string
+                        x-description-i18n:
+                          jpn: 事務管理部門スタッフメールアドレス
+                      name:
+                        description: tenant name
+                        example: Anti-Pattern Inc.
+                        type: string
+                        x-description-i18n:
+                          jpn: テナント名
+                    required:
+                    - name
+                    - attributes
+                    - back_office_staff_email
+                    type: object
+                  - properties:
+                      delete_usage:
+                        description: |
+                          If you have a stripe linkage,  you can set whether to delete pay-as-you-go items when changing plans.
+                          When you change plan, you can remove all pay-as-you-go items included in your current subscription to stop being billed based on pay-as-you-go items.
+                          The recorded usage is cleared immediately. Since it cannot be restored, please note that plan change reservations with delete_usage set to true cannot be canceled.
+                        title: Proration Behavior When Changing Plans
+                        type: boolean
+                        x-description-i18n:
+                          jpn: |
+                            stripe連携している場合で、プラン変更時に従量課金アイテムを削除するか設定できます。
+                            プラン変更した場合に、現在のサブスクリプションに含まれる従量課金アイテムを全て削除して、従量課金アイテムに基づく請求の発生を止めることができます。
+                            即時に記録している使用量がクリアされます。それらは復元できないため、delete_usageをtrueにしたプラン変更予約は取り消しできません。
+                        x-title-i18n:
+                          jpn: プラン変更時の従量課金アイテムの削除
+                      next_plan_id:
+                        example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                        type: string
+                      next_plan_tax_rate_id:
+                        example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                        type: string
+                      proration_behavior:
+                        description: |
+                          If you have a strine linkage, you can set the behavior of the proportional allocation when changing plans.
+                          When a plan is changed, you can set whether to prorate the billing amount and reflect it on the next invoice, to issue a prorated invoice immediately, or not to prorate at all.
+                        enum:
+                        - create_prorations
+                        - none
+                        - always_invoice
+                        title: Proration Behavior When Changing Plans
+                        type: string
+                        x-description-i18n:
+                          jpn: |
+                            stripe連携している場合で、プラン変更時の比例配分の挙動を設定できます。
+                            プラン変更した場合に、請求金額を日割り計算し次回請求書に反映させるか、日割り計算した請求を即時に発行する、日割り計算をしないを設定できます。
+                        x-title-i18n:
+                          jpn: プラン変更時の比例配分の挙動
+                      using_next_plan_from:
+                        description: |
+                          Next billing plan start time (When using stripe, you can create a subscription that starts at the beginning of the current month by specifying 00:00 (UTC) at the beginning of the current month. Ex. 1672531200 for January 2023.)
+                        example: 1640995200
+                        type: integer
+                        x-description-i18n:
+                          jpn: |
+                            次回料金プラン開始日時（stripe連携時、当月月初の0時（UTC）を指定すると当月月初開始のサブスクリプションを作成できます。ex. 2023年1月の場合は、1672531200 ）
+                    title: Tenant Plan Reservation Information
+                    type: object
+                    x-title-i18n:
+                      jpn: テナントのプラン予約情報
+                  - properties:
+                      plan_histories:
+                        description: Plan History
+                        items:
+                          properties:
+                            delete_usage:
+                              description: |
+                                If you have a stripe linkage,  you can set whether to delete pay-as-you-go items when changing plans.
+                                When you change plan, you can remove all pay-as-you-go items included in your current subscription to stop being billed based on pay-as-you-go items.
+                                The recorded usage is cleared immediately. Since it cannot be restored, please note that plan change reservations with delete_usage set to true cannot be canceled.
+                              title: Proration Behavior When Changing Plans
+                              type: boolean
+                              x-description-i18n:
+                                jpn: |
+                                  stripe連携している場合で、プラン変更時に従量課金アイテムを削除するか設定できます。
+                                  プラン変更した場合に、現在のサブスクリプションに含まれる従量課金アイテムを全て削除して、従量課金アイテムに基づく請求の発生を止めることができます。
+                                  即時に記録している使用量がクリアされます。それらは復元できないため、delete_usageをtrueにしたプラン変更予約は取り消しできません。
+                              x-title-i18n:
+                                jpn: プラン変更時の従量課金アイテムの削除
+                            plan_applied_at:
+                              description: Registration date
+                              example: 1640995200
+                              type: integer
+                              x-description-i18n:
+                                jpn: 登録日時
+                            plan_id:
+                              example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                              type: string
+                            proration_behavior:
+                              description: |
+                                If you have a strine linkage, you can set the behavior of the proportional allocation when changing plans.
+                                When a plan is changed, you can set whether to prorate the billing amount and reflect it on the next invoice, to issue a prorated invoice immediately, or not to prorate at all.
+                              enum:
+                              - create_prorations
+                              - none
+                              - always_invoice
+                              title: Proration Behavior When Changing Plans
+                              type: string
+                              x-description-i18n:
+                                jpn: |
+                                  stripe連携している場合で、プラン変更時の比例配分の挙動を設定できます。
+                                  プラン変更した場合に、請求金額を日割り計算し次回請求書に反映させるか、日割り計算した請求を即時に発行する、日割り計算をしないを設定できます。
+                              x-title-i18n:
+                                jpn: プラン変更時の比例配分の挙動
+                            tax_rate_id:
+                              example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                              type: string
+                          required:
+                          - plan_id
+                          - plan_applied_at
+                          type: object
+                        type: array
+                        x-description-i18n:
+                          jpn: 料金プラン履歴
+                    required:
+                    - plan_histories
+                    type: object
+                  title: Tenants
+                  type: object
+                  x-title-i18n:
+                    jpn: テナント情報
+                title: Tenant Detail
+                type: object
+                x-title-i18n:
+                  jpn: テナント詳細情報
+          description: OK
+        "404":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get Tenant Details
+      tags:
+      - tenant
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform で管理する、テナントの詳細情報を取得します。
+      x-summary-i18n:
+        jpn: テナント情報を取得
+    patch:
+      description: |
+        Update SaaSus Platform tenant details.
+      operationId: UpdateTenant
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: テナントID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                attributes:
+                  additionalProperties: true
+                  description: attribute info
+                  example:
+                    address: 東京都
+                    employee_number: 100
+                  type: object
+                  x-description-i18n:
+                    jpn: 属性情報
+                back_office_staff_email:
+                  description: administrative staff email address
+                  example: hoge@example.com
+                  type: string
+                  x-description-i18n:
+                    jpn: 事務管理部門スタッフメールアドレス
+                name:
+                  description: tenant name
+                  example: Anti-Pattern Inc.
+                  type: string
+                  x-description-i18n:
+                    jpn: テナント名
+              required:
+              - name
+              - attributes
+              - back_office_staff_email
+              type: object
+      responses:
+        "200":
+          description: OK
+        "404":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Update Tenant Details
+      tags:
+      - tenant
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform で管理する、テナントの詳細情報を更新します。
+      x-summary-i18n:
+        jpn: テナント情報を更新
+  /tenants/{tenant_id}/billing-info:
+    put:
+      description: |
+        Update SaaSus Platform tenant billing information.
+      operationId: UpdateTenantBillingInfo
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: テナントID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                address:
+                  properties:
+                    additional_address_info:
+                      description: Additional information about the address, such
+                        as a building name, floor, or department name.
+                      example: オフィスビル3階
+                      type: string
+                      x-description-i18n:
+                        jpn: 建物名・部屋番号などの住所に関する追加情報
+                    city:
+                      description: City, district, suburb, town, or village.
+                      example: 渋谷区
+                      type: string
+                      x-description-i18n:
+                        jpn: 住所の市区町村
+                    country:
+                      description: Country of the address using ISO 3166-1 alpha-2
+                        code.
+                      example: JP
+                      pattern: ^[A-Z]{2}$
+                      type: string
+                      x-description-i18n:
+                        jpn: 住所の国を ISO 3166-1 alpha-2 コードで指定します。
+                    postal_code:
+                      description: ZIP or postal code.
+                      example: 123-4567
+                      type: string
+                      x-description-i18n:
+                        jpn: 郵便番号
+                    state:
+                      description: State name or abbreviation.
+                      example: 東京都
+                      type: string
+                      x-description-i18n:
+                        jpn: 住所の都道府県または州
+                    street:
+                      description: Street address, apartment or suite number.
+                      example: 神宮前1-1-1
+                      type: string
+                      x-description-i18n:
+                        jpn: 住所の通りの名前や番地を含めた部分
+                  required:
+                  - street
+                  - city
+                  - state
+                  - country
+                  - postal_code
+                  title: Tenant Billing Address
+                  x-title-i18n:
+                    jpn: テナントの請求先住所
+                invoice_language:
+                  description: Language of invoice
+                  enum:
+                  - ja-JP
+                  - en-US
+                  type: string
+                  x-description-i18n:
+                    jpn: 請求書の言語
+                name:
+                  description: Tenant name for billing
+                  example: 株式会社テストテナント
+                  type: string
+                  x-description-i18n:
+                    jpn: 請求用のテナント名
+              required:
+              - name
+              - address
+              - invoice_language
+              title: Tenant Billing Info
+              type: object
+              x-title-i18n:
+                jpn: テナント請求情報
+      responses:
+        "200":
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Update Tenant Billing Information
+      tags:
+      - tenant
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform で管理しているテナントの請求先情報を更新します。
+      x-summary-i18n:
+        jpn: テナントの請求先情報を更新
+  /tenants/{tenant_id}/identity-providers:
+    get:
+      description: |
+        Get sign-in information via external identity provider per tenant.
+      operationId: GetTenantIdentityProviders
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: テナントID
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  saml:
+                    allOf:
+                    - properties:
+                        sign_in_url:
+                          example: https://example.com/sign-in/saml/1234567890123456
+                          type: string
+                      required:
+                      - sign_in_url
+                    - properties:
+                        email_attribute:
+                          example: email
+                          type: string
+                        metadata_url:
+                          example: https://example.com/saml/metadata
+                          type: string
+                      required:
+                      - metadata_url
+                      - email_attribute
+                      title: SAML Identity Provider
+                      type: object
+                      x-title-i18n:
+                        jpn: SAML外部IDプロバイダ
+                    type: object
+                title: Tenant Identity Providers
+                type: object
+                x-title-i18n:
+                  jpn: テナント毎の外部IDプロバイダ一覧
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get identity provider per tenant
+      tags:
+      - tenant
+      x-description-i18n:
+        jpn: |
+          テナント毎の外部IDプロバイダ経由のサインイン情報を取得します。
+      x-summary-i18n:
+        jpn: テナント毎の外部IDプロバイダ取得
+    put:
+      description: |
+        Update sign-in information via external identity provider per tenant.
+      operationId: UpdateTenantIdentityProvider
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: テナントID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: |
+                If identity_provider_props is null, the sign-in information for the external identity provider specified in provider_type is disabled.
+              properties:
+                identity_provider_props:
+                  oneOf:
+                  - properties:
+                      email_attribute:
+                        example: email
+                        type: string
+                      metadata_url:
+                        example: https://example.com/saml/metadata
+                        type: string
+                    required:
+                    - metadata_url
+                    - email_attribute
+                    title: SAML Identity Provider
+                    type: object
+                    x-title-i18n:
+                      jpn: SAML外部IDプロバイダ
+                  title: Tenant Identity Provider
+                  type: object
+                  x-title-i18n:
+                    jpn: テナント毎の外部IDプロバイダ
+                provider_type:
+                  enum:
+                  - SAML
+                  example: SAML
+                  type: string
+              required:
+              - provider_type
+              title: Update Tenant Identity Providers Parameters
+              type: object
+              x-description-i18n:
+                jpn: |
+                  identity_provider_propsがnullの場合は、provider_typeで指定された外部IDプロバイダのサインイン情報を無効化します。
+              x-title-i18n:
+                jpn: テナント毎の外部IDプロバイダ更新パラメータ
+      responses:
+        "200":
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Update identity provider per tenant
+      tags:
+      - tenant
+      x-description-i18n:
+        jpn: |
+          テナント毎の外部IDプロバイダ経由のサインイン情報を更新します。
+      x-summary-i18n:
+        jpn: テナント毎の外部IDプロバイダ更新
+  /tenants/{tenant_id}/plans:
+    put:
+      description: |
+        Update SaaSus Platform tenant plan information.
+      operationId: UpdateTenantPlan
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: テナントID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                delete_usage:
+                  description: |
+                    If you have a stripe linkage,  you can set whether to delete pay-as-you-go items when changing plans.
+                    When you change plan, you can remove all pay-as-you-go items included in your current subscription to stop being billed based on pay-as-you-go items.
+                    The recorded usage is cleared immediately. Since it cannot be restored, please note that plan change reservations with delete_usage set to true cannot be canceled.
+                  title: Proration Behavior When Changing Plans
+                  type: boolean
+                  x-description-i18n:
+                    jpn: |
+                      stripe連携している場合で、プラン変更時に従量課金アイテムを削除するか設定できます。
+                      プラン変更した場合に、現在のサブスクリプションに含まれる従量課金アイテムを全て削除して、従量課金アイテムに基づく請求の発生を止めることができます。
+                      即時に記録している使用量がクリアされます。それらは復元できないため、delete_usageをtrueにしたプラン変更予約は取り消しできません。
+                  x-title-i18n:
+                    jpn: プラン変更時の従量課金アイテムの削除
+                next_plan_id:
+                  example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                  type: string
+                next_plan_tax_rate_id:
+                  example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                  type: string
+                proration_behavior:
+                  description: |
+                    If you have a strine linkage, you can set the behavior of the proportional allocation when changing plans.
+                    When a plan is changed, you can set whether to prorate the billing amount and reflect it on the next invoice, to issue a prorated invoice immediately, or not to prorate at all.
+                  enum:
+                  - create_prorations
+                  - none
+                  - always_invoice
+                  title: Proration Behavior When Changing Plans
+                  type: string
+                  x-description-i18n:
+                    jpn: |
+                      stripe連携している場合で、プラン変更時の比例配分の挙動を設定できます。
+                      プラン変更した場合に、請求金額を日割り計算し次回請求書に反映させるか、日割り計算した請求を即時に発行する、日割り計算をしないを設定できます。
+                  x-title-i18n:
+                    jpn: プラン変更時の比例配分の挙動
+                using_next_plan_from:
+                  description: |
+                    Next billing plan start time (When using stripe, you can create a subscription that starts at the beginning of the current month by specifying 00:00 (UTC) at the beginning of the current month. Ex. 1672531200 for January 2023.)
+                  example: 1640995200
+                  type: integer
+                  x-description-i18n:
+                    jpn: |
+                      次回料金プラン開始日時（stripe連携時、当月月初の0時（UTC）を指定すると当月月初開始のサブスクリプションを作成できます。ex. 2023年1月の場合は、1672531200 ）
+              title: Tenant Plan Reservation Information
+              type: object
+              x-title-i18n:
+                jpn: テナントのプラン予約情報
+      responses:
+        "200":
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Update Tenant Plan Information
+      tags:
+      - tenant
+      x-description-i18n:
+        jpn: |
+          SaaSus Platform で管理しているテナントのプラン情報を更新します。
+      x-summary-i18n:
+        jpn: テナントのプラン情報を更新
+  /tenants/{tenant_id}/stripe-customer:
+    get:
+      description: |
+        Get the Stripe Customer information associated with the tenant, including their subscriptions.
+      operationId: GetStripeCustomer
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+          type: string
+        x-description-i18n:
+          jpn: テナントID
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  customer_id:
+                    description: stripe Customer ID
+                    example: cus_1234567890
+                    title: Customer ID
+                    type: string
+                    x-description-i18n:
+                      jpn: stripeの顧客ID
+                    x-title-i18n:
+                      jpn: 顧客ID
+                  subscription_schedule_id:
+                    description: stripe Subscription Schedule ID
+                    example: cus_1234567890
+                    title: Subscription Schedule ID
+                    type: string
+                    x-description-i18n:
+                      jpn: stripeのサブスクリプションスケジュールID
+                    x-title-i18n:
+                      jpn: サブスクリプションスケジュールID
+                required:
+                - customer_id
+                - subscription_schedule_id
+                title: Stripe Customer Information
+                type: object
+                x-title-i18n:
+                  jpn: Stripeの顧客ID連携情報
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get Stripe Customer
+      tags:
+      - tenant
+      x-description-i18n:
+        jpn: |
+          テナントに連携されているStripe顧客情報を取得します。
+          サブスクリプション情報も含まれます。
+      x-summary-i18n:
+        jpn: Stripe顧客情報取得
+security:
+- Bearer: []
+servers:
+- description: Production API Server
+  url: https://api.saasus.io/v1/auth
+tags:
+- description: Tenant
+  name: tenant
+  x-description-i18n:
+    jpn: テナント

@@ -1,0 +1,438 @@
+info:
+  contact:
+    name: Anti-Pattern
+  description: Schema
+  title: SaaSus Auth API Schema
+  version: 1.0.0
+  x-description-i18n:
+    jpn: スキーマ
+openapi: 3.0.0
+paths:
+  /userinfo:
+    get:
+      description: |
+        User information is obtained based on the ID token of the SaaS user (registered user).
+        The ID token is passed to the Callback URL during login from the SaaSus Platform generated login screen.
+        User information can be obtained from calling this API with an ID token from the URL on the server side.
+        Since the acquired tenant, role (role), price plan, etc. are included, it is possible to implement authorization based on it.
+      operationId: GetUserInfo
+      parameters:
+      - description: ID Token
+        in: query
+        name: token
+        required: true
+        schema:
+          type: string
+        x-description-i18n:
+          jpn: IDトークン
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  email:
+                    description: E-mail
+                    example: hoge@example.com
+                    type: string
+                    x-description-i18n:
+                      jpn: メールアドレス
+                  id:
+                    example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                    type: string
+                  tenants:
+                    description: Tenant Info
+                    items:
+                      properties:
+                        back_office_staff_email:
+                          description: back office contact email
+                          example: hoge@example.com
+                          type: string
+                          x-description-i18n:
+                            jpn: バックオフィス担当者のメール
+                        completed_sign_up:
+                          example: true
+                          type: boolean
+                        envs:
+                          description: environmental info, role info
+                          items:
+                            properties:
+                              display_name:
+                                description: env display name
+                                example: SaaSus dev
+                                type: string
+                                x-description-i18n:
+                                  jpn: 環境表示名
+                              id:
+                                example: 1
+                                type: integer
+                                x-go-type: uint64
+                              name:
+                                description: env name
+                                example: SaaSus dev
+                                type: string
+                                x-description-i18n:
+                                  jpn: 環境名
+                              roles:
+                                description: role info
+                                items:
+                                  description: role info
+                                  properties:
+                                    display_name:
+                                      description: role display name
+                                      example: 管理者
+                                      type: string
+                                      x-description-i18n:
+                                        jpn: 役割(ロール)表示名
+                                    role_name:
+                                      description: role name
+                                      example: admin
+                                      type: string
+                                      x-description-i18n:
+                                        jpn: 役割(ロール)名
+                                  required:
+                                  - role_name
+                                  - display_name
+                                  title: Role
+                                  type: object
+                                  x-description-i18n:
+                                    jpn: 役割(ロール)情報
+                                  x-title-i18n:
+                                    jpn: 役割(ロール)
+                                type: array
+                                x-description-i18n:
+                                  jpn: 役割(ロール)情報
+                            required:
+                            - id
+                            - name
+                            - roles
+                            type: object
+                          type: array
+                          x-description-i18n:
+                            jpn: 環境情報、役割(ロール)情報
+                        id:
+                          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                          type: string
+                        is_paid:
+                          description: |
+                            tenant payment status
+                            ※ Currently, it is returned only when stripe is linked.
+                          example: true
+                          type: boolean
+                          x-description-i18n:
+                            jpn: |
+                              テナントの支払い状況
+                              ※ 現在はストライプ連携時のみ返却されます。
+                        name:
+                          description: Tenant Name
+                          example: Anti-Pattern Inc.
+                          type: string
+                          x-description-i18n:
+                            jpn: テナント名
+                        plan_id:
+                          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                          type: string
+                        user_attribute:
+                          additionalProperties: true
+                          description: user additional attributes
+                          example:
+                            address: 東京都
+                            employee_number: 100
+                          type: object
+                          x-description-i18n:
+                            jpn: ユーザー追加属性
+                      required:
+                      - id
+                      - name
+                      - completed_sign_up
+                      - envs
+                      - user_attribute
+                      - back_office_staff_email
+                      type: object
+                    type: array
+                    x-description-i18n:
+                      jpn: テナント情報
+                  user_attribute:
+                    additionalProperties: true
+                    description: user additional attributes
+                    example:
+                      address: 東京都
+                      employee_number: 100
+                    type: object
+                    x-description-i18n:
+                      jpn: ユーザー追加属性
+                required:
+                - id
+                - email
+                - user_attribute
+                - tenants
+                title: User Info
+                type: object
+                x-title-i18n:
+                  jpn: ユーザー情報
+          description: OK
+        "401":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Unauthorized
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get User Info
+      tags:
+      - userInfo
+      x-description-i18n:
+        jpn: |
+          SaaS利用ユーザ(登録ユーザ)のIDトークンを元に、ユーザ情報を取得します。
+          IDトークンは、SaaSus Platform生成のログイン画面からログイン時にCallback URLに渡されます。
+          サーバ側でそのURLからIDトークンを取得し、このAPIを呼ぶことにより、該当ユーザの情報が取得できます。
+          取得した上には、所属テナントや役割(ロール)、料金プランなどが含まれているため、それを元に認可の実装を行うことが可能です。
+      x-summary-i18n:
+        jpn: ユーザー情報取得
+  /userinfo/search/email:
+    get:
+      description: |
+        Get user information by email address.
+      operationId: GetUserInfoByEmail
+      parameters:
+      - description: Email
+        in: query
+        name: email
+        required: true
+        schema:
+          type: string
+        x-description-i18n:
+          jpn: メールアドレス
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  email:
+                    description: E-mail
+                    example: hoge@example.com
+                    type: string
+                    x-description-i18n:
+                      jpn: メールアドレス
+                  id:
+                    example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                    type: string
+                  tenants:
+                    description: Tenant Info
+                    items:
+                      properties:
+                        back_office_staff_email:
+                          description: back office contact email
+                          example: hoge@example.com
+                          type: string
+                          x-description-i18n:
+                            jpn: バックオフィス担当者のメール
+                        completed_sign_up:
+                          example: true
+                          type: boolean
+                        envs:
+                          description: environmental info, role info
+                          items:
+                            properties:
+                              display_name:
+                                description: env display name
+                                example: SaaSus dev
+                                type: string
+                                x-description-i18n:
+                                  jpn: 環境表示名
+                              id:
+                                example: 1
+                                type: integer
+                                x-go-type: uint64
+                              name:
+                                description: env name
+                                example: SaaSus dev
+                                type: string
+                                x-description-i18n:
+                                  jpn: 環境名
+                              roles:
+                                description: role info
+                                items:
+                                  description: role info
+                                  properties:
+                                    display_name:
+                                      description: role display name
+                                      example: 管理者
+                                      type: string
+                                      x-description-i18n:
+                                        jpn: 役割(ロール)表示名
+                                    role_name:
+                                      description: role name
+                                      example: admin
+                                      type: string
+                                      x-description-i18n:
+                                        jpn: 役割(ロール)名
+                                  required:
+                                  - role_name
+                                  - display_name
+                                  title: Role
+                                  type: object
+                                  x-description-i18n:
+                                    jpn: 役割(ロール)情報
+                                  x-title-i18n:
+                                    jpn: 役割(ロール)
+                                type: array
+                                x-description-i18n:
+                                  jpn: 役割(ロール)情報
+                            required:
+                            - id
+                            - name
+                            - roles
+                            type: object
+                          type: array
+                          x-description-i18n:
+                            jpn: 環境情報、役割(ロール)情報
+                        id:
+                          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                          type: string
+                        is_paid:
+                          description: |
+                            tenant payment status
+                            ※ Currently, it is returned only when stripe is linked.
+                          example: true
+                          type: boolean
+                          x-description-i18n:
+                            jpn: |
+                              テナントの支払い状況
+                              ※ 現在はストライプ連携時のみ返却されます。
+                        name:
+                          description: Tenant Name
+                          example: Anti-Pattern Inc.
+                          type: string
+                          x-description-i18n:
+                            jpn: テナント名
+                        plan_id:
+                          example: 69e732d6-8ecc-45c4-c2eb-8438f7ffe775
+                          type: string
+                        user_attribute:
+                          additionalProperties: true
+                          description: user additional attributes
+                          example:
+                            address: 東京都
+                            employee_number: 100
+                          type: object
+                          x-description-i18n:
+                            jpn: ユーザー追加属性
+                      required:
+                      - id
+                      - name
+                      - completed_sign_up
+                      - envs
+                      - user_attribute
+                      - back_office_staff_email
+                      type: object
+                    type: array
+                    x-description-i18n:
+                      jpn: テナント情報
+                  user_attribute:
+                    additionalProperties: true
+                    description: user additional attributes
+                    example:
+                      address: 東京都
+                      employee_number: 100
+                    type: object
+                    x-description-i18n:
+                      jpn: ユーザー追加属性
+                required:
+                - id
+                - email
+                - user_attribute
+                - tenants
+                title: User Info
+                type: object
+                x-title-i18n:
+                  jpn: ユーザー情報
+          description: OK
+        "404":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get User Info by Email
+      tags:
+      - userInfo
+      x-description-i18n:
+        jpn: |
+          メールアドレスを条件にユーザー情報を取得します
+      x-summary-i18n:
+        jpn: メールアドレスからユーザー情報取得
+security:
+- Bearer: []
+servers:
+- description: Production API Server
+  url: https://api.saasus.io/v1/auth
+tags: []

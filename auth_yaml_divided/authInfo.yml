@@ -1,0 +1,752 @@
+info:
+  contact:
+    name: Anti-Pattern
+  description: Schema
+  title: SaaSus Auth API Schema
+  version: 1.0.0
+  x-description-i18n:
+    jpn: スキーマ
+openapi: 3.0.0
+paths:
+  /auth-info:
+    get:
+      description: |
+        Get the post-login SaaS URL that contains authentication information.
+        You can pass authentication information to the URL obtained here and implement this Callback using the SaaSus SDK.
+      operationId: GetAuthInfo
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  callback_url:
+                    description: Redirect After Authentication
+                    example: https://example.com/callback
+                    type: string
+                    x-description-i18n:
+                      jpn: 認証後遷移先
+                required:
+                - callback_url
+                title: Authentication Information
+                type: object
+                x-title-i18n:
+                  jpn: 認証情報
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get Authentication Info
+      tags:
+      - authInfo
+      x-description-i18n:
+        jpn: |
+          ログイン後に認証情報を渡す SaaS の URL を取得します。
+          ここで取得した URL へ認証情報を渡し、SaaSus SDK を利用してこの Callback の実装をすることが可能となります。
+      x-summary-i18n:
+        jpn: 認証情報を取得
+    put:
+      description: |
+        Register post-login SaaS URL for authentication information.
+        It is possible to pass authentication information to the URL registered here and implement this Callback using the SaaSus SDK.
+      operationId: UpdateAuthInfo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                callback_url:
+                  description: Redirect After Authentication
+                  example: https://example.com/callback
+                  type: string
+                  x-description-i18n:
+                    jpn: 認証後遷移先
+              required:
+              - callback_url
+              title: Authentication Information
+              type: object
+              x-title-i18n:
+                jpn: 認証情報
+      responses:
+        "200":
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Update Authentication Info
+      tags:
+      - authInfo
+      x-description-i18n:
+        jpn: |
+          ログイン後に認証情報を渡す SaaS の URL を登録します。
+          ここで登録した URL に認証情報を渡し、SaaSus SDK を利用してこの Callback の実装をすることが可能となります。
+      x-summary-i18n:
+        jpn: 認証情報を更新
+  /identity-providers:
+    get:
+      description: |
+        Get sign-in information via external provider set in cognito.
+      operationId: GetIdentityProviders
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  google:
+                    properties:
+                      application_id:
+                        example: 1234567890123456
+                        type: string
+                      application_secret:
+                        example: 123456789b00def123456a12345678d1
+                        type: string
+                      approval_scope:
+                        example: profile email openid
+                        type: string
+                      is_button_hidden:
+                        example: false
+                        type: boolean
+                    required:
+                    - application_id
+                    - application_secret
+                    - approval_scope
+                    type: object
+                required:
+                - google
+                type: object
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get Sign-In Information Via External Provider
+      tags:
+      - authInfo
+      x-description-i18n:
+        jpn: |
+          cognitoに設定している外部プロバイダ経由のサインイン情報を取得します。
+      x-summary-i18n:
+        jpn: cognitoに設定している外部プロバイダ経由のサインイン情報取得
+    put:
+      description: Update the sign-in information for the external ID provider
+      operationId: UpdateIdentityProvider
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                identity_provider_props:
+                  properties:
+                    application_id:
+                      example: 1234567890123456
+                      type: string
+                    application_secret:
+                      example: 123456789b00def123456a12345678d1
+                      type: string
+                    approval_scope:
+                      example: profile email openid
+                      type: string
+                    is_button_hidden:
+                      example: false
+                      type: boolean
+                  required:
+                  - application_id
+                  - application_secret
+                  - approval_scope
+                  type: object
+                provider:
+                  enum:
+                  - Google
+                  example: Google
+                  type: string
+              required:
+              - provider
+              type: object
+      responses:
+        "200":
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Update Sign-In Information
+      tags:
+      - authInfo
+      x-description-i18n:
+        jpn: |
+          外部IDプロバイダのサインイン情報を更新します。
+      x-summary-i18n:
+        jpn: 外部IDプロバイダのサインイン情報更新
+  /sign-in-settings:
+    get:
+      description: |
+        Get user password requirements.
+        Set a secure password that is difficult to decipher by increasing the number of digits by combining alphabets, numbers, and symbols.
+      operationId: GetSignInSettings
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  account_verification:
+                    description: |
+                      Account authentication settings
+                      ※ This function is not yet provided, so it cannot be changed or saved.
+                    properties:
+                      sending_to:
+                        description: |
+                          email: e-mail
+                          sms: SMS
+                          smsOrEmail: email if SMS is not possible
+                        enum:
+                        - email
+                        - sms
+                        - smsOrEmail
+                        example: email
+                        type: string
+                        x-description-i18n:
+                          jpn: |
+                            email: Eメール
+                            sms: SMS
+                            smsOrEmail: SMS不可の場合にEメール
+                      verification_method:
+                        description: |
+                          code: verification code
+                          link: verification link
+                          ※ This function is not yet provided, so it cannot be changed or saved.
+                        enum:
+                        - code
+                        - link
+                        example: code
+                        type: string
+                        x-description-i18n:
+                          jpn: |
+                            code: 検証コード
+                            link: 検証リンク
+                            ※ 未提供の機能のため、変更・保存はできません
+                    required:
+                    - verification_method
+                    - sending_to
+                    type: object
+                    x-description-i18n:
+                      jpn: |
+                        アカウント認証設定
+                        ※ 未提供の機能のため、変更・保存はできません。
+                  device_configuration:
+                    description: Settings for remembering trusted devices
+                    properties:
+                      device_remembering:
+                        description: |
+                          always: always remember
+                          userOptIn: user opt-in
+                          no: don't save
+                        enum:
+                        - always
+                        - userOptIn
+                        - "no"
+                        example: always
+                        type: string
+                        x-description-i18n:
+                          jpn: |
+                            always: 常に記憶する
+                            userOptIn: ユーザーオプトイン
+                            no: 記録しない
+                    required:
+                    - device_remembering
+                    type: object
+                    x-description-i18n:
+                      jpn: 信頼済みデバイスの記憶の設定
+                  identity_provider_configuration:
+                    description: |
+                      This information is required to set up sign-in using an external identity provider.
+                      It cannot be changed.
+                    properties:
+                      domain:
+                        description: domain
+                        type: string
+                        x-description-i18n:
+                          jpn: ドメイン
+                      entity_id:
+                        description: entity ID
+                        type: string
+                        x-description-i18n:
+                          jpn: 識別子
+                      redirect_url:
+                        description: redirect URL
+                        type: string
+                        x-description-i18n:
+                          jpn: リダイレクトURL
+                      reply_url:
+                        description: reply URL
+                        type: string
+                        x-description-i18n:
+                          jpn: 応答URL
+                    required:
+                    - domain
+                    - redirect_url
+                    - entity_id
+                    - reply_url
+                    title: External Identity Provider Configuration
+                    type: object
+                    x-description-i18n:
+                      jpn: |
+                        外部IDプロバイダを利用したサインインの設定をするために必要な情報です。
+                        変更はできません。
+                    x-title-i18n:
+                      jpn: 外部IDプロバイダ設定
+                  mfa_configuration:
+                    description: |
+                      MFA device authentication settings
+                      ※ This function is not yet provided, so it cannot be changed or saved.
+                    properties:
+                      mfa_configuration:
+                        description: |
+                          on: apply when all users log in
+                          optional: apply to individual users with MFA factor enabled
+                          ※ The parameter is currently optional and fixed.
+                        enum:
+                        - "on"
+                        - optional
+                        example: true
+                        type: string
+                        x-description-i18n:
+                          jpn: |
+                            on: 全ユーザーがログイン時に適用
+                            optional: MFA要素が有効になっている個別ユーザーに適用
+                            ※ パラメータは現在optionalで固定となります。
+                    required:
+                    - mfa_configuration
+                    type: object
+                    x-description-i18n:
+                      jpn: |
+                        MFAデバイス認証設定
+                        ※ 未提供の機能のため、変更・保存はできません
+                  password_policy:
+                    description: Password Policy
+                    properties:
+                      is_require_lowercase:
+                        description: Contains one or more lowercase characters
+                        example: true
+                        type: boolean
+                        x-description-i18n:
+                          jpn: 一文字以上の小文字を含むが設定されているか
+                      is_require_numbers:
+                        description: Contains one or more numeric characters
+                        example: true
+                        type: boolean
+                        x-description-i18n:
+                          jpn: 一文字以上の数字を含むが設定されているか
+                      is_require_symbols:
+                        description: Contains one or more special characters
+                        example: true
+                        type: boolean
+                        x-description-i18n:
+                          jpn: 一文字以上の特殊文字を含むが設定されているか
+                      is_require_uppercase:
+                        description: Contains one or more uppercase letters
+                        example: true
+                        type: boolean
+                        x-description-i18n:
+                          jpn: 一文字以上の大文字を含むが設定されているか
+                      minimum_length:
+                        description: Minimum number of characters
+                        example: 10
+                        type: integer
+                        x-description-i18n:
+                          jpn: 最小文字数
+                        x-go-type: uint64
+                      temporary_password_validity_days:
+                        description: Temporary password expiration date
+                        example: 10
+                        type: integer
+                        x-description-i18n:
+                          jpn: 仮パスワードの有効期限
+                        x-go-type: uint64
+                    required:
+                    - minimum_length
+                    - is_require_lowercase
+                    - is_require_numbers
+                    - is_require_symbols
+                    - is_require_uppercase
+                    - temporary_password_validity_days
+                    type: object
+                    x-description-i18n:
+                      jpn: パスワードポリシー
+                  recaptcha_props:
+                    description: |
+                      reCAPTCHA authentication settings
+                      ※ This function is not yet provided, so it cannot be changed or saved.
+                    properties:
+                      secret_key:
+                        description: secret key
+                        example: d5794b1b-5f92-4dc6-aa48-085dbb08b813
+                        type: string
+                        x-description-i18n:
+                          jpn: シークレットキー
+                      site_key:
+                        description: site key
+                        example: ede66c43-9b9d-4222-93ed-5f11c96e08e2
+                        type: string
+                        x-description-i18n:
+                          jpn: サイトキー
+                    required:
+                    - site_key
+                    - secret_key
+                    type: object
+                    x-description-i18n:
+                      jpn: |
+                        reCAPTCHA認証設定
+                        ※ 未提供の機能のため、変更・保存はできません。
+                  self_regist:
+                    description: self sign-up permission
+                    properties:
+                      enable:
+                        example: true
+                        type: boolean
+                    required:
+                    - enable
+                    type: object
+                    x-description-i18n:
+                      jpn: セルフサインアップを許可設定
+                required:
+                - password_policy
+                - device_configuration
+                - mfa_configuration
+                - recaptcha_props
+                - account_verification
+                - self_regist
+                - identity_provider_configuration
+                type: object
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get Password Requirements
+      tags:
+      - authInfo
+      x-description-i18n:
+        jpn: |
+          ユーザーパスワードの要件設定を取得します。
+          アルファベット、数字、記号の組み合わせで、桁数を長くすれば解読されづらい安全なパスワードを設定することが可能となります。
+      x-summary-i18n:
+        jpn: パスワード要件を取得
+    put:
+      description: |
+        Update user password requirements.
+        Set a secure password that is difficult to decipher by increasing the number of digits by combining alphabets, numbers, and symbols.
+      operationId: UpdateSignInSettings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                account_verification:
+                  description: |
+                    Account authentication settings
+                    ※ This function is not yet provided, so it cannot be changed or saved.
+                  properties:
+                    sending_to:
+                      description: |
+                        email: e-mail
+                        sms: SMS
+                        smsOrEmail: email if SMS is not possible
+                      enum:
+                      - email
+                      - sms
+                      - smsOrEmail
+                      example: email
+                      type: string
+                      x-description-i18n:
+                        jpn: |
+                          email: Eメール
+                          sms: SMS
+                          smsOrEmail: SMS不可の場合にEメール
+                    verification_method:
+                      description: |
+                        code: verification code
+                        link: verification link
+                        ※ This function is not yet provided, so it cannot be changed or saved.
+                      enum:
+                      - code
+                      - link
+                      example: code
+                      type: string
+                      x-description-i18n:
+                        jpn: |
+                          code: 検証コード
+                          link: 検証リンク
+                          ※ 未提供の機能のため、変更・保存はできません
+                  required:
+                  - verification_method
+                  - sending_to
+                  type: object
+                  x-description-i18n:
+                    jpn: |
+                      アカウント認証設定
+                      ※ 未提供の機能のため、変更・保存はできません。
+                device_configuration:
+                  description: Settings for remembering trusted devices
+                  properties:
+                    device_remembering:
+                      description: |
+                        always: always remember
+                        userOptIn: user opt-in
+                        no: don't save
+                      enum:
+                      - always
+                      - userOptIn
+                      - "no"
+                      example: always
+                      type: string
+                      x-description-i18n:
+                        jpn: |
+                          always: 常に記憶する
+                          userOptIn: ユーザーオプトイン
+                          no: 記録しない
+                  required:
+                  - device_remembering
+                  type: object
+                  x-description-i18n:
+                    jpn: 信頼済みデバイスの記憶の設定
+                mfa_configuration:
+                  description: |
+                    MFA device authentication settings
+                    ※ This function is not yet provided, so it cannot be changed or saved.
+                  properties:
+                    mfa_configuration:
+                      description: |
+                        on: apply when all users log in
+                        optional: apply to individual users with MFA factor enabled
+                        ※ The parameter is currently optional and fixed.
+                      enum:
+                      - "on"
+                      - optional
+                      example: true
+                      type: string
+                      x-description-i18n:
+                        jpn: |
+                          on: 全ユーザーがログイン時に適用
+                          optional: MFA要素が有効になっている個別ユーザーに適用
+                          ※ パラメータは現在optionalで固定となります。
+                  required:
+                  - mfa_configuration
+                  type: object
+                  x-description-i18n:
+                    jpn: |
+                      MFAデバイス認証設定
+                      ※ 未提供の機能のため、変更・保存はできません
+                password_policy:
+                  description: Password Policy
+                  properties:
+                    is_require_lowercase:
+                      description: Contains one or more lowercase characters
+                      example: true
+                      type: boolean
+                      x-description-i18n:
+                        jpn: 一文字以上の小文字を含むが設定されているか
+                    is_require_numbers:
+                      description: Contains one or more numeric characters
+                      example: true
+                      type: boolean
+                      x-description-i18n:
+                        jpn: 一文字以上の数字を含むが設定されているか
+                    is_require_symbols:
+                      description: Contains one or more special characters
+                      example: true
+                      type: boolean
+                      x-description-i18n:
+                        jpn: 一文字以上の特殊文字を含むが設定されているか
+                    is_require_uppercase:
+                      description: Contains one or more uppercase letters
+                      example: true
+                      type: boolean
+                      x-description-i18n:
+                        jpn: 一文字以上の大文字を含むが設定されているか
+                    minimum_length:
+                      description: Minimum number of characters
+                      example: 10
+                      type: integer
+                      x-description-i18n:
+                        jpn: 最小文字数
+                      x-go-type: uint64
+                    temporary_password_validity_days:
+                      description: Temporary password expiration date
+                      example: 10
+                      type: integer
+                      x-description-i18n:
+                        jpn: 仮パスワードの有効期限
+                      x-go-type: uint64
+                  required:
+                  - minimum_length
+                  - is_require_lowercase
+                  - is_require_numbers
+                  - is_require_symbols
+                  - is_require_uppercase
+                  - temporary_password_validity_days
+                  type: object
+                  x-description-i18n:
+                    jpn: パスワードポリシー
+                recaptcha_props:
+                  description: |
+                    reCAPTCHA authentication settings
+                    ※ This function is not yet provided, so it cannot be changed or saved.
+                  properties:
+                    secret_key:
+                      description: secret key
+                      example: d5794b1b-5f92-4dc6-aa48-085dbb08b813
+                      type: string
+                      x-description-i18n:
+                        jpn: シークレットキー
+                    site_key:
+                      description: site key
+                      example: ede66c43-9b9d-4222-93ed-5f11c96e08e2
+                      type: string
+                      x-description-i18n:
+                        jpn: サイトキー
+                  required:
+                  - site_key
+                  - secret_key
+                  type: object
+                  x-description-i18n:
+                    jpn: |
+                      reCAPTCHA認証設定
+                      ※ 未提供の機能のため、変更・保存はできません。
+                self_regist:
+                  description: self sign-up permission
+                  properties:
+                    enable:
+                      example: true
+                      type: boolean
+                  required:
+                  - enable
+                  type: object
+                  x-description-i18n:
+                    jpn: セルフサインアップを許可設定
+              type: object
+      responses:
+        "200":
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Update Password Requirements
+      tags:
+      - authInfo
+      x-description-i18n:
+        jpn: |
+          ユーザーパスワードの要件設定を更新します。
+          アルファベット、数字、記号の組み合わせで、桁数を長くすれば解読されづらい安全なパスワードを設定することが可能となります。
+      x-summary-i18n:
+        jpn: パスワード要件を更新
+security:
+- Bearer: []
+servers:
+- description: Production API Server
+  url: https://api.saasus.io/v1/auth
+tags:
+- description: Auth Info
+  name: authInfo
+  x-description-i18n:
+    jpn: 認証情報

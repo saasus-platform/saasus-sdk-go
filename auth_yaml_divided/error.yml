@@ -1,0 +1,54 @@
+info:
+  contact:
+    name: Anti-Pattern
+  description: Schema
+  title: SaaSus Auth API Schema
+  version: 1.0.0
+  x-description-i18n:
+    jpn: スキーマ
+openapi: 3.0.0
+paths:
+  /errors/internal-server-error:
+    get:
+      description: |
+        This endpoint is used for testing purposes. Returns a server error with status code 500.
+      operationId: ReturnInternalServerError
+      responses:
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Return Internal Server Error
+      tags:
+      - error
+      x-description-i18n:
+        jpn: |
+          テスト用途で使用するエンドポイントです。ステータスコード500でサーバーエラーを返却します。
+      x-summary-i18n:
+        jpn: ステータスコード500でサーバーエラーを返却
+security:
+- Bearer: []
+servers:
+- description: Production API Server
+  url: https://api.saasus.io/v1/auth
+tags:
+- description: Testing Purpose Error
+  name: error
+  x-description-i18n:
+    jpn: テスト用途のエラー

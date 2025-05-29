@@ -1,0 +1,274 @@
+info:
+  contact:
+    name: Anti-Pattern
+  description: Schema
+  title: SaaSus Auth API Schema
+  version: 1.0.0
+  x-description-i18n:
+    jpn: スキーマ
+openapi: 3.0.0
+paths:
+  /roles:
+    get:
+      description: |
+        Get registered roles list.
+        Granting users the roles defined here makes it easy to implement role-based authorization on the SaaS side.
+        In addition, even the same user can have different roles for each tenant/environment to which they belong.
+      operationId: GetRoles
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  roles:
+                    items:
+                      description: role info
+                      properties:
+                        display_name:
+                          description: role display name
+                          example: 管理者
+                          type: string
+                          x-description-i18n:
+                            jpn: 役割(ロール)表示名
+                        role_name:
+                          description: role name
+                          example: admin
+                          type: string
+                          x-description-i18n:
+                            jpn: 役割(ロール)名
+                      required:
+                      - role_name
+                      - display_name
+                      title: Role
+                      type: object
+                      x-description-i18n:
+                        jpn: 役割(ロール)情報
+                      x-title-i18n:
+                        jpn: 役割(ロール)
+                    type: array
+                required:
+                - roles
+                title: Roles
+                type: object
+                x-title-i18n:
+                  jpn: 役割(ロール)一覧
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Get Roles
+      tags:
+      - role
+      x-description-i18n:
+        jpn: |
+          登録されている役割(ロール)を一覧として取得します。
+          ここで定義した役割をユーザーに付与することによって、SaaS側で役割ベースの認可を実装することが用意になります。
+          また、同じユーザーでも、属するテナント・環境ごとに持っている役割を変えることが可能です。
+      x-summary-i18n:
+        jpn: 役割(ロール)一覧を取得
+    post:
+      description: |
+        Create a role.
+        By granting users the roles created here, it becomes easier to implement role-based authorization on the SaaS side.
+        In addition, even the same user can have different roles for each tenant/environment to which they belong.
+      operationId: CreateRole
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: role info
+              properties:
+                display_name:
+                  description: role display name
+                  example: 管理者
+                  type: string
+                  x-description-i18n:
+                    jpn: 役割(ロール)表示名
+                role_name:
+                  description: role name
+                  example: admin
+                  type: string
+                  x-description-i18n:
+                    jpn: 役割(ロール)名
+              required:
+              - role_name
+              - display_name
+              title: Role
+              type: object
+              x-description-i18n:
+                jpn: 役割(ロール)情報
+              x-title-i18n:
+                jpn: 役割(ロール)
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                description: role info
+                properties:
+                  display_name:
+                    description: role display name
+                    example: 管理者
+                    type: string
+                    x-description-i18n:
+                      jpn: 役割(ロール)表示名
+                  role_name:
+                    description: role name
+                    example: admin
+                    type: string
+                    x-description-i18n:
+                      jpn: 役割(ロール)名
+                required:
+                - role_name
+                - display_name
+                title: Role
+                type: object
+                x-description-i18n:
+                  jpn: 役割(ロール)情報
+                x-title-i18n:
+                  jpn: 役割(ロール)
+          description: Created
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Create Role
+      tags:
+      - role
+      x-description-i18n:
+        jpn: |
+          役割(ロール)を作成します。
+          ここで作成した役割をユーザーに付与することによって、SaaS側で役割ベースの認可を実装することが用意になります。
+          また、同じユーザーでも、属するテナント・環境ごとに持っている役割を変えることが可能です。
+      x-summary-i18n:
+        jpn: 役割(ロール)を作成
+  /roles/{role_name}:
+    delete:
+      description: |
+        Delete role.
+      operationId: DeleteRole
+      parameters:
+      - description: Role name
+        in: path
+        name: role_name
+        required: true
+        schema:
+          example: admin
+          type: string
+        x-description-i18n:
+          jpn: 役割(ロール)名
+      responses:
+        "200":
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    additionalProperties: true
+                    example:
+                      sign_in_page_url: auth.dev.saasus.io
+                    type: object
+                  message:
+                    description: Error message
+                    type: string
+                  type:
+                    description: permission_denied
+                    type: string
+                required:
+                - type
+                - message
+          description: Internal Server Error
+      summary: Delete Role
+      tags:
+      - role
+      x-description-i18n:
+        jpn: |
+          役割(ロール)を削除します。
+      x-summary-i18n:
+        jpn: 役割(ロール)を削除
+security:
+- Bearer: []
+servers:
+- description: Production API Server
+  url: https://api.saasus.io/v1/auth
+tags:
+- description: Role
+  name: role
+  x-description-i18n:
+    jpn: 役割(ロール)
