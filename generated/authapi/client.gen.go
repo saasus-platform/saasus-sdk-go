@@ -366,6 +366,9 @@ type ClientInterface interface {
 	// GetUserInfo request
 	GetUserInfo(ctx context.Context, params *GetUserInfoParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetUserInfoByEmail request
+	GetUserInfoByEmail(ctx context.Context, params *GetUserInfoByEmailParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetSaasUsers request
 	GetSaasUsers(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -1653,6 +1656,18 @@ func (c *Client) DeleteUserAttribute(ctx context.Context, attributeName string, 
 
 func (c *Client) GetUserInfo(ctx context.Context, params *GetUserInfoParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetUserInfoRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetUserInfoByEmail(ctx context.Context, params *GetUserInfoByEmailParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetUserInfoByEmailRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -4606,6 +4621,49 @@ func NewGetUserInfoRequest(server string, params *GetUserInfoParams) (*http.Requ
 	return req, nil
 }
 
+// NewGetUserInfoByEmailRequest generates requests for GetUserInfoByEmail
+func NewGetUserInfoByEmailRequest(server string, params *GetUserInfoByEmailParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/userinfo/search/email")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	queryValues := queryURL.Query()
+
+	if queryFrag, err := runtime.StyleParamWithLocation("form", true, "email", runtime.ParamLocationQuery, params.Email); err != nil {
+		return nil, err
+	} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+		return nil, err
+	} else {
+		for k, v := range parsed {
+			for _, v2 := range v {
+				queryValues.Add(k, v2)
+			}
+		}
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetSaasUsersRequest generates requests for GetSaasUsers
 func NewGetSaasUsersRequest(server string) (*http.Request, error) {
 	var err error
@@ -5511,6 +5569,9 @@ type ClientWithResponsesInterface interface {
 
 	// GetUserInfo request
 	GetUserInfoWithResponse(ctx context.Context, params *GetUserInfoParams, reqEditors ...RequestEditorFn) (*GetUserInfoResponse, error)
+
+	// GetUserInfoByEmail request
+	GetUserInfoByEmailWithResponse(ctx context.Context, params *GetUserInfoByEmailParams, reqEditors ...RequestEditorFn) (*GetUserInfoByEmailResponse, error)
 
 	// GetSaasUsers request
 	GetSaasUsersWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSaasUsersResponse, error)
@@ -7205,6 +7266,30 @@ func (r GetUserInfoResponse) StatusCode() int {
 	return 0
 }
 
+type GetUserInfoByEmailResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *UserInfo
+	JSON404      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetUserInfoByEmailResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetUserInfoByEmailResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetSaasUsersResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -8414,6 +8499,15 @@ func (c *ClientWithResponses) GetUserInfoWithResponse(ctx context.Context, param
 		return nil, err
 	}
 	return ParseGetUserInfoResponse(rsp)
+}
+
+// GetUserInfoByEmailWithResponse request returning *GetUserInfoByEmailResponse
+func (c *ClientWithResponses) GetUserInfoByEmailWithResponse(ctx context.Context, params *GetUserInfoByEmailParams, reqEditors ...RequestEditorFn) (*GetUserInfoByEmailResponse, error) {
+	rsp, err := c.GetUserInfoByEmail(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetUserInfoByEmailResponse(rsp)
 }
 
 // GetSaasUsersWithResponse request returning *GetSaasUsersResponse
@@ -10937,6 +11031,46 @@ func ParseGetUserInfoResponse(rsp *http.Response) (*GetUserInfoResponse, error) 
 			return nil, err
 		}
 		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetUserInfoByEmailResponse parses an HTTP response from a GetUserInfoByEmailWithResponse call
+func ParseGetUserInfoByEmailResponse(rsp *http.Response) (*GetUserInfoByEmailResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetUserInfoByEmailResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest UserInfo
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
