@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	server = "https://api.saasus.io/v1/apilog"
+	server = client.GetServerURL("apilog")
 )
 
 func withRequestEditorFns(c *apilogapi.Client) error {

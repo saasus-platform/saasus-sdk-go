@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	server = "https://api.saasus.io/v1/billing"
+	server = client.GetServerURL("billing")
 )
 
 func withRequestEditorFns(c *billingapi.Client) error {

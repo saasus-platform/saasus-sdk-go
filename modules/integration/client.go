@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	server = "https://api.saasus.io/v1/integration"
+	server = client.GetServerURL("integration")
 )
 
 func withRequestEditorFns(c *integrationapi.Client) error {

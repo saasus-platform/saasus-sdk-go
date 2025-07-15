@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	server = "https://api.saasus.io/v1/awsmarketplace"
+	server = client.GetServerURL("awsmarketplace")
 )
 
 func withRequestEditorFns(c *awsmarketplaceapi.Client) error {

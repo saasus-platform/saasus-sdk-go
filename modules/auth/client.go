@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	server = "https://api.saasus.io/v1/auth"
+	server = client.GetServerURL("auth")
 )
 
 func withRequestEditorFns(c *authapi.Client) error {

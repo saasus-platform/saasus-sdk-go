@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	server = "https://api.saasus.io/v1/communication"
+	server = client.GetServerURL("communication")
 )
 
 func withRequestEditorFns(c *communicationapi.Client) error {

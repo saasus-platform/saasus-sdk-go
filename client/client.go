@@ -16,6 +16,16 @@ import (
 	"github.com/saasus-platform/saasus-sdk-go/ctxlib"
 )
 
+// GetServerURL returns the server URL for the given module.
+func GetServerURL(module string) string {
+	baseURL := os.Getenv("SAASUS_BASE_URL")
+	if baseURL == "" {
+		baseURL = "https://api.saasus.io/v1"
+	}
+
+	return fmt.Sprintf("%s/%s", baseURL, module)
+}
+
 // SetSigV1 sets the signature to the request header.
 //
 // ref: https://docs.saasus.io/reference/getting-started-with-your-api
