@@ -746,7 +746,7 @@ type SingleTenantSettings struct {
 	// DdlTemplateUrl S3 URL where the CloudFormationTemplate to be executed in the SaaS environment is stored
 	DdlTemplateUrl string `json:"ddl_template_url"`
 
-	// Enabled enable Single Tenant settings or not
+	// Enabled enable SaaS Infrastructure Management settings or not
 	Enabled bool `json:"enabled"`
 
 	// RoleArn ARN of the role for SaaS Platform to AssumeRole
@@ -999,7 +999,7 @@ type UpdateSingleTenantSettingsParam struct {
 	// DdlTemplate ddl file to run in SaaS environment
 	DdlTemplate *string `json:"ddl_template,omitempty"`
 
-	// Enabled enable Single Tenant settings or not
+	// Enabled enable SaaS Infrastructure Management settings or not
 	Enabled *bool `json:"enabled,omitempty"`
 
 	// RoleArn ARN of the role for SaaS Platform to AssumeRole
@@ -1182,6 +1182,12 @@ type GetAuthCredentialsParamsAuthFlow string
 type GetUserInfoParams struct {
 	// Token ID Token
 	Token string `form:"token" json:"token"`
+}
+
+// GetUserInfoByEmailParams defines parameters for GetUserInfoByEmail.
+type GetUserInfoByEmailParams struct {
+	// Email Email
+	Email string `form:"email" json:"email"`
 }
 
 // UpdateAuthInfoJSONRequestBody defines body for UpdateAuthInfo for application/json ContentType.
