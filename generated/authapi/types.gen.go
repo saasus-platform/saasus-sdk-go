@@ -34,6 +34,26 @@ const (
 	String AttributeType = "string"
 )
 
+// Defines values for ChallengeName.
+const (
+	ADMINNOSRPAUTH         ChallengeName = "ADMIN_NO_SRP_AUTH"
+	CUSTOMCHALLENGE        ChallengeName = "CUSTOM_CHALLENGE"
+	DEVICEPASSWORDVERIFIER ChallengeName = "DEVICE_PASSWORD_VERIFIER"
+	DEVICESRPAUTH          ChallengeName = "DEVICE_SRP_AUTH"
+	EMAILOTP               ChallengeName = "EMAIL_OTP"
+	MFASETUP               ChallengeName = "MFA_SETUP"
+	NEWPASSWORDREQUIRED    ChallengeName = "NEW_PASSWORD_REQUIRED"
+	PASSWORD               ChallengeName = "PASSWORD"
+	PASSWORDSRP            ChallengeName = "PASSWORD_SRP"
+	PASSWORDVERIFIER       ChallengeName = "PASSWORD_VERIFIER"
+	SELECTCHALLENGE        ChallengeName = "SELECT_CHALLENGE"
+	SELECTMFATYPE          ChallengeName = "SELECT_MFA_TYPE"
+	SMSMFA                 ChallengeName = "SMS_MFA"
+	SMSOTP                 ChallengeName = "SMS_OTP"
+	SOFTWARETOKENMFA       ChallengeName = "SOFTWARE_TOKEN_MFA"
+	WEBAUTHN               ChallengeName = "WEB_AUTHN"
+)
+
 // Defines values for DeviceConfigurationDeviceRemembering.
 const (
 	Always    DeviceConfigurationDeviceRemembering = "always"
@@ -85,6 +105,11 @@ const (
 // Defines values for ProviderType.
 const (
 	SAML ProviderType = "SAML"
+)
+
+// Defines values for SignInParamSignInFlow.
+const (
+	USERSRPAUTH SignInParamSignInFlow = "USER_SRP_AUTH"
 )
 
 // Defines values for AuthFlow.
@@ -207,6 +232,9 @@ type BillingInfo struct {
 	// Name Tenant name for billing
 	Name string `json:"name"`
 }
+
+// ChallengeName Challenge name
+type ChallengeName string
 
 // CloudFormationLaunchStackLink defines model for CloudFormationLaunchStackLink.
 type CloudFormationLaunchStackLink struct {
@@ -618,7 +646,9 @@ type PlanReservation struct {
 	// When a plan is changed, you can set whether to prorate the billing amount and reflect it on the next invoice, to issue a prorated invoice immediately, or not to prorate at all.
 	ProrationBehavior *ProrationBehavior `json:"proration_behavior,omitempty"`
 
-	// UsingNextPlanFrom Next billing plan start time (When using stripe, you can create a subscription that starts at the beginning of the current month by specifying 00:00 (UTC) at the beginning of the current month. Ex. 1672531200 for January 2023.)
+	// UsingNextPlanFrom This parameter is set when reserving a pricing plan change for a future date and time. It is not required for immediate application.
+	// When specifying the next pricing plan start date and time, please specify a date and time at least 5 minutes after the current time.
+	// Note for Stripe integration: By specifying the beginning of the current month (00:00 UTC) as the start date and time, you can create a subscription that starts from the first day of that month. (Example: To specify January 1, 2023 00:00 UTC → 1672531200)
 	UsingNextPlanFrom *int `json:"using_next_plan_from,omitempty"`
 }
 
@@ -661,6 +691,33 @@ type ResendSignUpConfirmationEmailParam struct {
 	Email string `json:"email"`
 }
 
+// RespondToSignInChallengeParam Parameters required to respond to a sign-in challenge
+type RespondToSignInChallengeParam struct {
+	// ChallengeName Challenge name
+	ChallengeName ChallengeName `json:"challenge_name"`
+
+	// ChallengeResponses Responses to the challenge.
+	// The required responses vary depending on the challenge_name.
+	ChallengeResponses *map[string]string `json:"challenge_responses,omitempty"`
+
+	// Session Session identifier for the challenge.
+	Session *string `json:"session,omitempty"`
+}
+
+// RespondToSignInChallengeResult Result returned after responding to a sign-in challenge
+type RespondToSignInChallengeResult struct {
+	// ChallengeName Challenge name
+	ChallengeName *ChallengeName `json:"challenge_name,omitempty"`
+
+	// ChallengeParameters Parameters required for the next challenge.
+	ChallengeParameters *map[string]string `json:"challenge_parameters,omitempty"`
+	Credentials         *Credentials       `json:"credentials,omitempty"`
+
+	// Session Session identifier for the challenge.
+	// This session should be passed to the next call to RespondToSignInChallenge if another challenge is required.
+	Session *string `json:"session,omitempty"`
+}
+
 // Role role info
 type Role struct {
 	// DisplayName role display name
@@ -693,6 +750,37 @@ type SaasUsers struct {
 // SelfRegist self sign-up permission
 type SelfRegist struct {
 	Enable bool `json:"enable"`
+}
+
+// SignInParam Parameters required for user sign-in
+// The required parameters vary depending on the sign_in_flow.
+type SignInParam struct {
+	// SignInFlow The sign-in flow to use for authentication.
+	// Currently, only USER_SRP_AUTH is supported.
+	SignInFlow SignInParamSignInFlow `json:"sign_in_flow"`
+
+	// SignInParameters The required parameters vary depending on the sign_in_flow.
+	// USER_SRP_AUTH:
+	//   USERNAME: email address
+	//   SRP_A: SRP A value
+	SignInParameters *map[string]string `json:"sign_in_parameters,omitempty"`
+}
+
+// SignInParamSignInFlow The sign-in flow to use for authentication.
+// Currently, only USER_SRP_AUTH is supported.
+type SignInParamSignInFlow string
+
+// SignInResult Result returned after a sign-in attempt
+type SignInResult struct {
+	// ChallengeName Challenge name
+	ChallengeName *ChallengeName `json:"challenge_name,omitempty"`
+
+	// ChallengeParameters Parameters required to complete the challenge
+	ChallengeParameters *map[string]string `json:"challenge_parameters,omitempty"`
+
+	// Session Session identifier for the challenge.
+	// This session should be passed to the next call to RespondToSignInChallenge if another challenge is required.
+	Session *string `json:"session,omitempty"`
 }
 
 // SignInSettings defines model for SignInSettings.
@@ -746,7 +834,7 @@ type SingleTenantSettings struct {
 	// DdlTemplateUrl S3 URL where the CloudFormationTemplate to be executed in the SaaS environment is stored
 	DdlTemplateUrl string `json:"ddl_template_url"`
 
-	// Enabled enable Single Tenant settings or not
+	// Enabled enable SaaS Infrastructure Management settings or not
 	Enabled bool `json:"enabled"`
 
 	// RoleArn ARN of the role for SaaS Platform to AssumeRole
@@ -799,7 +887,9 @@ type Tenant struct {
 	// When a plan is changed, you can set whether to prorate the billing amount and reflect it on the next invoice, to issue a prorated invoice immediately, or not to prorate at all.
 	ProrationBehavior *ProrationBehavior `json:"proration_behavior,omitempty"`
 
-	// UsingNextPlanFrom Next billing plan start time (When using stripe, you can create a subscription that starts at the beginning of the current month by specifying 00:00 (UTC) at the beginning of the current month. Ex. 1672531200 for January 2023.)
+	// UsingNextPlanFrom This parameter is set when reserving a pricing plan change for a future date and time. It is not required for immediate application.
+	// When specifying the next pricing plan start date and time, please specify a date and time at least 5 minutes after the current time.
+	// Note for Stripe integration: By specifying the beginning of the current month (00:00 UTC) as the start date and time, you can create a subscription that starts from the first day of that month. (Example: To specify January 1, 2023 00:00 UTC → 1672531200)
 	UsingNextPlanFrom *int `json:"using_next_plan_from,omitempty"`
 }
 
@@ -843,7 +933,9 @@ type TenantDetail struct {
 	// When a plan is changed, you can set whether to prorate the billing amount and reflect it on the next invoice, to issue a prorated invoice immediately, or not to prorate at all.
 	ProrationBehavior *ProrationBehavior `json:"proration_behavior,omitempty"`
 
-	// UsingNextPlanFrom Next billing plan start time (When using stripe, you can create a subscription that starts at the beginning of the current month by specifying 00:00 (UTC) at the beginning of the current month. Ex. 1672531200 for January 2023.)
+	// UsingNextPlanFrom This parameter is set when reserving a pricing plan change for a future date and time. It is not required for immediate application.
+	// When specifying the next pricing plan start date and time, please specify a date and time at least 5 minutes after the current time.
+	// Note for Stripe integration: By specifying the beginning of the current month (00:00 UTC) as the start date and time, you can create a subscription that starts from the first day of that month. (Example: To specify January 1, 2023 00:00 UTC → 1672531200)
 	UsingNextPlanFrom *int `json:"using_next_plan_from,omitempty"`
 }
 
@@ -965,6 +1057,9 @@ type UpdateSaasUserEmailParam struct {
 type UpdateSaasUserPasswordParam struct {
 	// Password Password
 	Password string `json:"password"`
+
+	// Temporary Set to true to mark the new password as a temporary password (user must change on next sign-in)
+	Temporary *bool `json:"temporary,omitempty"`
 }
 
 // UpdateSignInSettingsParam defines model for UpdateSignInSettingsParam.
@@ -999,7 +1094,7 @@ type UpdateSingleTenantSettingsParam struct {
 	// DdlTemplate ddl file to run in SaaS environment
 	DdlTemplate *string `json:"ddl_template,omitempty"`
 
-	// Enabled enable Single Tenant settings or not
+	// Enabled enable SaaS Infrastructure Management settings or not
 	Enabled *bool `json:"enabled,omitempty"`
 
 	// RoleArn ARN of the role for SaaS Platform to AssumeRole
@@ -1184,6 +1279,12 @@ type GetUserInfoParams struct {
 	Token string `form:"token" json:"token"`
 }
 
+// GetUserInfoByEmailParams defines parameters for GetUserInfoByEmail.
+type GetUserInfoByEmailParams struct {
+	// Email Email
+	Email string `form:"email" json:"email"`
+}
+
 // UpdateAuthInfoJSONRequestBody defines body for UpdateAuthInfo for application/json ContentType.
 type UpdateAuthInfoJSONRequestBody = UpdateAuthInfoParam
 
@@ -1235,8 +1336,14 @@ type CreateRoleJSONRequestBody = CreateRoleParam
 // CreateSaasUserAttributeJSONRequestBody defines body for CreateSaasUserAttribute for application/json ContentType.
 type CreateSaasUserAttributeJSONRequestBody = CreateSaasUserAttributeParam
 
+// SignInJSONRequestBody defines body for SignIn for application/json ContentType.
+type SignInJSONRequestBody = SignInParam
+
 // UpdateSignInSettingsJSONRequestBody defines body for UpdateSignInSettings for application/json ContentType.
 type UpdateSignInSettingsJSONRequestBody = UpdateSignInSettingsParam
+
+// RespondToSignInChallengeJSONRequestBody defines body for RespondToSignInChallenge for application/json ContentType.
+type RespondToSignInChallengeJSONRequestBody = RespondToSignInChallengeParam
 
 // SignUpJSONRequestBody defines body for SignUp for application/json ContentType.
 type SignUpJSONRequestBody = SignUpParam
