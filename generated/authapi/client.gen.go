@@ -219,6 +219,11 @@ type ClientInterface interface {
 
 	CreateSaasUserAttribute(ctx context.Context, body CreateSaasUserAttributeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// SignIn request with any body
+	SignInWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	SignIn(ctx context.Context, body SignInJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetSignInSettings request
 	GetSignInSettings(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -226,6 +231,11 @@ type ClientInterface interface {
 	UpdateSignInSettingsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	UpdateSignInSettings(ctx context.Context, body UpdateSignInSettingsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RespondToSignInChallenge request with any body
+	RespondToSignInChallengeWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	RespondToSignInChallenge(ctx context.Context, body RespondToSignInChallengeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// SignUp request with any body
 	SignUpWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -365,6 +375,9 @@ type ClientInterface interface {
 
 	// GetUserInfo request
 	GetUserInfo(ctx context.Context, params *GetUserInfoParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetUserInfoByEmail request
+	GetUserInfoByEmail(ctx context.Context, params *GetUserInfoByEmailParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetSaasUsers request
 	GetSaasUsers(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -1015,6 +1028,30 @@ func (c *Client) CreateSaasUserAttribute(ctx context.Context, body CreateSaasUse
 	return c.Client.Do(req)
 }
 
+func (c *Client) SignInWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSignInRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SignIn(ctx context.Context, body SignInJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSignInRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) GetSignInSettings(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetSignInSettingsRequest(c.Server)
 	if err != nil {
@@ -1041,6 +1078,30 @@ func (c *Client) UpdateSignInSettingsWithBody(ctx context.Context, contentType s
 
 func (c *Client) UpdateSignInSettings(ctx context.Context, body UpdateSignInSettingsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateSignInSettingsRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RespondToSignInChallengeWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRespondToSignInChallengeRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RespondToSignInChallenge(ctx context.Context, body RespondToSignInChallengeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRespondToSignInChallengeRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1653,6 +1714,18 @@ func (c *Client) DeleteUserAttribute(ctx context.Context, attributeName string, 
 
 func (c *Client) GetUserInfo(ctx context.Context, params *GetUserInfoParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetUserInfoRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetUserInfoByEmail(ctx context.Context, params *GetUserInfoByEmailParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetUserInfoByEmailRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -3118,6 +3191,46 @@ func NewCreateSaasUserAttributeRequestWithBody(server string, contentType string
 	return req, nil
 }
 
+// NewSignInRequest calls the generic SignIn builder with application/json body
+func NewSignInRequest(server string, body SignInJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewSignInRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewSignInRequestWithBody generates requests for SignIn with any type of body
+func NewSignInRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/sign-in")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewGetSignInSettingsRequest generates requests for GetSignInSettings
 func NewGetSignInSettingsRequest(server string) (*http.Request, error) {
 	var err error
@@ -3176,6 +3289,46 @@ func NewUpdateSignInSettingsRequestWithBody(server string, contentType string, b
 	}
 
 	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewRespondToSignInChallengeRequest calls the generic RespondToSignInChallenge builder with application/json body
+func NewRespondToSignInChallengeRequest(server string, body RespondToSignInChallengeJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewRespondToSignInChallengeRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewRespondToSignInChallengeRequestWithBody generates requests for RespondToSignInChallenge with any type of body
+func NewRespondToSignInChallengeRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/sign-in/challenge")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -4606,6 +4759,49 @@ func NewGetUserInfoRequest(server string, params *GetUserInfoParams) (*http.Requ
 	return req, nil
 }
 
+// NewGetUserInfoByEmailRequest generates requests for GetUserInfoByEmail
+func NewGetUserInfoByEmailRequest(server string, params *GetUserInfoByEmailParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/userinfo/search/email")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	queryValues := queryURL.Query()
+
+	if queryFrag, err := runtime.StyleParamWithLocation("form", true, "email", runtime.ParamLocationQuery, params.Email); err != nil {
+		return nil, err
+	} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+		return nil, err
+	} else {
+		for k, v := range parsed {
+			for _, v2 := range v {
+				queryValues.Add(k, v2)
+			}
+		}
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetSaasUsersRequest generates requests for GetSaasUsers
 func NewGetSaasUsersRequest(server string) (*http.Request, error) {
 	var err error
@@ -5365,6 +5561,11 @@ type ClientWithResponsesInterface interface {
 
 	CreateSaasUserAttributeWithResponse(ctx context.Context, body CreateSaasUserAttributeJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSaasUserAttributeResponse, error)
 
+	// SignIn request with any body
+	SignInWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SignInResponse, error)
+
+	SignInWithResponse(ctx context.Context, body SignInJSONRequestBody, reqEditors ...RequestEditorFn) (*SignInResponse, error)
+
 	// GetSignInSettings request
 	GetSignInSettingsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSignInSettingsResponse, error)
 
@@ -5372,6 +5573,11 @@ type ClientWithResponsesInterface interface {
 	UpdateSignInSettingsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSignInSettingsResponse, error)
 
 	UpdateSignInSettingsWithResponse(ctx context.Context, body UpdateSignInSettingsJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSignInSettingsResponse, error)
+
+	// RespondToSignInChallenge request with any body
+	RespondToSignInChallengeWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RespondToSignInChallengeResponse, error)
+
+	RespondToSignInChallengeWithResponse(ctx context.Context, body RespondToSignInChallengeJSONRequestBody, reqEditors ...RequestEditorFn) (*RespondToSignInChallengeResponse, error)
 
 	// SignUp request with any body
 	SignUpWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SignUpResponse, error)
@@ -5511,6 +5717,9 @@ type ClientWithResponsesInterface interface {
 
 	// GetUserInfo request
 	GetUserInfoWithResponse(ctx context.Context, params *GetUserInfoParams, reqEditors ...RequestEditorFn) (*GetUserInfoResponse, error)
+
+	// GetUserInfoByEmail request
+	GetUserInfoByEmailWithResponse(ctx context.Context, params *GetUserInfoByEmailParams, reqEditors ...RequestEditorFn) (*GetUserInfoByEmailResponse, error)
 
 	// GetSaasUsers request
 	GetSaasUsersWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSaasUsersResponse, error)
@@ -6307,6 +6516,30 @@ func (r CreateSaasUserAttributeResponse) StatusCode() int {
 	return 0
 }
 
+type SignInResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SignInResult
+	JSON401      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r SignInResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SignInResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetSignInSettingsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -6346,6 +6579,30 @@ func (r UpdateSignInSettingsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdateSignInSettingsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type RespondToSignInChallengeResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *RespondToSignInChallengeResult
+	JSON401      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r RespondToSignInChallengeResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RespondToSignInChallengeResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -7205,6 +7462,30 @@ func (r GetUserInfoResponse) StatusCode() int {
 	return 0
 }
 
+type GetUserInfoByEmailResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *UserInfo
+	JSON404      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetUserInfoByEmailResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetUserInfoByEmailResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetSaasUsersResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -7945,6 +8226,23 @@ func (c *ClientWithResponses) CreateSaasUserAttributeWithResponse(ctx context.Co
 	return ParseCreateSaasUserAttributeResponse(rsp)
 }
 
+// SignInWithBodyWithResponse request with arbitrary body returning *SignInResponse
+func (c *ClientWithResponses) SignInWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SignInResponse, error) {
+	rsp, err := c.SignInWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSignInResponse(rsp)
+}
+
+func (c *ClientWithResponses) SignInWithResponse(ctx context.Context, body SignInJSONRequestBody, reqEditors ...RequestEditorFn) (*SignInResponse, error) {
+	rsp, err := c.SignIn(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSignInResponse(rsp)
+}
+
 // GetSignInSettingsWithResponse request returning *GetSignInSettingsResponse
 func (c *ClientWithResponses) GetSignInSettingsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSignInSettingsResponse, error) {
 	rsp, err := c.GetSignInSettings(ctx, reqEditors...)
@@ -7969,6 +8267,23 @@ func (c *ClientWithResponses) UpdateSignInSettingsWithResponse(ctx context.Conte
 		return nil, err
 	}
 	return ParseUpdateSignInSettingsResponse(rsp)
+}
+
+// RespondToSignInChallengeWithBodyWithResponse request with arbitrary body returning *RespondToSignInChallengeResponse
+func (c *ClientWithResponses) RespondToSignInChallengeWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RespondToSignInChallengeResponse, error) {
+	rsp, err := c.RespondToSignInChallengeWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRespondToSignInChallengeResponse(rsp)
+}
+
+func (c *ClientWithResponses) RespondToSignInChallengeWithResponse(ctx context.Context, body RespondToSignInChallengeJSONRequestBody, reqEditors ...RequestEditorFn) (*RespondToSignInChallengeResponse, error) {
+	rsp, err := c.RespondToSignInChallenge(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRespondToSignInChallengeResponse(rsp)
 }
 
 // SignUpWithBodyWithResponse request with arbitrary body returning *SignUpResponse
@@ -8414,6 +8729,15 @@ func (c *ClientWithResponses) GetUserInfoWithResponse(ctx context.Context, param
 		return nil, err
 	}
 	return ParseGetUserInfoResponse(rsp)
+}
+
+// GetUserInfoByEmailWithResponse request returning *GetUserInfoByEmailResponse
+func (c *ClientWithResponses) GetUserInfoByEmailWithResponse(ctx context.Context, params *GetUserInfoByEmailParams, reqEditors ...RequestEditorFn) (*GetUserInfoByEmailResponse, error) {
+	rsp, err := c.GetUserInfoByEmail(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetUserInfoByEmailResponse(rsp)
 }
 
 // GetSaasUsersWithResponse request returning *GetSaasUsersResponse
@@ -9656,6 +9980,46 @@ func ParseCreateSaasUserAttributeResponse(rsp *http.Response) (*CreateSaasUserAt
 	return response, nil
 }
 
+// ParseSignInResponse parses an HTTP response from a SignInWithResponse call
+func ParseSignInResponse(rsp *http.Response) (*SignInResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SignInResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SignInResult
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetSignInSettingsResponse parses an HTTP response from a GetSignInSettingsWithResponse call
 func ParseGetSignInSettingsResponse(rsp *http.Response) (*GetSignInSettingsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -9703,6 +10067,46 @@ func ParseUpdateSignInSettingsResponse(rsp *http.Response) (*UpdateSignInSetting
 	}
 
 	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseRespondToSignInChallengeResponse parses an HTTP response from a RespondToSignInChallengeWithResponse call
+func ParseRespondToSignInChallengeResponse(rsp *http.Response) (*RespondToSignInChallengeResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RespondToSignInChallengeResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest RespondToSignInChallengeResult
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -10937,6 +11341,46 @@ func ParseGetUserInfoResponse(rsp *http.Response) (*GetUserInfoResponse, error) 
 			return nil, err
 		}
 		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetUserInfoByEmailResponse parses an HTTP response from a GetUserInfoByEmailWithResponse call
+func ParseGetUserInfoByEmailResponse(rsp *http.Response) (*GetUserInfoByEmailResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetUserInfoByEmailResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest UserInfo
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
