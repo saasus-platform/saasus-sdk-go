@@ -7617,7 +7617,7 @@ func (r GetSaasUsersResponse) StatusCode() int {
 type CreateSaasUserResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *SaasUser
+	JSON201      *CreatedSaasUser
 	JSON400      *Error
 	JSON500      *Error
 }
@@ -7641,6 +7641,7 @@ func (r CreateSaasUserResponse) StatusCode() int {
 type DeleteSaasUserResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON200      *UserInfo
 	JSON404      *Error
 	JSON500      *Error
 }
@@ -11604,7 +11605,7 @@ func ParseCreateSaasUserResponse(rsp *http.Response) (*CreateSaasUserResponse, e
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest SaasUser
+		var dest CreatedSaasUser
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -11643,6 +11644,13 @@ func ParseDeleteSaasUserResponse(rsp *http.Response) (*DeleteSaasUserResponse, e
 	}
 
 	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest UserInfo
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
 		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {

@@ -277,13 +277,22 @@ type CreateRoleParam = Role
 // CreateSaasUserAttributeParam defines model for CreateSaasUserAttributeParam.
 type CreateSaasUserAttributeParam = Attribute
 
-// CreateSaasUserParam defines model for CreateSaasUserParam.
+// CreateSaasUserParam Either email or sign_in_id must be specified, but not both.
+//   - If email is specified: Email authentication user will be created.
+//     When password is not specified, a temporary password will be sent by email.
+//   - If sign_in_id is specified: Sign-in ID authentication user will be created.
+//     When password is not specified, it will be auto-generated and returned in the response.
 type CreateSaasUserParam struct {
 	// Email E-mail
-	Email string `json:"email"`
+	Email *string `json:"email,omitempty"`
 
-	// Password Password
+	// Password Password.
+	// For email authentication, if not specified, a temporary password will be sent by email.
+	// For sign-in ID authentication, if not specified, password will be auto-generated and returned.
 	Password *string `json:"password,omitempty"`
+
+	// SignInId Sign-in ID (alphanumeric and symbols -_ only, max 50 characters)
+	SignInId *string `json:"sign_in_id,omitempty"`
 }
 
 // CreateSecretCodeParam defines model for CreateSecretCodeParam.
@@ -313,13 +322,16 @@ type CreateTenantInvitationParam struct {
 // CreateTenantParam defines model for CreateTenantParam.
 type CreateTenantParam = TenantProps
 
-// CreateTenantUserParam defines model for CreateTenantUserParam.
+// CreateTenantUserParam Either email or sign_in_id must be specified, but not both.
 type CreateTenantUserParam struct {
 	// Attributes Attribute information (Get information set by defining user attributes in the SaaS development console)
 	Attributes map[string]interface{} `json:"attributes"`
 
 	// Email E-mail
-	Email string `json:"email"`
+	Email *string `json:"email,omitempty"`
+
+	// SignInId Sign-in ID (alphanumeric and symbols -_ only, max 50 characters)
+	SignInId *string `json:"sign_in_id,omitempty"`
 }
 
 // CreateTenantUserRolesParam defines model for CreateTenantUserRolesParam.
@@ -330,6 +342,24 @@ type CreateTenantUserRolesParam struct {
 
 // CreateUserAttributeParam defines model for CreateUserAttributeParam.
 type CreateUserAttributeParam = Attribute
+
+// CreatedSaasUser defines model for CreatedSaasUser.
+type CreatedSaasUser struct {
+	// Attributes Attribute information
+	Attributes map[string]interface{} `json:"attributes"`
+
+	// Email E-mail.
+	// For sign-in ID authentication users, this field is not set.
+	Email string `json:"email"`
+	Id    Uuid   `json:"id"`
+
+	// Password Auto-generated password (only when sign_in_id authentication and password not specified)
+	Password *string `json:"password,omitempty"`
+
+	// SignInId Sign-in ID.
+	// For email authentication users, this field is not set.
+	SignInId string `json:"sign_in_id"`
+}
 
 // Credentials defines model for Credentials.
 type Credentials struct {
@@ -737,9 +767,14 @@ type SaasUser struct {
 	// Attributes Attribute information
 	Attributes map[string]interface{} `json:"attributes"`
 
-	// Email E-mail
+	// Email E-mail.
+	// For sign-in ID authentication users, this field is not set.
 	Email string `json:"email"`
 	Id    Uuid   `json:"id"`
+
+	// SignInId Sign-in ID.
+	// For email authentication users, this field is not set.
+	SignInId string `json:"sign_in_id"`
 }
 
 // SaasUsers defines model for SaasUsers.
@@ -1148,12 +1183,17 @@ type User struct {
 	// Attributes Attribute information (Get information set by defining user attributes in the SaaS development console)
 	Attributes map[string]interface{} `json:"attributes"`
 
-	// Email E-mail
+	// Email E-mail.
+	// For sign-in ID authentication users, this field is not set.
 	Email string    `json:"email"`
 	Envs  []UserEnv `json:"envs"`
 
 	// Id User ID
-	Id       string `json:"id"`
+	Id string `json:"id"`
+
+	// SignInId Sign-in ID.
+	// For email authentication users, this field is not set.
+	SignInId string `json:"sign_in_id"`
 	TenantId Uuid   `json:"tenant_id"`
 
 	// TenantName Tenant Name
