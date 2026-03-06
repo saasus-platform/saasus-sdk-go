@@ -15,9 +15,9 @@ const (
 
 // Defines values for AccountVerificationSendingTo.
 const (
-	Email      AccountVerificationSendingTo = "email"
-	Sms        AccountVerificationSendingTo = "sms"
-	SmsOrEmail AccountVerificationSendingTo = "smsOrEmail"
+	AccountVerificationSendingToEmail      AccountVerificationSendingTo = "email"
+	AccountVerificationSendingToSms        AccountVerificationSendingTo = "sms"
+	AccountVerificationSendingToSmsOrEmail AccountVerificationSendingTo = "smsOrEmail"
 )
 
 // Defines values for AccountVerificationVerificationMethod.
@@ -61,6 +61,12 @@ const (
 	UserOptIn DeviceConfigurationDeviceRemembering = "userOptIn"
 )
 
+// Defines values for DeviceRememberedStatus.
+const (
+	NotRemembered DeviceRememberedStatus = "not_remembered"
+	Remembered    DeviceRememberedStatus = "remembered"
+)
+
 // Defines values for DnsRecordType.
 const (
 	CNAME DnsRecordType = "CNAME"
@@ -87,7 +93,8 @@ const (
 
 // Defines values for MfaPreferenceMethod.
 const (
-	SoftwareToken MfaPreferenceMethod = "softwareToken"
+	MfaPreferenceMethodEmail         MfaPreferenceMethod = "email"
+	MfaPreferenceMethodSoftwareToken MfaPreferenceMethod = "softwareToken"
 )
 
 // Defines values for ProrationBehavior.
@@ -241,6 +248,28 @@ type CloudFormationLaunchStackLink struct {
 	Link string `json:"link"`
 }
 
+// ConfirmDeviceParam Parameters required to confirm a device.
+type ConfirmDeviceParam struct {
+	// AccessToken A valid access token.
+	AccessToken string `json:"access_token"`
+
+	// DeviceKey The unique identifier of the device.
+	DeviceKey string `json:"device_key"`
+
+	// DeviceName A friendly name for the device.
+	DeviceName *string `json:"device_name,omitempty"`
+
+	// DeviceSecretVerifierConfig The configuration of the device secret verifier.
+	DeviceSecretVerifierConfig *DeviceSecretVerifierConfig `json:"device_secret_verifier_config,omitempty"`
+}
+
+// ConfirmDeviceResult Result returned after confirming a device.
+type ConfirmDeviceResult struct {
+	// UserConfirmationNecessary When true, the user must confirm that they want to remember the device.
+	// When false, the device is immediately set as remembered.
+	UserConfirmationNecessary bool `json:"user_confirmation_necessary"`
+}
+
 // ConfirmEmailUpdateParam defines model for ConfirmEmailUpdateParam.
 type ConfirmEmailUpdateParam struct {
 	AccessToken string `json:"access_token"`
@@ -277,13 +306,22 @@ type CreateRoleParam = Role
 // CreateSaasUserAttributeParam defines model for CreateSaasUserAttributeParam.
 type CreateSaasUserAttributeParam = Attribute
 
-// CreateSaasUserParam defines model for CreateSaasUserParam.
+// CreateSaasUserParam Either email or sign_in_id must be specified, but not both.
+//   - If email is specified: Email authentication user will be created.
+//     When password is not specified, a temporary password will be sent by email.
+//   - If sign_in_id is specified: Sign-in ID authentication user will be created.
+//     When password is not specified, it will be auto-generated and returned in the response.
 type CreateSaasUserParam struct {
 	// Email E-mail
-	Email string `json:"email"`
+	Email *string `json:"email,omitempty"`
 
-	// Password Password
+	// Password Password.
+	// For email authentication, if not specified, a temporary password will be sent by email.
+	// For sign-in ID authentication, if not specified, password will be auto-generated and returned.
 	Password *string `json:"password,omitempty"`
+
+	// SignInId Sign-in ID (alphanumeric and symbols -_ only, max 50 characters)
+	SignInId *string `json:"sign_in_id,omitempty"`
 }
 
 // CreateSecretCodeParam defines model for CreateSecretCodeParam.
@@ -313,13 +351,16 @@ type CreateTenantInvitationParam struct {
 // CreateTenantParam defines model for CreateTenantParam.
 type CreateTenantParam = TenantProps
 
-// CreateTenantUserParam defines model for CreateTenantUserParam.
+// CreateTenantUserParam Either email or sign_in_id must be specified, but not both.
 type CreateTenantUserParam struct {
 	// Attributes Attribute information (Get information set by defining user attributes in the SaaS development console)
 	Attributes map[string]interface{} `json:"attributes"`
 
 	// Email E-mail
-	Email string `json:"email"`
+	Email *string `json:"email,omitempty"`
+
+	// SignInId Sign-in ID (alphanumeric and symbols -_ only, max 50 characters)
+	SignInId *string `json:"sign_in_id,omitempty"`
 }
 
 // CreateTenantUserRolesParam defines model for CreateTenantUserRolesParam.
@@ -330,6 +371,24 @@ type CreateTenantUserRolesParam struct {
 
 // CreateUserAttributeParam defines model for CreateUserAttributeParam.
 type CreateUserAttributeParam = Attribute
+
+// CreatedSaasUser defines model for CreatedSaasUser.
+type CreatedSaasUser struct {
+	// Attributes Attribute information
+	Attributes map[string]interface{} `json:"attributes"`
+
+	// Email E-mail.
+	// For sign-in ID authentication users, this field is not set.
+	Email string `json:"email"`
+	Id    Uuid   `json:"id"`
+
+	// Password Auto-generated password (only when sign_in_id authentication and password not specified)
+	Password *string `json:"password,omitempty"`
+
+	// SignInId Sign-in ID.
+	// For email authentication users, this field is not set.
+	SignInId string `json:"sign_in_id"`
+}
 
 // Credentials defines model for Credentials.
 type Credentials struct {
@@ -416,6 +475,19 @@ type DeviceConfiguration struct {
 // userOptIn: user opt-in
 // no: don't save
 type DeviceConfigurationDeviceRemembering string
+
+// DeviceRememberedStatus The status of whether a device is remembered.
+// "remembered" enables device authentication, "not_remembered" disables it.
+type DeviceRememberedStatus string
+
+// DeviceSecretVerifierConfig The configuration of the device secret verifier.
+type DeviceSecretVerifierConfig struct {
+	// PasswordVerifier A password verifier for a user's device. Used in SRP authentication.
+	PasswordVerifier *string `json:"password_verifier,omitempty"`
+
+	// Salt The salt for SRP authentication with the user's device.
+	Salt *string `json:"salt,omitempty"`
+}
 
 // DnsRecord defines model for DnsRecord.
 type DnsRecord struct {
@@ -576,6 +648,15 @@ type MfaPreference struct {
 // MfaPreferenceMethod MFA method (required if enabled is true)
 type MfaPreferenceMethod string
 
+// NewDeviceMetadata Metadata for a new device registered during authentication.
+type NewDeviceMetadata struct {
+	// DeviceGroupKey Device group key identifier
+	DeviceGroupKey *string `json:"device_group_key,omitempty"`
+
+	// DeviceKey Device key identifier
+	DeviceKey *string `json:"device_key,omitempty"`
+}
+
 // NotificationMessages defines model for NotificationMessages.
 type NotificationMessages struct {
 	AuthenticationMfa   MessageTemplate `json:"authentication_mfa"`
@@ -713,6 +794,9 @@ type RespondToSignInChallengeResult struct {
 	ChallengeParameters *map[string]string `json:"challenge_parameters,omitempty"`
 	Credentials         *Credentials       `json:"credentials,omitempty"`
 
+	// NewDeviceMetadata Metadata for a new device registered during authentication.
+	NewDeviceMetadata *NewDeviceMetadata `json:"new_device_metadata,omitempty"`
+
 	// Session Session identifier for the challenge.
 	// This session should be passed to the next call to RespondToSignInChallenge if another challenge is required.
 	Session *string `json:"session,omitempty"`
@@ -737,9 +821,14 @@ type SaasUser struct {
 	// Attributes Attribute information
 	Attributes map[string]interface{} `json:"attributes"`
 
-	// Email E-mail
+	// Email E-mail.
+	// For sign-in ID authentication users, this field is not set.
 	Email string `json:"email"`
 	Id    Uuid   `json:"id"`
+
+	// SignInId Sign-in ID.
+	// For email authentication users, this field is not set.
+	SignInId string `json:"sign_in_id"`
 }
 
 // SaasUsers defines model for SaasUsers.
@@ -1013,6 +1102,19 @@ type UpdateCustomizePagesParam struct {
 	SignUpPage        *CustomizePageProps `json:"sign_up_page,omitempty"`
 }
 
+// UpdateDeviceStatusParam Parameters required to update a device status.
+type UpdateDeviceStatusParam struct {
+	// AccessToken A valid access token.
+	AccessToken string `json:"access_token"`
+
+	// DeviceKey The unique identifier of the device.
+	DeviceKey string `json:"device_key"`
+
+	// DeviceRememberedStatus The status of whether a device is remembered.
+	// "remembered" enables device authentication, "not_remembered" disables it.
+	DeviceRememberedStatus DeviceRememberedStatus `json:"device_remembered_status"`
+}
+
 // UpdateEnvParam defines model for UpdateEnvParam.
 type UpdateEnvParam struct {
 	// DisplayName env display name
@@ -1148,12 +1250,17 @@ type User struct {
 	// Attributes Attribute information (Get information set by defining user attributes in the SaaS development console)
 	Attributes map[string]interface{} `json:"attributes"`
 
-	// Email E-mail
+	// Email E-mail.
+	// For sign-in ID authentication users, this field is not set.
 	Email string    `json:"email"`
 	Envs  []UserEnv `json:"envs"`
 
 	// Id User ID
-	Id       string `json:"id"`
+	Id string `json:"id"`
+
+	// SignInId Sign-in ID.
+	// For email authentication users, this field is not set.
+	SignInId string `json:"sign_in_id"`
 	TenantId Uuid   `json:"tenant_id"`
 
 	// TenantName Tenant Name
@@ -1314,6 +1421,12 @@ type UpdateCustomizePageSettingsJSONRequestBody = UpdateCustomizePageSettingsPar
 
 // UpdateCustomizePagesJSONRequestBody defines body for UpdateCustomizePages for application/json ContentType.
 type UpdateCustomizePagesJSONRequestBody = UpdateCustomizePagesParam
+
+// ConfirmDeviceJSONRequestBody defines body for ConfirmDevice for application/json ContentType.
+type ConfirmDeviceJSONRequestBody = ConfirmDeviceParam
+
+// UpdateDeviceStatusJSONRequestBody defines body for UpdateDeviceStatus for application/json ContentType.
+type UpdateDeviceStatusJSONRequestBody = UpdateDeviceStatusParam
 
 // CreateEnvJSONRequestBody defines body for CreateEnv for application/json ContentType.
 type CreateEnvJSONRequestBody = CreateEnvParam

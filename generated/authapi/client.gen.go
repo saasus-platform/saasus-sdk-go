@@ -144,6 +144,16 @@ type ClientInterface interface {
 
 	UpdateCustomizePages(ctx context.Context, body UpdateCustomizePagesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ConfirmDevice request with any body
+	ConfirmDeviceWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	ConfirmDevice(ctx context.Context, body ConfirmDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateDeviceStatus request with any body
+	UpdateDeviceStatusWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateDeviceStatus(ctx context.Context, body UpdateDeviceStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetEnvs request
 	GetEnvs(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -687,6 +697,54 @@ func (c *Client) UpdateCustomizePagesWithBody(ctx context.Context, contentType s
 
 func (c *Client) UpdateCustomizePages(ctx context.Context, body UpdateCustomizePagesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateCustomizePagesRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ConfirmDeviceWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewConfirmDeviceRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ConfirmDevice(ctx context.Context, body ConfirmDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewConfirmDeviceRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateDeviceStatusWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateDeviceStatusRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateDeviceStatus(ctx context.Context, body UpdateDeviceStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateDeviceStatusRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -2539,6 +2597,86 @@ func NewUpdateCustomizePagesRequestWithBody(server string, contentType string, b
 	}
 
 	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewConfirmDeviceRequest calls the generic ConfirmDevice builder with application/json body
+func NewConfirmDeviceRequest(server string, body ConfirmDeviceJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewConfirmDeviceRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewConfirmDeviceRequestWithBody generates requests for ConfirmDevice with any type of body
+func NewConfirmDeviceRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/device/confirm")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewUpdateDeviceStatusRequest calls the generic UpdateDeviceStatus builder with application/json body
+func NewUpdateDeviceStatusRequest(server string, body UpdateDeviceStatusJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateDeviceStatusRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewUpdateDeviceStatusRequestWithBody generates requests for UpdateDeviceStatus with any type of body
+func NewUpdateDeviceStatusRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/device/status")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -5562,6 +5700,16 @@ type ClientWithResponsesInterface interface {
 
 	UpdateCustomizePagesWithResponse(ctx context.Context, body UpdateCustomizePagesJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateCustomizePagesResponse, error)
 
+	// ConfirmDevice request with any body
+	ConfirmDeviceWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ConfirmDeviceResponse, error)
+
+	ConfirmDeviceWithResponse(ctx context.Context, body ConfirmDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*ConfirmDeviceResponse, error)
+
+	// UpdateDeviceStatus request with any body
+	UpdateDeviceStatusWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateDeviceStatusResponse, error)
+
+	UpdateDeviceStatusWithResponse(ctx context.Context, body UpdateDeviceStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateDeviceStatusResponse, error)
+
 	// GetEnvs request
 	GetEnvsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetEnvsResponse, error)
 
@@ -6154,6 +6302,55 @@ func (r UpdateCustomizePagesResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdateCustomizePagesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ConfirmDeviceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ConfirmDeviceResult
+	JSON400      *Error
+	JSON401      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r ConfirmDeviceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ConfirmDeviceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateDeviceStatusResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *Error
+	JSON401      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateDeviceStatusResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateDeviceStatusResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -7617,7 +7814,7 @@ func (r GetSaasUsersResponse) StatusCode() int {
 type CreateSaasUserResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *SaasUser
+	JSON201      *CreatedSaasUser
 	JSON400      *Error
 	JSON500      *Error
 }
@@ -7641,6 +7838,7 @@ func (r CreateSaasUserResponse) StatusCode() int {
 type DeleteSaasUserResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON200      *UserInfo
 	JSON404      *Error
 	JSON500      *Error
 }
@@ -8086,6 +8284,40 @@ func (c *ClientWithResponses) UpdateCustomizePagesWithResponse(ctx context.Conte
 		return nil, err
 	}
 	return ParseUpdateCustomizePagesResponse(rsp)
+}
+
+// ConfirmDeviceWithBodyWithResponse request with arbitrary body returning *ConfirmDeviceResponse
+func (c *ClientWithResponses) ConfirmDeviceWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ConfirmDeviceResponse, error) {
+	rsp, err := c.ConfirmDeviceWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseConfirmDeviceResponse(rsp)
+}
+
+func (c *ClientWithResponses) ConfirmDeviceWithResponse(ctx context.Context, body ConfirmDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*ConfirmDeviceResponse, error) {
+	rsp, err := c.ConfirmDevice(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseConfirmDeviceResponse(rsp)
+}
+
+// UpdateDeviceStatusWithBodyWithResponse request with arbitrary body returning *UpdateDeviceStatusResponse
+func (c *ClientWithResponses) UpdateDeviceStatusWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateDeviceStatusResponse, error) {
+	rsp, err := c.UpdateDeviceStatusWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateDeviceStatusResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateDeviceStatusWithResponse(ctx context.Context, body UpdateDeviceStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateDeviceStatusResponse, error) {
+	rsp, err := c.UpdateDeviceStatus(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateDeviceStatusResponse(rsp)
 }
 
 // GetEnvsWithResponse request returning *GetEnvsResponse
@@ -9463,6 +9695,93 @@ func ParseUpdateCustomizePagesResponse(rsp *http.Response) (*UpdateCustomizePage
 	}
 
 	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseConfirmDeviceResponse parses an HTTP response from a ConfirmDeviceWithResponse call
+func ParseConfirmDeviceResponse(rsp *http.Response) (*ConfirmDeviceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ConfirmDeviceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ConfirmDeviceResult
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateDeviceStatusResponse parses an HTTP response from a UpdateDeviceStatusWithResponse call
+func ParseUpdateDeviceStatusResponse(rsp *http.Response) (*UpdateDeviceStatusResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateDeviceStatusResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -11604,7 +11923,7 @@ func ParseCreateSaasUserResponse(rsp *http.Response) (*CreateSaasUserResponse, e
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest SaasUser
+		var dest CreatedSaasUser
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -11643,6 +11962,13 @@ func ParseDeleteSaasUserResponse(rsp *http.Response) (*DeleteSaasUserResponse, e
 	}
 
 	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest UserInfo
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
 		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
