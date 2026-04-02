@@ -96,4 +96,8 @@ func SetReferer(ctx context.Context, req *http.Request) {
 	if xSaaSusReferer, ok := ctx.Value(ctxlib.XSaaSusRefererKey).(string); ok {
 		req.Header.Set("X-SaaSus-Referer", xSaaSusReferer)
 	}
+
+	if xSaaSusTraceId, ok := ctx.Value(ctxlib.XSaaSusTraceIdKey).(string); ok {
+		req.Header.Set("X-SaaSus-Trace-Id", xSaaSusTraceId)
+	}
 }

@@ -6,4 +6,5 @@ var (
 	UserInfoKey       CtxKey = "userInfo"
 	RefererKey        CtxKey = "referer"
 	XSaaSusRefererKey CtxKey = "xSaaSusReferer"
+	XSaaSusTraceIdKey CtxKey = "xSaaSusTraceId"
 )
