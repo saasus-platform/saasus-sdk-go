@@ -144,6 +144,16 @@ type ClientInterface interface {
 
 	UpdateCustomizePages(ctx context.Context, body UpdateCustomizePagesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ConfirmDevice request with any body
+	ConfirmDeviceWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	ConfirmDevice(ctx context.Context, body ConfirmDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateDeviceStatus request with any body
+	UpdateDeviceStatusWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateDeviceStatus(ctx context.Context, body UpdateDeviceStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetEnvs request
 	GetEnvs(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -291,6 +301,9 @@ type ClientInterface interface {
 	// GetAllTenantUsers request
 	GetAllTenantUsers(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// SearchTenantUsers request
+	SearchTenantUsers(ctx context.Context, params *SearchTenantUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetAllTenantUser request
 	GetAllTenantUser(ctx context.Context, userId UserId, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -384,6 +397,9 @@ type ClientInterface interface {
 	// GetUserInfoByEmail request
 	GetUserInfoByEmail(ctx context.Context, params *GetUserInfoByEmailParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetUserInfoBySignInId request
+	GetUserInfoBySignInId(ctx context.Context, params *GetUserInfoBySignInIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetSaasUsers request
 	GetSaasUsers(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -441,8 +457,16 @@ type ClientInterface interface {
 
 	UpdateSaasUserPassword(ctx context.Context, userId UserId, body UpdateSaasUserPasswordJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ResetSaasUserPassword request
+	ResetSaasUserPassword(ctx context.Context, userId UserId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// UnlinkProvider request
 	UnlinkProvider(ctx context.Context, userId UserId, providerName string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateSaasUserSignInId request with any body
+	UpdateSaasUserSignInIdWithBody(ctx context.Context, userId UserId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateSaasUserSignInId(ctx context.Context, userId UserId, body UpdateSaasUserSignInIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) GetAuthInfo(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -687,6 +711,54 @@ func (c *Client) UpdateCustomizePagesWithBody(ctx context.Context, contentType s
 
 func (c *Client) UpdateCustomizePages(ctx context.Context, body UpdateCustomizePagesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateCustomizePagesRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ConfirmDeviceWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewConfirmDeviceRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ConfirmDevice(ctx context.Context, body ConfirmDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewConfirmDeviceRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateDeviceStatusWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateDeviceStatusRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateDeviceStatus(ctx context.Context, body UpdateDeviceStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateDeviceStatusRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1357,6 +1429,18 @@ func (c *Client) GetAllTenantUsers(ctx context.Context, reqEditors ...RequestEdi
 	return c.Client.Do(req)
 }
 
+func (c *Client) SearchTenantUsers(ctx context.Context, params *SearchTenantUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSearchTenantUsersRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) GetAllTenantUser(ctx context.Context, userId UserId, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetAllTenantUserRequest(c.Server, userId)
 	if err != nil {
@@ -1765,6 +1849,18 @@ func (c *Client) GetUserInfoByEmail(ctx context.Context, params *GetUserInfoByEm
 	return c.Client.Do(req)
 }
 
+func (c *Client) GetUserInfoBySignInId(ctx context.Context, params *GetUserInfoBySignInIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetUserInfoBySignInIdRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) GetSaasUsers(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetSaasUsersRequest(c.Server)
 	if err != nil {
@@ -2029,8 +2125,44 @@ func (c *Client) UpdateSaasUserPassword(ctx context.Context, userId UserId, body
 	return c.Client.Do(req)
 }
 
+func (c *Client) ResetSaasUserPassword(ctx context.Context, userId UserId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewResetSaasUserPasswordRequest(c.Server, userId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) UnlinkProvider(ctx context.Context, userId UserId, providerName string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUnlinkProviderRequest(c.Server, userId, providerName)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateSaasUserSignInIdWithBody(ctx context.Context, userId UserId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSaasUserSignInIdRequestWithBody(c.Server, userId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateSaasUserSignInId(ctx context.Context, userId UserId, body UpdateSaasUserSignInIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSaasUserSignInIdRequest(c.Server, userId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -2539,6 +2671,86 @@ func NewUpdateCustomizePagesRequestWithBody(server string, contentType string, b
 	}
 
 	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewConfirmDeviceRequest calls the generic ConfirmDevice builder with application/json body
+func NewConfirmDeviceRequest(server string, body ConfirmDeviceJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewConfirmDeviceRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewConfirmDeviceRequestWithBody generates requests for ConfirmDevice with any type of body
+func NewConfirmDeviceRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/device/confirm")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewUpdateDeviceStatusRequest calls the generic UpdateDeviceStatus builder with application/json body
+func NewUpdateDeviceStatusRequest(server string, body UpdateDeviceStatusJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateDeviceStatusRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewUpdateDeviceStatusRequestWithBody generates requests for UpdateDeviceStatus with any type of body
+func NewUpdateDeviceStatusRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/device/status")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -3837,6 +4049,165 @@ func NewGetAllTenantUsersRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
+// NewSearchTenantUsersRequest generates requests for SearchTenantUsers
+func NewSearchTenantUsersRequest(server string, params *SearchTenantUsersParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/tenants/all/users/search")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	queryValues := queryURL.Query()
+
+	if params.TenantId != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "tenant_id", runtime.ParamLocationQuery, *params.TenantId); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.Id != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "id", runtime.ParamLocationQuery, *params.Id); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.Email != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "email", runtime.ParamLocationQuery, *params.Email); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.SignInId != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "sign_in_id", runtime.ParamLocationQuery, *params.SignInId); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.EnvId != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "env_id", runtime.ParamLocationQuery, *params.EnvId); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.RoleId != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "role_id", runtime.ParamLocationQuery, *params.RoleId); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.Limit != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.Cursor != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "cursor", runtime.ParamLocationQuery, *params.Cursor); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetAllTenantUserRequest generates requests for GetAllTenantUser
 func NewGetAllTenantUserRequest(server string, userId UserId) (*http.Request, error) {
 	var err error
@@ -4878,6 +5249,49 @@ func NewGetUserInfoByEmailRequest(server string, params *GetUserInfoByEmailParam
 	return req, nil
 }
 
+// NewGetUserInfoBySignInIdRequest generates requests for GetUserInfoBySignInId
+func NewGetUserInfoBySignInIdRequest(server string, params *GetUserInfoBySignInIdParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/userinfo/search/sign-in-id")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	queryValues := queryURL.Query()
+
+	if queryFrag, err := runtime.StyleParamWithLocation("form", true, "sign_in_id", runtime.ParamLocationQuery, params.SignInId); err != nil {
+		return nil, err
+	} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+		return nil, err
+	} else {
+		for k, v := range parsed {
+			for _, v2 := range v {
+				queryValues.Add(k, v2)
+			}
+		}
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetSaasUsersRequest generates requests for GetSaasUsers
 func NewGetSaasUsersRequest(server string) (*http.Request, error) {
 	var err error
@@ -5423,6 +5837,40 @@ func NewUpdateSaasUserPasswordRequestWithBody(server string, userId UserId, cont
 	return req, nil
 }
 
+// NewResetSaasUserPasswordRequest generates requests for ResetSaasUserPassword
+func NewResetSaasUserPasswordRequest(server string, userId UserId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "user_id", runtime.ParamLocationPath, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/users/%s/password/reset", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewUnlinkProviderRequest generates requests for UnlinkProvider
 func NewUnlinkProviderRequest(server string, userId UserId, providerName string) (*http.Request, error) {
 	var err error
@@ -5460,6 +5908,53 @@ func NewUnlinkProviderRequest(server string, userId UserId, providerName string)
 	if err != nil {
 		return nil, err
 	}
+
+	return req, nil
+}
+
+// NewUpdateSaasUserSignInIdRequest calls the generic UpdateSaasUserSignInId builder with application/json body
+func NewUpdateSaasUserSignInIdRequest(server string, userId UserId, body UpdateSaasUserSignInIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateSaasUserSignInIdRequestWithBody(server, userId, "application/json", bodyReader)
+}
+
+// NewUpdateSaasUserSignInIdRequestWithBody generates requests for UpdateSaasUserSignInId with any type of body
+func NewUpdateSaasUserSignInIdRequestWithBody(server string, userId UserId, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "user_id", runtime.ParamLocationPath, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/users/%s/sign-in-id", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -5561,6 +6056,16 @@ type ClientWithResponsesInterface interface {
 	UpdateCustomizePagesWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateCustomizePagesResponse, error)
 
 	UpdateCustomizePagesWithResponse(ctx context.Context, body UpdateCustomizePagesJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateCustomizePagesResponse, error)
+
+	// ConfirmDevice request with any body
+	ConfirmDeviceWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ConfirmDeviceResponse, error)
+
+	ConfirmDeviceWithResponse(ctx context.Context, body ConfirmDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*ConfirmDeviceResponse, error)
+
+	// UpdateDeviceStatus request with any body
+	UpdateDeviceStatusWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateDeviceStatusResponse, error)
+
+	UpdateDeviceStatusWithResponse(ctx context.Context, body UpdateDeviceStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateDeviceStatusResponse, error)
 
 	// GetEnvs request
 	GetEnvsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetEnvsResponse, error)
@@ -5709,6 +6214,9 @@ type ClientWithResponsesInterface interface {
 	// GetAllTenantUsers request
 	GetAllTenantUsersWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetAllTenantUsersResponse, error)
 
+	// SearchTenantUsers request
+	SearchTenantUsersWithResponse(ctx context.Context, params *SearchTenantUsersParams, reqEditors ...RequestEditorFn) (*SearchTenantUsersResponse, error)
+
 	// GetAllTenantUser request
 	GetAllTenantUserWithResponse(ctx context.Context, userId UserId, reqEditors ...RequestEditorFn) (*GetAllTenantUserResponse, error)
 
@@ -5802,6 +6310,9 @@ type ClientWithResponsesInterface interface {
 	// GetUserInfoByEmail request
 	GetUserInfoByEmailWithResponse(ctx context.Context, params *GetUserInfoByEmailParams, reqEditors ...RequestEditorFn) (*GetUserInfoByEmailResponse, error)
 
+	// GetUserInfoBySignInId request
+	GetUserInfoBySignInIdWithResponse(ctx context.Context, params *GetUserInfoBySignInIdParams, reqEditors ...RequestEditorFn) (*GetUserInfoBySignInIdResponse, error)
+
 	// GetSaasUsers request
 	GetSaasUsersWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSaasUsersResponse, error)
 
@@ -5859,8 +6370,16 @@ type ClientWithResponsesInterface interface {
 
 	UpdateSaasUserPasswordWithResponse(ctx context.Context, userId UserId, body UpdateSaasUserPasswordJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSaasUserPasswordResponse, error)
 
+	// ResetSaasUserPassword request
+	ResetSaasUserPasswordWithResponse(ctx context.Context, userId UserId, reqEditors ...RequestEditorFn) (*ResetSaasUserPasswordResponse, error)
+
 	// UnlinkProvider request
 	UnlinkProviderWithResponse(ctx context.Context, userId UserId, providerName string, reqEditors ...RequestEditorFn) (*UnlinkProviderResponse, error)
+
+	// UpdateSaasUserSignInId request with any body
+	UpdateSaasUserSignInIdWithBodyWithResponse(ctx context.Context, userId UserId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSaasUserSignInIdResponse, error)
+
+	UpdateSaasUserSignInIdWithResponse(ctx context.Context, userId UserId, body UpdateSaasUserSignInIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSaasUserSignInIdResponse, error)
 }
 
 type GetAuthInfoResponse struct {
@@ -6154,6 +6673,55 @@ func (r UpdateCustomizePagesResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdateCustomizePagesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ConfirmDeviceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ConfirmDeviceResult
+	JSON400      *Error
+	JSON401      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r ConfirmDeviceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ConfirmDeviceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateDeviceStatusResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *Error
+	JSON401      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateDeviceStatusResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateDeviceStatusResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -7010,6 +7578,30 @@ func (r GetAllTenantUsersResponse) StatusCode() int {
 	return 0
 }
 
+type SearchTenantUsersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SearchTenantUsersResult
+	JSON400      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r SearchTenantUsersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SearchTenantUsersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetAllTenantUserResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -7591,6 +8183,30 @@ func (r GetUserInfoByEmailResponse) StatusCode() int {
 	return 0
 }
 
+type GetUserInfoBySignInIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *UserInfo
+	JSON404      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetUserInfoBySignInIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetUserInfoBySignInIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetSaasUsersResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -7617,7 +8233,7 @@ func (r GetSaasUsersResponse) StatusCode() int {
 type CreateSaasUserResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *SaasUser
+	JSON201      *CreatedSaasUser
 	JSON400      *Error
 	JSON500      *Error
 }
@@ -7641,6 +8257,7 @@ func (r CreateSaasUserResponse) StatusCode() int {
 type DeleteSaasUserResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON200      *UserInfo
 	JSON404      *Error
 	JSON500      *Error
 }
@@ -7885,6 +8502,30 @@ func (r UpdateSaasUserPasswordResponse) StatusCode() int {
 	return 0
 }
 
+type ResetSaasUserPasswordResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SaasUserResetPasswordResult
+	JSON404      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r ResetSaasUserPasswordResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ResetSaasUserPasswordResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type UnlinkProviderResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -7901,6 +8542,28 @@ func (r UnlinkProviderResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UnlinkProviderResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateSaasUserSignInIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateSaasUserSignInIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateSaasUserSignInIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -8086,6 +8749,40 @@ func (c *ClientWithResponses) UpdateCustomizePagesWithResponse(ctx context.Conte
 		return nil, err
 	}
 	return ParseUpdateCustomizePagesResponse(rsp)
+}
+
+// ConfirmDeviceWithBodyWithResponse request with arbitrary body returning *ConfirmDeviceResponse
+func (c *ClientWithResponses) ConfirmDeviceWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ConfirmDeviceResponse, error) {
+	rsp, err := c.ConfirmDeviceWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseConfirmDeviceResponse(rsp)
+}
+
+func (c *ClientWithResponses) ConfirmDeviceWithResponse(ctx context.Context, body ConfirmDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*ConfirmDeviceResponse, error) {
+	rsp, err := c.ConfirmDevice(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseConfirmDeviceResponse(rsp)
+}
+
+// UpdateDeviceStatusWithBodyWithResponse request with arbitrary body returning *UpdateDeviceStatusResponse
+func (c *ClientWithResponses) UpdateDeviceStatusWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateDeviceStatusResponse, error) {
+	rsp, err := c.UpdateDeviceStatusWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateDeviceStatusResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateDeviceStatusWithResponse(ctx context.Context, body UpdateDeviceStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateDeviceStatusResponse, error) {
+	rsp, err := c.UpdateDeviceStatus(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateDeviceStatusResponse(rsp)
 }
 
 // GetEnvsWithResponse request returning *GetEnvsResponse
@@ -8565,6 +9262,15 @@ func (c *ClientWithResponses) GetAllTenantUsersWithResponse(ctx context.Context,
 	return ParseGetAllTenantUsersResponse(rsp)
 }
 
+// SearchTenantUsersWithResponse request returning *SearchTenantUsersResponse
+func (c *ClientWithResponses) SearchTenantUsersWithResponse(ctx context.Context, params *SearchTenantUsersParams, reqEditors ...RequestEditorFn) (*SearchTenantUsersResponse, error) {
+	rsp, err := c.SearchTenantUsers(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSearchTenantUsersResponse(rsp)
+}
+
 // GetAllTenantUserWithResponse request returning *GetAllTenantUserResponse
 func (c *ClientWithResponses) GetAllTenantUserWithResponse(ctx context.Context, userId UserId, reqEditors ...RequestEditorFn) (*GetAllTenantUserResponse, error) {
 	rsp, err := c.GetAllTenantUser(ctx, userId, reqEditors...)
@@ -8862,6 +9568,15 @@ func (c *ClientWithResponses) GetUserInfoByEmailWithResponse(ctx context.Context
 	return ParseGetUserInfoByEmailResponse(rsp)
 }
 
+// GetUserInfoBySignInIdWithResponse request returning *GetUserInfoBySignInIdResponse
+func (c *ClientWithResponses) GetUserInfoBySignInIdWithResponse(ctx context.Context, params *GetUserInfoBySignInIdParams, reqEditors ...RequestEditorFn) (*GetUserInfoBySignInIdResponse, error) {
+	rsp, err := c.GetUserInfoBySignInId(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetUserInfoBySignInIdResponse(rsp)
+}
+
 // GetSaasUsersWithResponse request returning *GetSaasUsersResponse
 func (c *ClientWithResponses) GetSaasUsersWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSaasUsersResponse, error) {
 	rsp, err := c.GetSaasUsers(ctx, reqEditors...)
@@ -9051,6 +9766,15 @@ func (c *ClientWithResponses) UpdateSaasUserPasswordWithResponse(ctx context.Con
 	return ParseUpdateSaasUserPasswordResponse(rsp)
 }
 
+// ResetSaasUserPasswordWithResponse request returning *ResetSaasUserPasswordResponse
+func (c *ClientWithResponses) ResetSaasUserPasswordWithResponse(ctx context.Context, userId UserId, reqEditors ...RequestEditorFn) (*ResetSaasUserPasswordResponse, error) {
+	rsp, err := c.ResetSaasUserPassword(ctx, userId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseResetSaasUserPasswordResponse(rsp)
+}
+
 // UnlinkProviderWithResponse request returning *UnlinkProviderResponse
 func (c *ClientWithResponses) UnlinkProviderWithResponse(ctx context.Context, userId UserId, providerName string, reqEditors ...RequestEditorFn) (*UnlinkProviderResponse, error) {
 	rsp, err := c.UnlinkProvider(ctx, userId, providerName, reqEditors...)
@@ -9058,6 +9782,23 @@ func (c *ClientWithResponses) UnlinkProviderWithResponse(ctx context.Context, us
 		return nil, err
 	}
 	return ParseUnlinkProviderResponse(rsp)
+}
+
+// UpdateSaasUserSignInIdWithBodyWithResponse request with arbitrary body returning *UpdateSaasUserSignInIdResponse
+func (c *ClientWithResponses) UpdateSaasUserSignInIdWithBodyWithResponse(ctx context.Context, userId UserId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSaasUserSignInIdResponse, error) {
+	rsp, err := c.UpdateSaasUserSignInIdWithBody(ctx, userId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSaasUserSignInIdResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateSaasUserSignInIdWithResponse(ctx context.Context, userId UserId, body UpdateSaasUserSignInIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSaasUserSignInIdResponse, error) {
+	rsp, err := c.UpdateSaasUserSignInId(ctx, userId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSaasUserSignInIdResponse(rsp)
 }
 
 // ParseGetAuthInfoResponse parses an HTTP response from a GetAuthInfoWithResponse call
@@ -9463,6 +10204,93 @@ func ParseUpdateCustomizePagesResponse(rsp *http.Response) (*UpdateCustomizePage
 	}
 
 	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseConfirmDeviceResponse parses an HTTP response from a ConfirmDeviceWithResponse call
+func ParseConfirmDeviceResponse(rsp *http.Response) (*ConfirmDeviceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ConfirmDeviceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ConfirmDeviceResult
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateDeviceStatusResponse parses an HTTP response from a UpdateDeviceStatusWithResponse call
+func ParseUpdateDeviceStatusResponse(rsp *http.Response) (*UpdateDeviceStatusResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateDeviceStatusResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -10689,6 +11517,46 @@ func ParseGetAllTenantUsersResponse(rsp *http.Response) (*GetAllTenantUsersRespo
 	return response, nil
 }
 
+// ParseSearchTenantUsersResponse parses an HTTP response from a SearchTenantUsersWithResponse call
+func ParseSearchTenantUsersResponse(rsp *http.Response) (*SearchTenantUsersResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SearchTenantUsersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SearchTenantUsersResult
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetAllTenantUserResponse parses an HTTP response from a GetAllTenantUserWithResponse call
 func ParseGetAllTenantUserResponse(rsp *http.Response) (*GetAllTenantUserResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -11556,6 +12424,46 @@ func ParseGetUserInfoByEmailResponse(rsp *http.Response) (*GetUserInfoByEmailRes
 	return response, nil
 }
 
+// ParseGetUserInfoBySignInIdResponse parses an HTTP response from a GetUserInfoBySignInIdWithResponse call
+func ParseGetUserInfoBySignInIdResponse(rsp *http.Response) (*GetUserInfoBySignInIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetUserInfoBySignInIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest UserInfo
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetSaasUsersResponse parses an HTTP response from a GetSaasUsersWithResponse call
 func ParseGetSaasUsersResponse(rsp *http.Response) (*GetSaasUsersResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -11604,7 +12512,7 @@ func ParseCreateSaasUserResponse(rsp *http.Response) (*CreateSaasUserResponse, e
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest SaasUser
+		var dest CreatedSaasUser
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -11643,6 +12551,13 @@ func ParseDeleteSaasUserResponse(rsp *http.Response) (*DeleteSaasUserResponse, e
 	}
 
 	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest UserInfo
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
 		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -11950,6 +12865,46 @@ func ParseUpdateSaasUserPasswordResponse(rsp *http.Response) (*UpdateSaasUserPas
 	return response, nil
 }
 
+// ParseResetSaasUserPasswordResponse parses an HTTP response from a ResetSaasUserPasswordWithResponse call
+func ParseResetSaasUserPasswordResponse(rsp *http.Response) (*ResetSaasUserPasswordResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ResetSaasUserPasswordResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SaasUserResetPasswordResult
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseUnlinkProviderResponse parses an HTTP response from a UnlinkProviderWithResponse call
 func ParseUnlinkProviderResponse(rsp *http.Response) (*UnlinkProviderResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -11959,6 +12914,32 @@ func ParseUnlinkProviderResponse(rsp *http.Response) (*UnlinkProviderResponse, e
 	}
 
 	response := &UnlinkProviderResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateSaasUserSignInIdResponse parses an HTTP response from a UpdateSaasUserSignInIdWithResponse call
+func ParseUpdateSaasUserSignInIdResponse(rsp *http.Response) (*UpdateSaasUserSignInIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateSaasUserSignInIdResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
