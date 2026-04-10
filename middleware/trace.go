@@ -13,7 +13,7 @@ func ExtractTraceId(next http.Handler) http.Handler {
 		ctx := r.Context()
 		xSaaSusTraceId := r.Header.Get("X-SaaSus-Trace-Id")
 		if xSaaSusTraceId != "" {
-			ctx = context.WithValue(ctx, ctxlib.XSaaSusTraceIdKey, xSaaSusTraceId)
+			ctx = context.WithValue(ctx, ctxlib.XSaaSusTraceIDKey, xSaaSusTraceId)
 		}
 
 		next.ServeHTTP(w, r.WithContext(ctx))
