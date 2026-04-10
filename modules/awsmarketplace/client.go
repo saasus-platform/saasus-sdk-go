@@ -16,7 +16,7 @@ func withRequestEditorFns(c *awsmarketplaceapi.Client) error {
 	c.RequestEditors = []awsmarketplaceapi.RequestEditorFn{
 		func(ctx context.Context, req *http.Request) error {
 			client.SetReferer(ctx, req)
-			client.SetTraceId(ctx, req)
+			client.SetTraceID(ctx, req)
 			return client.SetSigV1(req)
 		},
 	}
