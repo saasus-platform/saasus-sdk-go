@@ -16,6 +16,7 @@ func withRequestEditorFns(c *pricingapi.Client) error {
 	c.RequestEditors = []pricingapi.RequestEditorFn{
 		func(ctx context.Context, req *http.Request) error {
 			client.SetReferer(ctx, req)
+			client.SetTraceId(ctx, req)
 			return client.SetSigV1(req)
 		}}
 
