@@ -97,3 +97,10 @@ func SetReferer(ctx context.Context, req *http.Request) {
 		req.Header.Set("X-SaaSus-Referer", xSaaSusReferer)
 	}
 }
+
+// SetTraceId sets the X-SaaSus-Trace-Id to the request header if existed.
+func SetTraceID(ctx context.Context, req *http.Request) {
+	if xSaaSusTraceId, ok := ctx.Value(ctxlib.XSaaSusTraceIDKey).(string); ok {
+		req.Header.Set("X-SaaSus-Trace-Id", xSaaSusTraceId)
+	}
+}
