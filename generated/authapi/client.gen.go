@@ -408,6 +408,9 @@ type ClientInterface interface {
 
 	CreateSaasUser(ctx context.Context, body CreateSaasUserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// SearchSaasUsers request
+	SearchSaasUsers(ctx context.Context, params *SearchSaasUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DeleteSaasUser request
 	DeleteSaasUser(ctx context.Context, userId UserId, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -1887,6 +1890,18 @@ func (c *Client) CreateSaasUserWithBody(ctx context.Context, contentType string,
 
 func (c *Client) CreateSaasUser(ctx context.Context, body CreateSaasUserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateSaasUserRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SearchSaasUsers(ctx context.Context, params *SearchSaasUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSearchSaasUsersRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -5359,6 +5374,117 @@ func NewCreateSaasUserRequestWithBody(server string, contentType string, body io
 	return req, nil
 }
 
+// NewSearchSaasUsersRequest generates requests for SearchSaasUsers
+func NewSearchSaasUsersRequest(server string, params *SearchSaasUsersParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/users/search")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	queryValues := queryURL.Query()
+
+	if params.Id != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "id", runtime.ParamLocationQuery, *params.Id); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.Email != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "email", runtime.ParamLocationQuery, *params.Email); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.SignInId != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "sign_in_id", runtime.ParamLocationQuery, *params.SignInId); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.Limit != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.Cursor != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "cursor", runtime.ParamLocationQuery, *params.Cursor); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewDeleteSaasUserRequest generates requests for DeleteSaasUser
 func NewDeleteSaasUserRequest(server string, userId UserId) (*http.Request, error) {
 	var err error
@@ -6320,6 +6446,9 @@ type ClientWithResponsesInterface interface {
 	CreateSaasUserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSaasUserResponse, error)
 
 	CreateSaasUserWithResponse(ctx context.Context, body CreateSaasUserJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSaasUserResponse, error)
+
+	// SearchSaasUsers request
+	SearchSaasUsersWithResponse(ctx context.Context, params *SearchSaasUsersParams, reqEditors ...RequestEditorFn) (*SearchSaasUsersResponse, error)
 
 	// DeleteSaasUser request
 	DeleteSaasUserWithResponse(ctx context.Context, userId UserId, reqEditors ...RequestEditorFn) (*DeleteSaasUserResponse, error)
@@ -8254,6 +8383,30 @@ func (r CreateSaasUserResponse) StatusCode() int {
 	return 0
 }
 
+type SearchSaasUsersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SearchSaasUsersResult
+	JSON400      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r SearchSaasUsersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SearchSaasUsersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type DeleteSaasUserResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -9601,6 +9754,15 @@ func (c *ClientWithResponses) CreateSaasUserWithResponse(ctx context.Context, bo
 		return nil, err
 	}
 	return ParseCreateSaasUserResponse(rsp)
+}
+
+// SearchSaasUsersWithResponse request returning *SearchSaasUsersResponse
+func (c *ClientWithResponses) SearchSaasUsersWithResponse(ctx context.Context, params *SearchSaasUsersParams, reqEditors ...RequestEditorFn) (*SearchSaasUsersResponse, error) {
+	rsp, err := c.SearchSaasUsers(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSearchSaasUsersResponse(rsp)
 }
 
 // DeleteSaasUserWithResponse request returning *DeleteSaasUserResponse
@@ -12517,6 +12679,46 @@ func ParseCreateSaasUserResponse(rsp *http.Response) (*CreateSaasUserResponse, e
 			return nil, err
 		}
 		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseSearchSaasUsersResponse parses an HTTP response from a SearchSaasUsersWithResponse call
+func ParseSearchSaasUsersResponse(rsp *http.Response) (*SearchSaasUsersResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SearchSaasUsersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SearchSaasUsersResult
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest Error
