@@ -848,6 +848,13 @@ type SaasUsers struct {
 	Users []SaasUser `json:"users"`
 }
 
+// SearchSaasUsersResult defines model for SearchSaasUsersResult.
+type SearchSaasUsersResult struct {
+	// Cursor Pagination cursor for the next page
+	Cursor *string    `json:"cursor,omitempty"`
+	Users  []SaasUser `json:"users"`
+}
+
 // SearchTenantUsersResult defines model for SearchTenantUsersResult.
 type SearchTenantUsersResult struct {
 	// Cursor Pagination cursor for the next page
@@ -1383,11 +1390,17 @@ type AuthFlow string
 // Code defines model for Code.
 type Code = Uuid
 
+// Cursor defines model for Cursor.
+type Cursor = string
+
 // EnvId defines model for EnvId.
 type EnvId = Id
 
 // InvitationId defines model for InvitationId.
 type InvitationId = Uuid
+
+// Limit defines model for Limit.
+type Limit = int64
 
 // RefreshToken defines model for RefreshToken.
 type RefreshToken = string
@@ -1439,11 +1452,11 @@ type SearchTenantUsersParams struct {
 	// RoleId Role ID
 	RoleId *string `form:"role_id,omitempty" json:"role_id,omitempty"`
 
-	// Limit Maximum number of users to retrieve
-	Limit *int64 `form:"limit,omitempty" json:"limit,omitempty"`
+	// Limit Maximum number of items to retrieve
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
 
 	// Cursor Cursor for cursor pagination
-	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
 }
 
 // GetUserInfoParams defines parameters for GetUserInfo.
@@ -1462,6 +1475,24 @@ type GetUserInfoByEmailParams struct {
 type GetUserInfoBySignInIdParams struct {
 	// SignInId Sign-in ID.
 	SignInId string `form:"sign_in_id" json:"sign_in_id"`
+}
+
+// SearchSaasUsersParams defines parameters for SearchSaasUsers.
+type SearchSaasUsersParams struct {
+	// Id User ID
+	Id *Uuid `form:"id,omitempty" json:"id,omitempty"`
+
+	// Email Email prefix
+	Email *string `form:"email,omitempty" json:"email,omitempty"`
+
+	// SignInId Sign-in ID prefix
+	SignInId *string `form:"sign_in_id,omitempty" json:"sign_in_id,omitempty"`
+
+	// Limit Maximum number of items to retrieve
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Cursor for cursor pagination
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
 }
 
 // UpdateAuthInfoJSONRequestBody defines body for UpdateAuthInfo for application/json ContentType.
