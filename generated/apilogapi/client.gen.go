@@ -230,6 +230,38 @@ func NewGetLogsRequest(server string, params *GetLogsParams) (*http.Request, err
 
 	}
 
+	if params.StartAt != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "start_at", runtime.ParamLocationQuery, *params.StartAt); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.EndAt != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "end_at", runtime.ParamLocationQuery, *params.EndAt); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
 	if params.Cursor != nil {
 
 		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "cursor", runtime.ParamLocationQuery, *params.Cursor); err != nil {

@@ -999,6 +999,7 @@ type GetCatalogEntityVisibilityResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *CatalogEntityVisibility
+	JSON404      *Error
 	JSON500      *Error
 }
 
@@ -1530,6 +1531,13 @@ func ParseGetCatalogEntityVisibilityResponse(rsp *http.Response) (*GetCatalogEnt
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
