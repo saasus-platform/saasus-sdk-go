@@ -1,2 +1,11 @@
 .idea
 
+# Local E2E credentials
+.env
+.env.*
+
+# Generated E2E snapshots, comparisons, validations, and reports
+tests/e2e/snapshot/
+tests/e2e/*/test_reports/
+tests/e2e/*/logs/
+tests/e2e/*/*.log
