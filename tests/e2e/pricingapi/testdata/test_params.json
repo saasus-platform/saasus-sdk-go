@@ -1,0 +1,617 @@
+{
+  "CreateMeteringUnit": {
+    "createParams": {
+      "aggregate_usage": "max",
+      "description": "ユーザ数カウント用のメーター",
+      "display_name": "ユーザ数",
+      "unit_name": "user_counts"
+    }
+  },
+  "CreatePricingMenu": {
+    "createParams": {
+      "currency1": "JPY",
+      "currency2": "JPY",
+      "currency3": "JPY",
+      "description": "テスト用文字列",
+      "description1": "固定ユニットdescription1",
+      "description2": "固定ユニットdescription2",
+      "description3": "固定ユニットdescription3",
+      "display_name": "テスト用文字列",
+      "display_name1": "固定ユニット1",
+      "display_name2": "固定ユニット2",
+      "display_name3": "固定ユニット3",
+      "menu_description": "メニューdescription",
+      "menu_display_name": "固定UNITメニュー",
+      "menu_name": "fixed-menu_name",
+      "name": "テスト用文字列",
+      "name1": "fixed-unit-name1",
+      "name2": "fixed-unit-name2",
+      "name3": "fixed-unit-name3",
+      "recurring_interval1": "month",
+      "recurring_interval2": "month",
+      "recurring_interval3": "month",
+      "type1": "fixed",
+      "type2": "fixed",
+      "type3": "fixed",
+      "unit_amount1": 300,
+      "unit_amount2": 5000,
+      "unit_amount3": 10000,
+      "unit_ids": [
+        "pricing_unit_id1",
+        "pricing_unit_id2"
+      ]
+    }
+  },
+  "CreatePricingPlan": {
+    "createParams": {
+      "aggregate_usage3": "max",
+      "aggregate_usage4": "max",
+      "currency1": "JPY",
+      "currency2": "JPY",
+      "currency3": "JPY",
+      "currency4": "JPY",
+      "currency5": "JPY",
+      "description": "テスト用文字列",
+      "description1": "固定ユニットdescription1",
+      "description2": "固定ユニットdescription2",
+      "description3": "使用量ユニットdescription",
+      "description4": "段階ユニットdescription",
+      "description5": "固定ユニットdescription5",
+      "display_name": "テスト用文字列",
+      "display_name1": "固定ユニット1",
+      "display_name2": "固定ユニット2",
+      "display_name3": "使用量ユニット",
+      "display_name4": "段階ユニット",
+      "display_name5": "固定ユニット5",
+      "flat_amount4": 400,
+      "inf4": true,
+      "menu_description1": "メニューdescription1",
+      "menu_description2": "サンプルメニューdescription1",
+      "menu_description3": "サンプルメニューdescription3",
+      "menu_display_name1": "固定UNITメニュー1",
+      "menu_display_name2": "サンプルメニュー",
+      "menu_display_name3": "サンプルメニュー3",
+      "menu_ids": [
+        "pricing_menu_id1",
+        "pricing_menu_id2"
+      ],
+      "menu_name1": "fixed-menu_name1",
+      "menu_name2": "mixed-menu_name",
+      "menu_name3": "mixed-menu_name3",
+      "meter_description3": "ユニットdescriptionメーター",
+      "meter_description4": "ユニットdescriptionメーター",
+      "meter_display_name3": "ユニットメーター",
+      "meter_display_name4": "ユニットメーター",
+      "metering_unit_name3": "usage_unit_metter",
+      "metering_unit_name4": "tiered_unit_metter",
+      "name": "テスト用文字列",
+      "name1": "fixed-unit-name1",
+      "name2": "fixed-unit-name2",
+      "name3": "usage_unit-name",
+      "name4": "tiered_unit-name",
+      "name5": "fixed-unit-name5",
+      "plan_description": "プランdescription",
+      "plan_display_name": "サンプルプラン",
+      "plan_name": "plan_name",
+      "recurring_interval1": "month",
+      "recurring_interval2": "month",
+      "recurring_interval3": "month",
+      "recurring_interval4": "month",
+      "recurring_interval5": "month",
+      "type1": "fixed",
+      "type2": "fixed",
+      "type3": "usage",
+      "type4": "tiered",
+      "type5": "fixed",
+      "unit_amount1": 300,
+      "unit_amount2": 5000,
+      "unit_amount3": 1300,
+      "unit_amount4": 500,
+      "unit_amount5": 3000,
+      "up_to4": 0,
+      "upper_count3": 5000,
+      "upper_count4": 5000
+    }
+  },
+  "CreatePricingUnit": {
+    "createParams": {
+      "aggregate_usage": "max",
+      "currency": "JPY",
+      "currency1": "JPY",
+      "currency2": "JPY",
+      "currency3": "JPY",
+      "description": "段階使用量ユニットdescription",
+      "description1": "固定ユニットdescription1",
+      "description2": "固定ユニットdescription2",
+      "description3": "固定ユニットdescription3",
+      "display_name": "段階使用量ユニット",
+      "display_name1": "固定ユニット1",
+      "display_name2": "固定ユニット2",
+      "display_name3": "固定ユニット3",
+      "flat_amount": 400,
+      "inf": true,
+      "menu_description": "メニューdescription",
+      "menu_description1": "メニューdescription1",
+      "menu_display_name": "固定UNITメニュー",
+      "menu_display_name1": "固定UNITメニュー1",
+      "menu_name": "fixed-menu_name",
+      "menu_name1": "fixed-menu_name1",
+      "meter_description": "ユニットdescriptionメーター",
+      "meter_display_name": "ユニットメーター",
+      "metering_unit_name": "tiered_unit_metter",
+      "name": "tiered_usage_unit-name",
+      "name1": "fixed-unit-name1",
+      "name2": "fixed-unit-name2",
+      "name3": "fixed-unit-name3",
+      "plan_description": "プランdescription",
+      "plan_display_name": "サンプルプラン",
+      "plan_name": "plan_name",
+      "recurring_interval": "month",
+      "recurring_interval1": "month",
+      "recurring_interval2": "month",
+      "recurring_interval3": "month",
+      "type": "tiered_usage",
+      "type1": "fixed",
+      "type2": "fixed",
+      "type3": "fixed",
+      "union": null,
+      "unit_amount": 500,
+      "unit_amount1": 300,
+      "unit_amount2": 5000,
+      "unit_amount3": 10000,
+      "unit_name": "user_counts",
+      "up_to": 0,
+      "upper_count": 5000
+    }
+  },
+  "CreateTaxRate": {
+    "createParams": {
+      "country": "JP",
+      "description": "日本の消費税。内税10%",
+      "display_name": "日本の消費税(内税)",
+      "inclusive": true,
+      "name": "japanese_consumption_tax_inclusive",
+      "percentage": 10
+    }
+  },
+  "CreateTenant": {
+    "name": "Test Tenant for Pricing E2E",
+    "back_office_staff_email": "pricing-e2e-test@example.com",
+    "attributes": {}
+  },
+  "UpdateMeteringUnitByID": {
+    "updateParams": {
+      "description": "[更新]ユーザ数カウント用のメーター",
+      "display_name": "[更新]ユーザ数"
+    }
+  },
+  "UpdateMeteringUnitTimestampCount": {
+    "updateParams": {
+      "count": 0,
+      "method": null
+    }
+  },
+  "UpdateMeteringUnitTimestampCountNow": {
+    "updateParams": {
+      "count": 0,
+      "method": null
+    }
+  },
+  "UpdatePricingMenu": {
+    "updateParams": {
+      "menu_name": "fixed-menu_name",
+      "menu_display_name": "固定UNITメニュー-update",
+      "menu_description": "メニューdescription-update",
+      "description": "メニューdescription-update",
+      "display_name": "固定UNITメニュー-update"
+    }
+  },
+  "UpdatePricingPlan": {
+    "updateParams": {
+      "plan_name": "plan_name",
+      "plan_display_name": "サンプルプラン-update",
+      "plan_description": "プランdescription-update",
+      "description": "プランdescription-update",
+      "display_name": "サンプルプラン-update"
+    }
+  },
+  "UpdatePricingPlansUsed": {
+    "updateParams": {
+      "plan_description": "プランdescription-update",
+      "plan_display_name": "サンプルプラン-update",
+      "plan_ids": [
+        "pricing_plan_id"
+      ],
+      "plan_name": "plan_name-update"
+    }
+  },
+  "UpdatePricingUnit": {
+    "updateParams": {
+      "description": "段階使用量ユニットdescription-update",
+      "display_name": "段階使用量ユニット-update"
+    }
+  },
+  "UpdateStripeInfo": {
+    "updateParams": {
+      "secret_key": "テスト用文字列"
+    }
+  },
+  "UpdateTaxRate": {
+    "updateParams": {
+      "description": "日本の消費税。内税10%-update",
+      "display_name": "日本の消費税(内税)-update"
+    }
+  },
+  "info": {
+    "createParams": {
+      "aggregate_usage3": "sum",
+      "aggregate_usage4": "sum",
+      "currency1": "JPY",
+      "currency2": "JPY",
+      "currency3": "JPY",
+      "currency4": "JPY",
+      "description1": "固定ユニットdescription1",
+      "description2": "固定ユニットdescription2",
+      "description3": "使用量ユニットdescription",
+      "description4": "段階ユニットdescription",
+      "display_name1": "固定ユニット1",
+      "display_name2": "固定ユニット2",
+      "display_name3": "使用量ユニット",
+      "display_name4": "段階ユニット",
+      "flat_amount4": 400,
+      "inf4": true,
+      "menu_description1": "メニューdescription1",
+      "menu_description2": "サンプルメニューdescription1",
+      "menu_display_name1": "固定UNITメニュー1",
+      "menu_display_name2": "サンプルメニュー",
+      "menu_name1": "fixed-menu_name1",
+      "menu_name2": "mixed-menu_name",
+      "meter_description3": "ユニットdescriptionメーター",
+      "meter_description4": "ユニットdescriptionメーター",
+      "meter_display_name3": "ユニットメーター",
+      "meter_display_name4": "ユニットメーター",
+      "metering_unit_name3": "usage_unit_metter",
+      "metering_unit_name4": "tiered_unit_metter",
+      "name1": "fixed-unit-name1",
+      "name2": "fixed-unit-name2",
+      "name3": "usage_unit-name",
+      "name4": "tiered_unit-name",
+      "plan_description": "プランdescription",
+      "plan_display_name": "サンプルプラン",
+      "plan_name": "plan_name",
+      "recurring_interval1": "month",
+      "recurring_interval2": "month",
+      "recurring_interval3": "month",
+      "recurring_interval4": "month",
+      "type1": "fixed",
+      "type2": "fixed",
+      "type3": "usage",
+      "type4": "tiered",
+      "unit_amount1": 300,
+      "unit_amount2": 5000,
+      "unit_amount3": 1300,
+      "unit_amount4": 500,
+      "up_to4": 0,
+      "upper_count3": 5000,
+      "upper_count4": 5000
+    },
+    "updateParams": {
+      "secret_key": "テスト用文字列"
+    }
+  },
+  "menus": {
+    "createParams": {
+      "currency1": "JPY",
+      "currency2": "JPY",
+      "currency3": "JPY",
+      "description": "テスト用文字列",
+      "description1": "固定ユニットdescription1",
+      "description2": "固定ユニットdescription2",
+      "description3": "固定ユニットdescription3",
+      "display_name": "テスト用文字列",
+      "display_name1": "固定ユニット1",
+      "display_name2": "固定ユニット2",
+      "display_name3": "固定ユニット3",
+      "menu_description": "メニューdescription",
+      "menu_display_name": "固定UNITメニュー",
+      "menu_name": "fixed-menu_name",
+      "name": "テスト用文字列",
+      "name1": "fixed-unit-name1",
+      "name2": "fixed-unit-name2",
+      "name3": "fixed-unit-name3",
+      "recurring_interval1": "month",
+      "recurring_interval2": "month",
+      "recurring_interval3": "month",
+      "type1": "fixed",
+      "type2": "fixed",
+      "type3": "fixed",
+      "unit_amount1": 300,
+      "unit_amount2": 5000,
+      "unit_amount3": 10000,
+      "unit_ids": [
+        "pricing_unit_id1",
+        "pricing_unit_id2"
+      ]
+    },
+    "updateParams": {
+      "description": "テスト用文字列",
+      "display_name": "テスト用文字列",
+      "menu_description": "メニューdescription-update",
+      "menu_display_name": "固定UNITメニュー-update",
+      "menu_name": "fixed-menu_name-update",
+      "name": "テスト用文字列",
+      "unit_ids": [
+        "pricing_unit_id3"
+      ]
+    }
+  },
+  "metering-tenants-units-now": {
+    "updateParams": {
+      "count": 0,
+      "method": null
+    }
+  },
+  "metering-tenants-units-timestamp": {
+    "updateParams": {
+      "count": 0,
+      "method": null
+    }
+  },
+  "metering-units": {
+    "createParams": {
+      "aggregate_usage": "max",
+      "description": "ユーザ数カウント用のメーター",
+      "display_name": "ユーザ数",
+      "unit_name": "user_counts"
+    },
+    "updateParams": {
+      "aggregate_usage": "max",
+      "description": "[更新]ユーザ数カウント用のメーター",
+      "display_name": "[更新]ユーザ数",
+      "unit_name": "テスト用文字列"
+    }
+  },
+  "plans": {
+    "createParams": {
+      "aggregate_usage3": "max",
+      "aggregate_usage4": "max",
+      "currency1": "JPY",
+      "currency2": "JPY",
+      "currency3": "JPY",
+      "currency4": "JPY",
+      "currency5": "JPY",
+      "description": "テスト用文字列",
+      "description1": "固定ユニットdescription1",
+      "description2": "固定ユニットdescription2",
+      "description3": "使用量ユニットdescription",
+      "description4": "段階ユニットdescription",
+      "description5": "固定ユニットdescription5",
+      "display_name": "テスト用文字列",
+      "display_name1": "固定ユニット1",
+      "display_name2": "固定ユニット2",
+      "display_name3": "使用量ユニット",
+      "display_name4": "段階ユニット",
+      "display_name5": "固定ユニット5",
+      "flat_amount4": 400,
+      "inf4": true,
+      "menu_description1": "メニューdescription1",
+      "menu_description2": "サンプルメニューdescription1",
+      "menu_description3": "サンプルメニューdescription3",
+      "menu_display_name1": "固定UNITメニュー1",
+      "menu_display_name2": "サンプルメニュー",
+      "menu_display_name3": "サンプルメニュー3",
+      "menu_ids": [
+        "pricing_menu_id1",
+        "pricing_menu_id2"
+      ],
+      "menu_name1": "fixed-menu_name1",
+      "menu_name2": "mixed-menu_name",
+      "menu_name3": "mixed-menu_name3",
+      "meter_description3": "ユニットdescriptionメーター",
+      "meter_description4": "ユニットdescriptionメーター",
+      "meter_display_name3": "ユニットメーター",
+      "meter_display_name4": "ユニットメーター",
+      "metering_unit_name3": "usage_unit_metter",
+      "metering_unit_name4": "tiered_unit_metter",
+      "name": "テスト用文字列",
+      "name1": "fixed-unit-name1",
+      "name2": "fixed-unit-name2",
+      "name3": "usage_unit-name",
+      "name4": "tiered_unit-name",
+      "name5": "fixed-unit-name5",
+      "plan_description": "プランdescription",
+      "plan_display_name": "サンプルプラン",
+      "plan_name": "plan_name",
+      "recurring_interval1": "month",
+      "recurring_interval2": "month",
+      "recurring_interval3": "month",
+      "recurring_interval4": "month",
+      "recurring_interval5": "month",
+      "type1": "fixed",
+      "type2": "fixed",
+      "type3": "usage",
+      "type4": "tiered",
+      "type5": "fixed",
+      "unit_amount1": 300,
+      "unit_amount2": 5000,
+      "unit_amount3": 1300,
+      "unit_amount4": 500,
+      "unit_amount5": 3000,
+      "up_to4": 0,
+      "upper_count3": 5000,
+      "upper_count4": 5000
+    },
+    "updateParams": {
+      "description": "テスト用文字列",
+      "display_name": "テスト用文字列",
+      "menu_ids": [
+        "pricing_menu_id3"
+      ],
+      "name": "テスト用文字列",
+      "plan_description": "プランdescription-update",
+      "plan_display_name": "サンプルプラン-update",
+      "plan_name": "plan_name-update"
+    }
+  },
+  "plans-used": {
+    "createParams": {
+      "aggregate_usage3": "max",
+      "aggregate_usage4": "max",
+      "currency1": "JPY",
+      "currency2": "JPY",
+      "currency3": "JPY",
+      "currency4": "JPY",
+      "currency5": "JPY",
+      "description1": "固定ユニットdescription1",
+      "description2": "固定ユニットdescription2",
+      "description3": "使用量ユニットdescription",
+      "description4": "段階ユニットdescription",
+      "description5": "固定ユニットdescription5",
+      "display_name1": "固定ユニット1",
+      "display_name2": "固定ユニット2",
+      "display_name3": "使用量ユニット",
+      "display_name4": "段階ユニット",
+      "display_name5": "固定ユニット5",
+      "flat_amount4": 400,
+      "inf4": true,
+      "menu_description1": "メニューdescription1",
+      "menu_description2": "サンプルメニューdescription1",
+      "menu_description3": "サンプルメニューdescription3",
+      "menu_display_name1": "固定UNITメニュー1",
+      "menu_display_name2": "サンプルメニュー",
+      "menu_display_name3": "サンプルメニュー3",
+      "menu_name1": "fixed-menu_name1",
+      "menu_name2": "mixed-menu_name",
+      "menu_name3": "mixed-menu_name3",
+      "meter_description3": "ユニットdescriptionメーター",
+      "meter_description4": "ユニットdescriptionメーター",
+      "meter_display_name3": "ユニットメーター",
+      "meter_display_name4": "ユニットメーター",
+      "metering_unit_name3": "usage_unit_metter",
+      "metering_unit_name4": "tiered_unit_metter",
+      "name1": "fixed-unit-name1",
+      "name2": "fixed-unit-name2",
+      "name3": "usage_unit-name",
+      "name4": "tiered_unit-name",
+      "name5": "fixed-unit-name5",
+      "plan_description": "プランdescription",
+      "plan_display_name": "サンプルプラン",
+      "plan_name": "plan_name",
+      "recurring_interval1": "month",
+      "recurring_interval2": "month",
+      "recurring_interval3": "month",
+      "recurring_interval4": "month",
+      "recurring_interval5": "month",
+      "type1": "fixed",
+      "type2": "fixed",
+      "type3": "usage",
+      "type4": "tiered",
+      "type5": "fixed",
+      "unit_amount1": 300,
+      "unit_amount2": 5000,
+      "unit_amount3": 1300,
+      "unit_amount4": 500,
+      "unit_amount5": 3000,
+      "up_to4": 0,
+      "upper_count3": 5000,
+      "upper_count4": 5000
+    },
+    "updateParams": {
+      "plan_description": "プランdescription-update",
+      "plan_display_name": "サンプルプラン-update",
+      "plan_ids": [
+        "pricing_plan_id"
+      ],
+      "plan_name": "plan_name-update"
+    }
+  },
+  "tax-rates": {
+    "createParams": {
+      "country": "JP",
+      "description": "日本の消費税。内税10%",
+      "display_name": "日本の消費税(内税)",
+      "inclusive": true,
+      "name": "japanese_consumption_tax_inclusive",
+      "percentage": 10
+    },
+    "updateParams": {
+      "description": "日本の消費税。内税10%-update",
+      "display_name": "日本の消費税(内税)-update"
+    }
+  },
+  "tenants": {
+    "createParams": {
+      "attributes": {},
+      "back_office_staff_email": "テスト用文字列",
+      "name": "テスト用文字列"
+    }
+  },
+  "units": {
+    "createParams": {
+      "aggregate_usage": "max",
+      "currency": "JPY",
+      "currency1": "JPY",
+      "currency2": "JPY",
+      "currency3": "JPY",
+      "description": "段階使用量ユニットdescription",
+      "description1": "固定ユニットdescription1",
+      "description2": "固定ユニットdescription2",
+      "description3": "固定ユニットdescription3",
+      "display_name": "段階使用量ユニット",
+      "display_name1": "固定ユニット1",
+      "display_name2": "固定ユニット2",
+      "display_name3": "固定ユニット3",
+      "flat_amount": 400,
+      "inf": true,
+      "menu_description": "メニューdescription",
+      "menu_description1": "メニューdescription1",
+      "menu_display_name": "固定UNITメニュー",
+      "menu_display_name1": "固定UNITメニュー1",
+      "menu_name": "fixed-menu_name",
+      "menu_name1": "fixed-menu_name1",
+      "meter_description": "ユニットdescriptionメーター",
+      "meter_display_name": "ユニットメーター",
+      "metering_unit_name": "tiered_unit_metter",
+      "name": "tiered_usage_unit-name",
+      "name1": "fixed-unit-name1",
+      "name2": "fixed-unit-name2",
+      "name3": "fixed-unit-name3",
+      "plan_description": "プランdescription",
+      "plan_display_name": "サンプルプラン",
+      "plan_name": "plan_name",
+      "recurring_interval": "month",
+      "recurring_interval1": "month",
+      "recurring_interval2": "month",
+      "recurring_interval3": "month",
+      "type": "tiered_usage",
+      "type1": "fixed",
+      "type2": "fixed",
+      "type3": "fixed",
+      "union": null,
+      "unit_amount": 500,
+      "unit_amount1": 300,
+      "unit_amount2": 5000,
+      "unit_amount3": 10000,
+      "unit_name": "user_counts",
+      "up_to": 0,
+      "upper_count": 5000
+    },
+    "updateParams": {
+      "aggregate_usage": "sum",
+      "currency": "USD",
+      "description": "段階使用量ユニットdescription-update",
+      "display_name": "段階使用量ユニット-update",
+      "menu_description": "メニューdescription-update",
+      "menu_display_name": "固定UNITメニュー-update",
+      "menu_name": "fixed-menu_name-update",
+      "meter_description": "更新ユニットdescriptionメーター",
+      "meter_display_name": "更新ユニットメーター",
+      "metering_unit_name": "tiered_unit_metter-update",
+      "name": "tiered_usage_unit-name-update",
+      "recurring_interval": "year",
+      "union": null,
+      "unit_amount": 13000,
+      "upper_count": 5000
+    }
+  }
+}
