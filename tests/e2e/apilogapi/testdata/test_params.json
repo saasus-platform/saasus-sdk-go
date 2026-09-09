@@ -1,0 +1,14 @@
+{
+  "GetLogs": {
+    "queryParams": {
+      "created_date": "2024-01-01",
+      "created_at": "2024-01-01T00:00:00Z",
+      "cursor": ""
+    }
+  },
+  "GetLog": {
+    "pathParams": {
+      "api_log_id": "test-log-id"
+    }
+  }
+}
