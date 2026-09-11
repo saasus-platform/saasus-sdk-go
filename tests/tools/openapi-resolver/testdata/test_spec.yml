@@ -1,0 +1,280 @@
+openapi: 3.0.0
+info:
+  title: Test API
+  description: テスト用の最小限のOpenAPI仕様
+  version: 1.0.0
+
+paths:
+  # 基本的なGETエンドポイント（リクエストボディなし）
+  /test:
+    get:
+      operationId: GetTest
+      summary: Get test
+      description: テストデータを取得
+      tags:
+        - test
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+
+    # リクエストボディを持つPOSTエンドポイント
+    post:
+      operationId: CreateTest
+      summary: Create test
+      description: テストデータを作成
+      tags:
+        - test
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                value:
+                  type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+
+    # リクエストボディを持つPUTエンドポイント
+    put:
+      operationId: UpdateTest
+      summary: Update test
+      description: テストデータを更新
+      tags:
+        - test
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Success
+
+    # リクエストボディなしのDELETEエンドポイント
+    delete:
+      operationId: DeleteTest
+      summary: Delete test
+      description: テストデータを削除
+      tags:
+        - test
+      responses:
+        '204':
+          description: No Content
+
+  # パスパラメータを含むエンドポイント（標準形式: {param}）
+  /test/{id}:
+    get:
+      operationId: GetTestById
+      summary: Get test by ID
+      description: IDでテストデータを取得
+      tags:
+        - test
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+
+    put:
+      operationId: UpdateTestById
+      summary: Update test by ID
+      description: IDでテストデータを更新
+      tags:
+        - test
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Success
+
+    delete:
+      operationId: DeleteTestById
+      summary: Delete test by ID
+      description: IDでテストデータを削除
+      tags:
+        - test
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+
+  # 複数のパスパラメータを含むエンドポイント
+  /users/{user_id}/posts/{post_id}:
+    get:
+      operationId: GetUserPost
+      summary: Get user post
+      description: ユーザーの投稿を取得
+      tags:
+        - users
+        - posts
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: post_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+
+  # リクエストボディがオプショナルなエンドポイント
+  /optional-body:
+    post:
+      operationId: CreateOptionalBody
+      summary: Create with optional body
+      description: オプショナルなリクエストボディを持つエンドポイント
+      tags:
+        - test
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+
+  # PATCHメソッドのエンドポイント
+  /test/{id}/partial:
+    patch:
+      operationId: PartialUpdateTest
+      summary: Partial update test
+      description: テストデータを部分更新
+      tags:
+        - test
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Success
+
+  # operationIdが定義されていないエンドポイント（エラーケース）
+  /no-operation-id:
+    get:
+      summary: No operation ID
+      description: operationIdが定義されていないエンドポイント
+      responses:
+        '200':
+          description: Success
+
+  # クエリパラメータを含むエンドポイント
+  /search:
+    get:
+      operationId: SearchTests
+      summary: Search tests
+      description: テストデータを検索
+      tags:
+        - test
+      parameters:
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  # ネストされたパスパラメータ
+  /organizations/{org_id}/teams/{team_id}/members/{member_id}:
+    get:
+      operationId: GetTeamMember
+      summary: Get team member
+      description: チームメンバーを取得
+      tags:
+        - organizations
+      parameters:
+        - name: org_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: team_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: member_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+
+  # ハイフンとアンダースコアを含むパス
+  /api-resources/test_items:
+    get:
+      operationId: GetApiResourceTestItems
+      summary: Get API resource test items
+      description: APIリソースのテストアイテムを取得
+      tags:
+        - resources
+      responses:
+        '200':
+          description: Success

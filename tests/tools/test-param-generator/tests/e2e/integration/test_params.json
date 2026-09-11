@@ -1,0 +1,44 @@
+{
+  "CreateEventBridgeEvent": {
+    "createParams": {
+      "aws_account_id": "267185063265",
+      "aws_region": "ap-northeast-1",
+      "event_messages": [
+        {
+          "event_detail_type": "create_user",
+          "event_type": "api_call",
+          "message": "{id:8b79528a-ec3b-4f68-b7c4-d793e3894561,name:test222}"
+        }
+      ]
+    }
+  },
+  "SaveEventBridgeSettings": {
+    "updateParams": {
+      "aws_account_id": "テスト用文字列",
+      "aws_region": "ap-northeast-1"
+    }
+  },
+  "eventbridge-event": {
+    "createParams": {
+      "aws_account_id": "267185063265",
+      "aws_region": "ap-northeast-1",
+      "event_messages": [
+        {
+          "event_detail_type": "create_user",
+          "event_type": "api_call",
+          "message": "{id:8b79528a-ec3b-4f68-b7c4-d793e3894561,name:test222}"
+        }
+      ]
+    }
+  },
+  "eventbridge-info": {
+    "createParams": {
+      "aws_account_id": "267185063265",
+      "aws_region": "ap-northeast-1"
+    },
+    "updateParams": {
+      "aws_account_id": "テスト用文字列",
+      "aws_region": "ap-northeast-1"
+    }
+  }
+}
