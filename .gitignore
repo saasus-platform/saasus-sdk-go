@@ -1,2 +1,19 @@
 .idea
 
+# Local E2E credentials
+.env
+.env.local
+.env.*.local
+
+# Generated E2E snapshots, comparisons, validations, and reports
+tests/e2e/snapshot/
+tests/e2e/*/test_reports/
+tests/e2e/*/logs/
+tests/e2e/*/*.log
+
+# Generated analysis / tool outputs
+tests/tools/postman-analyzer/reports/
+tests/tools/postman-analyzer/collections/*.json
+tests/tools/test-param-generator/test_output/
+tests/tools/test-param-generator/iterationData/
+tests/tools/test-param-generator/mapping_metrics_*.txt

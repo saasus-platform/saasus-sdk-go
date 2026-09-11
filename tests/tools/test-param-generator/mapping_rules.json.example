@@ -1,0 +1,31 @@
+{
+  "typeNameMappings": {
+    "users.Create": "CreateSaasUserJSONRequestBody",
+    "users.Update": "UpdateSaasUserJSONRequestBody",
+    "tenants.Create": "CreateTenantJSONRequestBody",
+    "tenants.Update": "UpdateTenantJSONRequestBody",
+    "feedbacks.Create": "CreateFeedbackJSONRequestBody",
+    "feedbacks.Update": "UpdateFeedbackJSONRequestBody"
+  },
+  "fieldNameMappings": {
+    "CreateSaasUserJSONRequestBody": {
+      "email": "Email",
+      "password": "Password"
+    },
+    "CreateTenantJSONRequestBody": {
+      "name": "Name",
+      "attributes": "Attributes",
+      "back_office_staff_email": "BackOfficeStaffEmail"
+    }
+  },
+  "resourceAliases": {
+    "users": ["saasusers", "saas_users"],
+    "tenants": ["tenant"],
+    "feedbacks": ["feedback"]
+  },
+  "fieldAliases": {
+    "desc": ["description", "Description"],
+    "id": ["ID", "Id", "identifier"],
+    "email": ["Email", "e_mail", "emailAddress"]
+  }
+}

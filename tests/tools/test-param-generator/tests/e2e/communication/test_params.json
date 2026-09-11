@@ -1,0 +1,108 @@
+{
+  "CreateFeedback": {
+    "createParams": {
+      "body": "貴重なご意見ありがとうございます。",
+      "feedback_description": "編集ダイアログの保存ボタンが押しにいくいので、位置を変えて欲しい",
+      "feedback_title": "保存ボタンの位置を変えてほしい",
+      "status": 1,
+      "user_id": "test_user"
+    }
+  },
+  "CreateFeedbackComment": {
+    "createParams": {
+      "body": "貴重なご意見ありがとうございます。",
+      "feedback_description": "編集ダイアログの保存ボタンが押しにいくいので、位置を変えて欲しい",
+      "feedback_title": "保存ボタンの位置を変えてほしい",
+      "status": 1,
+      "user_id": "test_user"
+    }
+  },
+  "CreateVoteUser": {
+    "createParams": {
+      "body": "貴重なご意見ありがとうございます。",
+      "feedback_description": "編集ダイアログの保存ボタンが押しにいくいので、位置を変えて欲しい",
+      "feedback_title": "保存ボタンの位置を変えてほしい",
+      "status": 1,
+      "user_id": "test_user"
+    }
+  },
+  "UpdateFeedback": {
+    "updateParams": {
+      "body": "編集したコメント",
+      "feedback_description": "保存ボタンの位置を変えてほしいupdate",
+      "feedback_title": "保存ボタンの位置を変えてほしいupdate"
+    }
+  },
+  "UpdateFeedbackComment": {
+    "updateParams": {
+      "body": "編集したコメント",
+      "feedback_description": "保存ボタンの位置を変えてほしいupdate",
+      "feedback_title": "保存ボタンの位置を変えてほしいupdate"
+    }
+  },
+  "UpdateFeedbackStatus": {
+    "updateParams": {
+      "body": "編集したコメント",
+      "feedback_description": "保存ボタンの位置を変えてほしいupdate",
+      "feedback_title": "保存ボタンの位置を変えてほしいupdate",
+      "status": 0
+    }
+  },
+  "feedbacks": {
+    "createParams": {
+      "body": "貴重なご意見ありがとうございます。",
+      "feedback_description": "編集ダイアログの保存ボタンが押しにいくいので、位置を変えて欲しい",
+      "feedback_title": "保存ボタンの位置を変えてほしい",
+      "status": 1,
+      "user_id": "test_user"
+    },
+    "updateParams": {
+      "body": "編集したコメント",
+      "feedback_description": "保存ボタンの位置を変えてほしいupdate",
+      "feedback_title": "保存ボタンの位置を変えてほしいupdate"
+    }
+  },
+  "feedbacks-comments": {
+    "createParams": {
+      "body": "貴重なご意見ありがとうございます。",
+      "feedback_description": "編集ダイアログの保存ボタンが押しにいくいので、位置を変えて欲しい",
+      "feedback_title": "保存ボタンの位置を変えてほしい",
+      "status": 1,
+      "user_id": "test_user"
+    },
+    "updateParams": {
+      "body": "編集したコメント",
+      "feedback_description": "保存ボタンの位置を変えてほしいupdate",
+      "feedback_title": "保存ボタンの位置を変えてほしいupdate"
+    }
+  },
+  "feedbacks-status": {
+    "createParams": {
+      "body": "貴重なご意見ありがとうございます。",
+      "feedback_description": "編集ダイアログの保存ボタンが押しにいくいので、位置を変えて欲しい",
+      "feedback_title": "保存ボタンの位置を変えてほしい",
+      "status": 1,
+      "user_id": "test_user"
+    },
+    "updateParams": {
+      "body": "編集したコメント",
+      "feedback_description": "保存ボタンの位置を変えてほしいupdate",
+      "feedback_title": "保存ボタンの位置を変えてほしいupdate",
+      "status": 0
+    }
+  },
+  "feedbacks-votes-users": {
+    "createParams": {
+      "body": "貴重なご意見ありがとうございます。",
+      "feedback_description": "編集ダイアログの保存ボタンが押しにいくいので、位置を変えて欲しい",
+      "feedback_title": "保存ボタンの位置を変えてほしい",
+      "status": 1,
+      "user_id": "test_user"
+    },
+    "updateParams": {
+      "body": "編集したコメント",
+      "feedback_description": "保存ボタンの位置を変えてほしいupdate",
+      "feedback_title": "保存ボタンの位置を変えてほしいupdate"
+    }
+  }
+}

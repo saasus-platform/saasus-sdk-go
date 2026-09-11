@@ -1,0 +1,103 @@
+{
+  "CreateCustomer": {
+    "createParams": {
+      "product_code": "productCode",
+      "registration_token": "registration_token",
+      "role_arn": "arn:aws:iam::123456789012:role/role-name",
+      "sns_topic_arn": "arn:aws:sns:us-east-1:123456789012:topic-name",
+      "tenant_id": "10000000-0000-0000-0000-000000000001",
+      "tenant_id_2": "10000000-0000-0000-0000-000000000002"
+    }
+  },
+  "SavePlan": {
+    "updateParams": {
+      "plan_id": "テスト用文字列",
+      "plan_name": "テスト用文字列"
+    }
+  },
+  "UpdateListingStatus": {
+    "updateParams": {
+      "listing_status": "invalid_status"
+    }
+  },
+  "UpdateSettings": {
+    "updateParams": {
+      "cas_bucket_name": "テスト用文字列",
+      "cas_sns_topic_arn": "テスト用文字列",
+      "product_code": "テスト用文字列",
+      "role_arn": "テスト用文字列",
+      "role_external_id": "テスト用文字列",
+      "seller_sns_topic_arn": "テスト用文字列",
+      "sns_topic_arn": "テスト用文字列",
+      "sqs_arn": "テスト用文字列"
+    }
+  },
+  "VerifyRegistrationToken": {
+    "createParams": {
+      "product_code": "productCode",
+      "registration_token": "registration_token",
+      "registration_token_invalid": "invalid_token",
+      "role_arn": "arn:aws:iam::123456789012:role/role-name",
+      "sns_topic_arn": "arn:aws:sns:us-east-1:123456789012:topic-name"
+    }
+  },
+  "customers": {
+    "createParams": {
+      "product_code": "productCode",
+      "registration_token": "registration_token",
+      "role_arn": "arn:aws:iam::123456789012:role/role-name",
+      "sns_topic_arn": "arn:aws:sns:us-east-1:123456789012:topic-name",
+      "tenant_id": "10000000-0000-0000-0000-000000000001",
+      "tenant_id_2": "10000000-0000-0000-0000-000000000002"
+    }
+  },
+  "listing-status": {
+    "createParams": {
+      "listing_status": "first_step_working"
+    },
+    "updateParams": {
+      "listing_status": "invalid_status"
+    }
+  },
+  "plans": {
+    "createParams": {
+      "plan_id": "69e732d6-8ecc-45c4-c2eb-8438f7ffe775",
+      "plan_name": ""
+    },
+    "updateParams": {
+      "plan_id": "テスト用文字列",
+      "plan_name": "テスト用文字列"
+    }
+  },
+  "registration-token-verify": {
+    "createParams": {
+      "product_code": "productCode",
+      "registration_token": "registration_token",
+      "registration_token_invalid": "invalid_token",
+      "role_arn": "arn:aws:iam::123456789012:role/role-name",
+      "sns_topic_arn": "arn:aws:sns:us-east-1:123456789012:topic-name"
+    }
+  },
+  "settings": {
+    "createParams": {
+      "cas_bucket_name": "bucket-name",
+      "cas_sns_topic_arn": "arn:aws:sns:us-east-1:123456789012:topic-name-cas",
+      "product_code": "1234567890",
+      "role_arn": "arn:aws:iam::123456789012:role/role-name",
+      "role_external_id": "external-id",
+      "seller_sns_topic_arn": "arn:aws:sns:us-east-1:123456789012:topic-name-seller",
+      "sns_topic_arn": "arn:aws:sns:us-east-1:123456789012:topic-name",
+      "sqs_arn": "arn:aws:sqs:us-east-1:123456789012:q-name"
+    },
+    "updateParams": {
+      "cas_bucket_name": "テスト用文字列",
+      "cas_sns_topic_arn": "テスト用文字列",
+      "product_code": "テスト用文字列",
+      "role_arn": "テスト用文字列",
+      "role_external_id": "テスト用文字列",
+      "seller_sns_topic_arn": "テスト用文字列",
+      "sns_topic_arn": "テスト用文字列",
+      "sqs_arn": "テスト用文字列"
+    }
+  }
+}

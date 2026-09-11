@@ -1,0 +1,105 @@
+{
+  "typeNameMappings": {
+    "users.Create": "CreateSaasUserJSONRequestBody",
+    "users.Update": "UpdateSaasUserEmailJSONRequestBody"
+  },
+  "fieldNameMappings": {
+    "CreateSaasUserJSONRequestBody": {
+      "email": "Email",
+      "password": "Password"
+    }
+  },
+  "resourceAliases": {
+    "users": ["saasusers", "saas_users"]
+  },
+  "fieldAliases": {
+    "email": ["Email", "email_address"],
+    "desc": ["description", "Description"]
+  },
+  "moduleSpecificRules": {
+    "auth": {
+      "typeNameMappings": {
+        "saasusers.Create": "CreateSaasUserJSONRequestBody",
+        "saasusers.Update": "UpdateSaasUserEmailJSONRequestBody",
+        "tenants.Create": "CreateTenantJSONRequestBody",
+        "tenants.Update": "UpdateTenantJSONRequestBody"
+      },
+      "fieldNameMappings": {
+        "CreateSaasUserJSONRequestBody": {
+          "email": "Email",
+          "password": "Password"
+        },
+        "CreateTenantJSONRequestBody": {
+          "name": "Name",
+          "attributes": "Attributes",
+          "back_office_staff_email": "BackOfficeStaffEmail"
+        }
+      },
+      "resourceAliases": {
+        "users": ["saasusers", "saas_users"]
+      },
+      "fieldAliases": {
+        "email": ["Email", "email_address"]
+      }
+    },
+    "communication": {
+      "typeNameMappings": {
+        "feedbacks.Create": "CreateFeedbackJSONRequestBody",
+        "feedbacks.Update": "UpdateFeedbackJSONRequestBody",
+        "comments.Create": "CreateFeedbackCommentJSONRequestBody",
+        "comments.Update": "UpdateFeedbackCommentJSONRequestBody"
+      },
+      "fieldNameMappings": {
+        "CreateFeedbackJSONRequestBody": {
+          "user_id": "UserId",
+          "feedback_title": "FeedbackTitle",
+          "feedback_description": "FeedbackDescription"
+        },
+        "CreateFeedbackCommentJSONRequestBody": {
+          "body": "Body"
+        }
+      },
+      "resourceAliases": {},
+      "fieldAliases": {
+        "desc": ["description", "Description"]
+      }
+    },
+    "pricing": {
+      "typeNameMappings": {
+        "plans.Create": "CreatePricingPlanJSONRequestBody",
+        "plans.Update": "UpdatePricingPlanJSONRequestBody",
+        "menus.Create": "CreatePricingMenuJSONRequestBody",
+        "menus.Update": "UpdatePricingMenuJSONRequestBody"
+      },
+      "fieldNameMappings": {
+        "CreatePricingPlanJSONRequestBody": {
+          "name": "Name",
+          "display_name": "DisplayName",
+          "description": "Description",
+          "menu_ids": "MenuIds"
+        },
+        "CreatePricingMenuJSONRequestBody": {
+          "name": "Name",
+          "display_name": "DisplayName",
+          "description": "Description",
+          "unit_ids": "UnitIds"
+        }
+      },
+      "resourceAliases": {},
+      "fieldAliases": {}
+    },
+    "billing": {
+      "typeNameMappings": {
+        "stripe.Create": "UpdateStripeInfoJSONRequestBody",
+        "stripe.Update": "UpdateStripeInfoJSONRequestBody"
+      },
+      "fieldNameMappings": {
+        "UpdateStripeInfoJSONRequestBody": {
+          "secret_key": "SecretKey"
+        }
+      },
+      "resourceAliases": {},
+      "fieldAliases": {}
+    }
+  }
+}

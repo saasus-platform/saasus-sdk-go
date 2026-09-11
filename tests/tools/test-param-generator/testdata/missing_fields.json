@@ -1,0 +1,16 @@
+{
+  "collection_name": "",
+  "test_flow": [
+    {
+      "name": "Test",
+      "method": "GET",
+      "endpoint": "/test"
+    }
+  ],
+  "client_methods": [
+    {
+      "name": "TestMethod",
+      "type": "standard"
+    }
+  ]
+}

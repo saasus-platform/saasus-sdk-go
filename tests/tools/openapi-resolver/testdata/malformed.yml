@@ -1,0 +1,19 @@
+openapi: 3.0.0
+info:
+  title: Malformed YAML
+  version: 1.0.0
+
+paths:
+  /test:
+    get:
+      operationId: TestOperation
+      summary: Test
+      responses:
+        '200':
+          description: Success
+      # 不正なインデント
+     invalid_indent: true
+    # 閉じられていないブロック
+    post:
+      operationId: UnclosedBlock
+      summary: Unclosed

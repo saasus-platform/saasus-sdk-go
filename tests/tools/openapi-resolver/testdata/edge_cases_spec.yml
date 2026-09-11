@@ -1,0 +1,336 @@
+openapi: 3.0.0
+info:
+  title: Edge Cases Test API
+  description: エッジケースをテストするためのOpenAPI仕様
+  version: 1.0.0
+
+paths:
+  # パスパラメータの異なる形式（正規化テスト用）
+  # 注: これらは実際のOpenAPI仕様では標準形式{param}を使用すべきですが、
+  # パス正規化機能のテストのために様々な形式を含めています
+  
+  # 標準形式: {param}
+  /standard/{param_id}:
+    get:
+      operationId: GetStandardParam
+      summary: Standard parameter format
+      description: 標準的なパスパラメータ形式
+      parameters:
+        - name: param_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+
+  # UUID形式のパラメータ
+  /items/{item_uuid}:
+    get:
+      operationId: GetItemByUuid
+      summary: Get item by UUID
+      description: UUIDでアイテムを取得
+      parameters:
+        - name: item_uuid
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+
+  # 数値IDのパラメータ
+  /numeric/{numeric_id}:
+    get:
+      operationId: GetByNumericId
+      summary: Get by numeric ID
+      description: 数値IDで取得
+      parameters:
+        - name: numeric_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Success
+
+  # 特殊文字を含むパス
+  /special-chars/{id}/sub_resource:
+    get:
+      operationId: GetSpecialCharsResource
+      summary: Get special chars resource
+      description: 特殊文字を含むパス
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+
+  # 非常に長いパス
+  /api/v1/organizations/{org_id}/departments/{dept_id}/teams/{team_id}/projects/{project_id}/tasks/{task_id}:
+    get:
+      operationId: GetNestedTask
+      summary: Get deeply nested task
+      description: 深くネストされたリソース
+      parameters:
+        - name: org_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: dept_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: team_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+
+  # 複数のHTTPメソッドを持つエンドポイント（全メソッド）
+  /all-methods/{id}:
+    get:
+      operationId: GetAllMethods
+      summary: GET method
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+    
+    post:
+      operationId: CreateAllMethods
+      summary: POST method
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+    
+    put:
+      operationId: UpdateAllMethods
+      summary: PUT method
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Success
+    
+    patch:
+      operationId: PatchAllMethods
+      summary: PATCH method
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Success
+    
+    delete:
+      operationId: DeleteAllMethods
+      summary: DELETE method
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+
+  # 複数のコンテンツタイプを持つエンドポイント
+  /multi-content-type:
+    post:
+      operationId: CreateMultiContentType
+      summary: Multiple content types
+      description: 複数のコンテンツタイプをサポート
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+          application/xml:
+            schema:
+              type: object
+          multipart/form-data:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+
+  # レスポンスボディがないエンドポイント
+  /no-response-body:
+    post:
+      operationId: CreateNoResponseBody
+      summary: No response body
+      description: レスポンスボディがないエンドポイント
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '204':
+          description: No Content
+
+  # 複数のタグを持つエンドポイント
+  /multi-tag:
+    get:
+      operationId: GetMultiTag
+      summary: Multiple tags
+      description: 複数のタグを持つエンドポイント
+      tags:
+        - tag1
+        - tag2
+        - tag3
+      responses:
+        '200':
+          description: Success
+
+  # 非常に長いoperationId
+  /long-operation-id:
+    get:
+      operationId: GetVeryLongOperationIdThatExceedsNormalLengthForTestingPurposes
+      summary: Very long operation ID
+      description: 非常に長いoperationIDを持つエンドポイント
+      responses:
+        '200':
+          description: Success
+
+  # 空の説明を持つエンドポイント
+  /empty-description:
+    get:
+      operationId: GetEmptyDescription
+      summary: Empty description
+      description: ""
+      responses:
+        '200':
+          description: Success
+
+  # summaryのみでdescriptionがないエンドポイント
+  /no-description:
+    get:
+      operationId: GetNoDescription
+      summary: No description field
+      responses:
+        '200':
+          description: Success
+
+  # パラメータが多数あるエンドポイント
+  /many-params/{id}:
+    get:
+      operationId: GetManyParams
+      summary: Many parameters
+      description: 多数のパラメータを持つエンドポイント
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: filter1
+          in: query
+          schema:
+            type: string
+        - name: filter2
+          in: query
+          schema:
+            type: string
+        - name: filter3
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+        - name: order
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Success
+
+  # 同じパスで異なるパラメータ名を持つエンドポイント
+  /same-path-diff-param/{resource_id}:
+    get:
+      operationId: GetResourceById
+      summary: Get resource by ID
+      parameters:
+        - name: resource_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success

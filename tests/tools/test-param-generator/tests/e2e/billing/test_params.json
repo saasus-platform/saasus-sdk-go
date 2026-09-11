@@ -1,0 +1,12 @@
+{
+  "UpdateStripeInfo": {
+    "updateParams": {
+      "secret_key": "テスト用文字列"
+    }
+  },
+  "stripe-info": {
+    "updateParams": {
+      "secret_key": "テスト用文字列"
+    }
+  }
+}
