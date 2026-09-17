@@ -114,6 +114,14 @@ const (
 	SAML ProviderType = "SAML"
 )
 
+// Defines values for RefreshTokenValidityUnit.
+const (
+	Days    RefreshTokenValidityUnit = "days"
+	Hours   RefreshTokenValidityUnit = "hours"
+	Minutes RefreshTokenValidityUnit = "minutes"
+	Seconds RefreshTokenValidityUnit = "seconds"
+)
+
 // Defines values for SignInParamSignInFlow.
 const (
 	USERSRPAUTH SignInParamSignInFlow = "USER_SRP_AUTH"
@@ -381,6 +389,10 @@ type CreatedSaasUser struct {
 	// For sign-in ID authentication users, this field is an empty string.
 	Email string `json:"email"`
 	Id    Uuid   `json:"id"`
+
+	// LastLoginAt Last login date and time (unix timestamp).
+	// Null if the user has never logged in.
+	LastLoginAt *int64 `json:"last_login_at"`
 
 	// Password Auto-generated password (only when sign_in_id authentication and password not specified)
 	Password *string `json:"password,omitempty"`
@@ -759,6 +771,26 @@ type RecaptchaProps struct {
 	SiteKey string `json:"site_key"`
 }
 
+// RefreshTokenValidity Refresh token validity period.
+type RefreshTokenValidity struct {
+	// Unit Unit for the refresh token validity period.
+	// seconds: seconds
+	// minutes: minutes
+	// hours: hours
+	// days: days
+	Unit RefreshTokenValidityUnit `json:"unit"`
+
+	// Value Refresh token validity value. The duration must be between 60 minutes and 10 years.
+	Value uint64 `json:"value"`
+}
+
+// RefreshTokenValidityUnit Unit for the refresh token validity period.
+// seconds: seconds
+// minutes: minutes
+// hours: hours
+// days: days
+type RefreshTokenValidityUnit string
+
 // RequestEmailUpdateParam defines model for RequestEmailUpdateParam.
 type RequestEmailUpdateParam struct {
 	AccessToken string `json:"access_token"`
@@ -808,6 +840,12 @@ type RespondToSignInChallengeResult struct {
 	Session *string `json:"session,omitempty"`
 }
 
+// RevokeTokenParam defines model for RevokeTokenParam.
+type RevokeTokenParam struct {
+	// RefreshToken Refresh token to revoke
+	RefreshToken string `json:"refresh_token"`
+}
+
 // Role role info
 type Role struct {
 	// DisplayName role display name
@@ -832,6 +870,10 @@ type SaasUser struct {
 	Email string `json:"email"`
 	Id    Uuid   `json:"id"`
 
+	// LastLoginAt Last login date and time (unix timestamp).
+	// Null if the user has never logged in.
+	LastLoginAt *int64 `json:"last_login_at"`
+
 	// SignInId Sign-in ID.
 	// For email authentication users, this field is an empty string.
 	SignInId string `json:"sign_in_id"`
@@ -846,6 +888,40 @@ type SaasUserResetPasswordResult struct {
 // SaasUsers defines model for SaasUsers.
 type SaasUsers struct {
 	Users []SaasUser `json:"users"`
+}
+
+// SaasUsersCount defines model for SaasUsersCount.
+type SaasUsersCount struct {
+	// Count Count of SaaS users
+	Count int `json:"count"`
+
+	// UpdatedAt Unix timestamp (seconds) of the last update
+	UpdatedAt int64 `json:"updated_at"`
+}
+
+// SaveSaasUsersCountParam defines model for SaveSaasUsersCountParam.
+type SaveSaasUsersCountParam struct {
+	// Count Count of SaaS users
+	Count int `json:"count"`
+}
+
+// SaveTenantUserCountParam defines model for SaveTenantUserCountParam.
+type SaveTenantUserCountParam struct {
+	// Count Count of tenant users
+	Count    int  `json:"count"`
+	TenantId Uuid `json:"tenant_id"`
+}
+
+// SaveTenantUsersCountsParam defines model for SaveTenantUsersCountsParam.
+type SaveTenantUsersCountsParam struct {
+	TenantUserCounts []SaveTenantUserCountParam `json:"tenant_user_counts"`
+}
+
+// SearchSaasUsersResult defines model for SearchSaasUsersResult.
+type SearchSaasUsersResult struct {
+	// Cursor Pagination cursor for the next page
+	Cursor *string    `json:"cursor,omitempty"`
+	Users  []SaasUser `json:"users"`
 }
 
 // SearchTenantUsersResult defines model for SearchTenantUsersResult.
@@ -914,6 +990,9 @@ type SignInSettings struct {
 	// RecaptchaProps reCAPTCHA authentication settings
 	// ※ This function is not yet provided, so it cannot be changed or saved.
 	RecaptchaProps RecaptchaProps `json:"recaptcha_props"`
+
+	// RefreshTokenValidity Refresh token validity period.
+	RefreshTokenValidity RefreshTokenValidity `json:"refresh_token_validity"`
 
 	// SelfRegist self sign-up permission
 	SelfRegist SelfRegist `json:"self_regist"`
@@ -1073,6 +1152,21 @@ type TenantProps struct {
 	Name string `json:"name"`
 }
 
+// TenantUserCount defines model for TenantUserCount.
+type TenantUserCount struct {
+	// Count Count of tenant users
+	Count    int  `json:"count"`
+	TenantId Uuid `json:"tenant_id"`
+
+	// UpdatedAt Unix timestamp (seconds) of the last update
+	UpdatedAt int64 `json:"updated_at"`
+}
+
+// TenantUsersCounts defines model for TenantUsersCounts.
+type TenantUsersCounts struct {
+	TenantUserCounts []TenantUserCount `json:"tenant_user_counts"`
+}
+
 // Tenants Tenant Info
 type Tenants struct {
 	Tenants []Tenant `json:"tenants"`
@@ -1198,7 +1292,7 @@ type UpdateSaasUserSignInIdParam struct {
 	SignInId string `json:"sign_in_id"`
 }
 
-// UpdateSignInSettingsParam defines model for UpdateSignInSettingsParam.
+// UpdateSignInSettingsParam Set both value and unit in refresh_token_validity when updating the refresh token validity period.
 type UpdateSignInSettingsParam struct {
 	// AccountVerification Account authentication settings
 	// ※ This function is not yet provided, so it cannot be changed or saved.
@@ -1217,6 +1311,9 @@ type UpdateSignInSettingsParam struct {
 	// RecaptchaProps reCAPTCHA authentication settings
 	// ※ This function is not yet provided, so it cannot be changed or saved.
 	RecaptchaProps *RecaptchaProps `json:"recaptcha_props,omitempty"`
+
+	// RefreshTokenValidity Refresh token validity period.
+	RefreshTokenValidity *RefreshTokenValidity `json:"refresh_token_validity,omitempty"`
 
 	// SelfRegist self sign-up permission
 	SelfRegist *SelfRegist `json:"self_regist,omitempty"`
@@ -1383,11 +1480,17 @@ type AuthFlow string
 // Code defines model for Code.
 type Code = Uuid
 
+// Cursor defines model for Cursor.
+type Cursor = string
+
 // EnvId defines model for EnvId.
 type EnvId = Id
 
 // InvitationId defines model for InvitationId.
 type InvitationId = Uuid
+
+// Limit defines model for Limit.
+type Limit = int64
 
 // RefreshToken defines model for RefreshToken.
 type RefreshToken = string
@@ -1436,14 +1539,14 @@ type SearchTenantUsersParams struct {
 	// EnvId Environment ID
 	EnvId *uint64 `form:"env_id,omitempty" json:"env_id,omitempty"`
 
-	// RoleId Role ID
-	RoleId *string `form:"role_id,omitempty" json:"role_id,omitempty"`
+	// RoleName Role Name
+	RoleName *string `form:"role_name,omitempty" json:"role_name,omitempty"`
 
-	// Limit Maximum number of users to retrieve
-	Limit *int64 `form:"limit,omitempty" json:"limit,omitempty"`
+	// Limit Maximum number of items to retrieve
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
 
 	// Cursor Cursor for cursor pagination
-	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
 }
 
 // GetUserInfoParams defines parameters for GetUserInfo.
@@ -1462,6 +1565,24 @@ type GetUserInfoByEmailParams struct {
 type GetUserInfoBySignInIdParams struct {
 	// SignInId Sign-in ID.
 	SignInId string `form:"sign_in_id" json:"sign_in_id"`
+}
+
+// SearchSaasUsersParams defines parameters for SearchSaasUsers.
+type SearchSaasUsersParams struct {
+	// Id User ID
+	Id *Uuid `form:"id,omitempty" json:"id,omitempty"`
+
+	// Email Email prefix
+	Email *string `form:"email,omitempty" json:"email,omitempty"`
+
+	// SignInId Sign-in ID prefix
+	SignInId *string `form:"sign_in_id,omitempty" json:"sign_in_id,omitempty"`
+
+	// Limit Maximum number of items to retrieve
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Cursor for cursor pagination
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
 }
 
 // UpdateAuthInfoJSONRequestBody defines body for UpdateAuthInfo for application/json ContentType.
@@ -1548,6 +1669,9 @@ type CreateTenantAttributeJSONRequestBody = CreateTenantAttributeParam
 // CreateTenantJSONRequestBody defines body for CreateTenant for application/json ContentType.
 type CreateTenantJSONRequestBody = CreateTenantParam
 
+// SaveTenantUsersCountsJSONRequestBody defines body for SaveTenantUsersCounts for application/json ContentType.
+type SaveTenantUsersCountsJSONRequestBody = SaveTenantUsersCountsParam
+
 // UpdateTenantJSONRequestBody defines body for UpdateTenant for application/json ContentType.
 type UpdateTenantJSONRequestBody = UpdateTenantParam
 
@@ -1572,11 +1696,17 @@ type UpdateTenantUserJSONRequestBody = UpdateTenantUserParam
 // CreateTenantUserRolesJSONRequestBody defines body for CreateTenantUserRoles for application/json ContentType.
 type CreateTenantUserRolesJSONRequestBody = CreateTenantUserRolesParam
 
+// RevokeTokenJSONRequestBody defines body for RevokeToken for application/json ContentType.
+type RevokeTokenJSONRequestBody = RevokeTokenParam
+
 // CreateUserAttributeJSONRequestBody defines body for CreateUserAttribute for application/json ContentType.
 type CreateUserAttributeJSONRequestBody = CreateUserAttributeParam
 
 // CreateSaasUserJSONRequestBody defines body for CreateSaasUser for application/json ContentType.
 type CreateSaasUserJSONRequestBody = CreateSaasUserParam
+
+// SaveSaasUsersCountJSONRequestBody defines body for SaveSaasUsersCount for application/json ContentType.
+type SaveSaasUsersCountJSONRequestBody = SaveSaasUsersCountParam
 
 // UpdateSaasUserAttributesJSONRequestBody defines body for UpdateSaasUserAttributes for application/json ContentType.
 type UpdateSaasUserAttributesJSONRequestBody = UpdateSaasUserAttributesParam
