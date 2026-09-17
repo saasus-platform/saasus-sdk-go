@@ -301,6 +301,14 @@ type ClientInterface interface {
 	// GetAllTenantUsers request
 	GetAllTenantUsers(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetAllTenantUsersCount request
+	GetAllTenantUsersCount(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// SaveTenantUsersCounts request with any body
+	SaveTenantUsersCountsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	SaveTenantUsersCounts(ctx context.Context, body SaveTenantUsersCountsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// SearchTenantUsers request
 	SearchTenantUsers(ctx context.Context, params *SearchTenantUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -380,6 +388,11 @@ type ClientInterface interface {
 	// DeleteTenantUserRole request
 	DeleteTenantUserRole(ctx context.Context, tenantId TenantId, userId UserId, envId EnvId, roleName RoleName, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// RevokeToken request with any body
+	RevokeTokenWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	RevokeToken(ctx context.Context, body RevokeTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetUserAttributes request
 	GetUserAttributes(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -407,6 +420,17 @@ type ClientInterface interface {
 	CreateSaasUserWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	CreateSaasUser(ctx context.Context, body CreateSaasUserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetSaasUsersCount request
+	GetSaasUsersCount(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// SaveSaasUsersCount request with any body
+	SaveSaasUsersCountWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	SaveSaasUsersCount(ctx context.Context, body SaveSaasUsersCountJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// SearchSaasUsers request
+	SearchSaasUsers(ctx context.Context, params *SearchSaasUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteSaasUser request
 	DeleteSaasUser(ctx context.Context, userId UserId, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -1429,6 +1453,42 @@ func (c *Client) GetAllTenantUsers(ctx context.Context, reqEditors ...RequestEdi
 	return c.Client.Do(req)
 }
 
+func (c *Client) GetAllTenantUsersCount(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetAllTenantUsersCountRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SaveTenantUsersCountsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSaveTenantUsersCountsRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SaveTenantUsersCounts(ctx context.Context, body SaveTenantUsersCountsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSaveTenantUsersCountsRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) SearchTenantUsers(ctx context.Context, params *SearchTenantUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewSearchTenantUsersRequest(c.Server, params)
 	if err != nil {
@@ -1777,6 +1837,30 @@ func (c *Client) DeleteTenantUserRole(ctx context.Context, tenantId TenantId, us
 	return c.Client.Do(req)
 }
 
+func (c *Client) RevokeTokenWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRevokeTokenRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RevokeToken(ctx context.Context, body RevokeTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRevokeTokenRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) GetUserAttributes(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetUserAttributesRequest(c.Server)
 	if err != nil {
@@ -1887,6 +1971,54 @@ func (c *Client) CreateSaasUserWithBody(ctx context.Context, contentType string,
 
 func (c *Client) CreateSaasUser(ctx context.Context, body CreateSaasUserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateSaasUserRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetSaasUsersCount(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetSaasUsersCountRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SaveSaasUsersCountWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSaveSaasUsersCountRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SaveSaasUsersCount(ctx context.Context, body SaveSaasUsersCountJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSaveSaasUsersCountRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SearchSaasUsers(ctx context.Context, params *SearchSaasUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSearchSaasUsersRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -4049,6 +4181,73 @@ func NewGetAllTenantUsersRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
+// NewGetAllTenantUsersCountRequest generates requests for GetAllTenantUsersCount
+func NewGetAllTenantUsersCountRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/tenants/all/users/count")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewSaveTenantUsersCountsRequest calls the generic SaveTenantUsersCounts builder with application/json body
+func NewSaveTenantUsersCountsRequest(server string, body SaveTenantUsersCountsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewSaveTenantUsersCountsRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewSaveTenantUsersCountsRequestWithBody generates requests for SaveTenantUsersCounts with any type of body
+func NewSaveTenantUsersCountsRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/tenants/all/users/count")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewSearchTenantUsersRequest generates requests for SearchTenantUsers
 func NewSearchTenantUsersRequest(server string, params *SearchTenantUsersParams) (*http.Request, error) {
 	var err error
@@ -4150,9 +4349,9 @@ func NewSearchTenantUsersRequest(server string, params *SearchTenantUsersParams)
 
 	}
 
-	if params.RoleId != nil {
+	if params.RoleName != nil {
 
-		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "role_id", runtime.ParamLocationQuery, *params.RoleId); err != nil {
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "role_name", runtime.ParamLocationQuery, *params.RoleName); err != nil {
 			return nil, err
 		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
 			return nil, err
@@ -5062,6 +5261,46 @@ func NewDeleteTenantUserRoleRequest(server string, tenantId TenantId, userId Use
 	return req, nil
 }
 
+// NewRevokeTokenRequest calls the generic RevokeToken builder with application/json body
+func NewRevokeTokenRequest(server string, body RevokeTokenJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewRevokeTokenRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewRevokeTokenRequestWithBody generates requests for RevokeToken with any type of body
+func NewRevokeTokenRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/token/revoke")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewGetUserAttributesRequest generates requests for GetUserAttributes
 func NewGetUserAttributesRequest(server string) (*http.Request, error) {
 	var err error
@@ -5355,6 +5594,184 @@ func NewCreateSaasUserRequestWithBody(server string, contentType string, body io
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetSaasUsersCountRequest generates requests for GetSaasUsersCount
+func NewGetSaasUsersCountRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/users/count")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewSaveSaasUsersCountRequest calls the generic SaveSaasUsersCount builder with application/json body
+func NewSaveSaasUsersCountRequest(server string, body SaveSaasUsersCountJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewSaveSaasUsersCountRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewSaveSaasUsersCountRequestWithBody generates requests for SaveSaasUsersCount with any type of body
+func NewSaveSaasUsersCountRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/users/count")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewSearchSaasUsersRequest generates requests for SearchSaasUsers
+func NewSearchSaasUsersRequest(server string, params *SearchSaasUsersParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/users/search")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	queryValues := queryURL.Query()
+
+	if params.Id != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "id", runtime.ParamLocationQuery, *params.Id); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.Email != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "email", runtime.ParamLocationQuery, *params.Email); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.SignInId != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "sign_in_id", runtime.ParamLocationQuery, *params.SignInId); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.Limit != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.Cursor != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "cursor", runtime.ParamLocationQuery, *params.Cursor); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -6214,6 +6631,14 @@ type ClientWithResponsesInterface interface {
 	// GetAllTenantUsers request
 	GetAllTenantUsersWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetAllTenantUsersResponse, error)
 
+	// GetAllTenantUsersCount request
+	GetAllTenantUsersCountWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetAllTenantUsersCountResponse, error)
+
+	// SaveTenantUsersCounts request with any body
+	SaveTenantUsersCountsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SaveTenantUsersCountsResponse, error)
+
+	SaveTenantUsersCountsWithResponse(ctx context.Context, body SaveTenantUsersCountsJSONRequestBody, reqEditors ...RequestEditorFn) (*SaveTenantUsersCountsResponse, error)
+
 	// SearchTenantUsers request
 	SearchTenantUsersWithResponse(ctx context.Context, params *SearchTenantUsersParams, reqEditors ...RequestEditorFn) (*SearchTenantUsersResponse, error)
 
@@ -6293,6 +6718,11 @@ type ClientWithResponsesInterface interface {
 	// DeleteTenantUserRole request
 	DeleteTenantUserRoleWithResponse(ctx context.Context, tenantId TenantId, userId UserId, envId EnvId, roleName RoleName, reqEditors ...RequestEditorFn) (*DeleteTenantUserRoleResponse, error)
 
+	// RevokeToken request with any body
+	RevokeTokenWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RevokeTokenResponse, error)
+
+	RevokeTokenWithResponse(ctx context.Context, body RevokeTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*RevokeTokenResponse, error)
+
 	// GetUserAttributes request
 	GetUserAttributesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetUserAttributesResponse, error)
 
@@ -6320,6 +6750,17 @@ type ClientWithResponsesInterface interface {
 	CreateSaasUserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSaasUserResponse, error)
 
 	CreateSaasUserWithResponse(ctx context.Context, body CreateSaasUserJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSaasUserResponse, error)
+
+	// GetSaasUsersCount request
+	GetSaasUsersCountWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSaasUsersCountResponse, error)
+
+	// SaveSaasUsersCount request with any body
+	SaveSaasUsersCountWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SaveSaasUsersCountResponse, error)
+
+	SaveSaasUsersCountWithResponse(ctx context.Context, body SaveSaasUsersCountJSONRequestBody, reqEditors ...RequestEditorFn) (*SaveSaasUsersCountResponse, error)
+
+	// SearchSaasUsers request
+	SearchSaasUsersWithResponse(ctx context.Context, params *SearchSaasUsersParams, reqEditors ...RequestEditorFn) (*SearchSaasUsersResponse, error)
 
 	// DeleteSaasUser request
 	DeleteSaasUserWithResponse(ctx context.Context, userId UserId, reqEditors ...RequestEditorFn) (*DeleteSaasUserResponse, error)
@@ -6938,6 +7379,7 @@ func (r GetIdentityProvidersResponse) StatusCode() int {
 type UpdateIdentityProviderResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON400      *Error
 	JSON500      *Error
 }
 
@@ -7239,6 +7681,7 @@ func (r GetSignInSettingsResponse) StatusCode() int {
 type UpdateSignInSettingsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON400      *Error
 	JSON500      *Error
 }
 
@@ -7572,6 +8015,52 @@ func (r GetAllTenantUsersResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetAllTenantUsersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetAllTenantUsersCountResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *TenantUsersCounts
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetAllTenantUsersCountResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetAllTenantUsersCountResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type SaveTenantUsersCountsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r SaveTenantUsersCountsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SaveTenantUsersCountsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -8066,6 +8555,29 @@ func (r DeleteTenantUserRoleResponse) StatusCode() int {
 	return 0
 }
 
+type RevokeTokenResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r RevokeTokenResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RevokeTokenResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetUserAttributesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -8254,6 +8766,76 @@ func (r CreateSaasUserResponse) StatusCode() int {
 	return 0
 }
 
+type GetSaasUsersCountResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SaasUsersCount
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetSaasUsersCountResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetSaasUsersCountResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type SaveSaasUsersCountResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r SaveSaasUsersCountResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SaveSaasUsersCountResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type SearchSaasUsersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SearchSaasUsersResult
+	JSON400      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r SearchSaasUsersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SearchSaasUsersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type DeleteSaasUserResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -8371,6 +8953,7 @@ func (r ConfirmEmailUpdateResponse) StatusCode() int {
 type RequestEmailUpdateResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON400      *Error
 	JSON500      *Error
 }
 
@@ -9262,6 +9845,32 @@ func (c *ClientWithResponses) GetAllTenantUsersWithResponse(ctx context.Context,
 	return ParseGetAllTenantUsersResponse(rsp)
 }
 
+// GetAllTenantUsersCountWithResponse request returning *GetAllTenantUsersCountResponse
+func (c *ClientWithResponses) GetAllTenantUsersCountWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetAllTenantUsersCountResponse, error) {
+	rsp, err := c.GetAllTenantUsersCount(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetAllTenantUsersCountResponse(rsp)
+}
+
+// SaveTenantUsersCountsWithBodyWithResponse request with arbitrary body returning *SaveTenantUsersCountsResponse
+func (c *ClientWithResponses) SaveTenantUsersCountsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SaveTenantUsersCountsResponse, error) {
+	rsp, err := c.SaveTenantUsersCountsWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSaveTenantUsersCountsResponse(rsp)
+}
+
+func (c *ClientWithResponses) SaveTenantUsersCountsWithResponse(ctx context.Context, body SaveTenantUsersCountsJSONRequestBody, reqEditors ...RequestEditorFn) (*SaveTenantUsersCountsResponse, error) {
+	rsp, err := c.SaveTenantUsersCounts(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSaveTenantUsersCountsResponse(rsp)
+}
+
 // SearchTenantUsersWithResponse request returning *SearchTenantUsersResponse
 func (c *ClientWithResponses) SearchTenantUsersWithResponse(ctx context.Context, params *SearchTenantUsersParams, reqEditors ...RequestEditorFn) (*SearchTenantUsersResponse, error) {
 	rsp, err := c.SearchTenantUsers(ctx, params, reqEditors...)
@@ -9515,6 +10124,23 @@ func (c *ClientWithResponses) DeleteTenantUserRoleWithResponse(ctx context.Conte
 	return ParseDeleteTenantUserRoleResponse(rsp)
 }
 
+// RevokeTokenWithBodyWithResponse request with arbitrary body returning *RevokeTokenResponse
+func (c *ClientWithResponses) RevokeTokenWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RevokeTokenResponse, error) {
+	rsp, err := c.RevokeTokenWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRevokeTokenResponse(rsp)
+}
+
+func (c *ClientWithResponses) RevokeTokenWithResponse(ctx context.Context, body RevokeTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*RevokeTokenResponse, error) {
+	rsp, err := c.RevokeToken(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRevokeTokenResponse(rsp)
+}
+
 // GetUserAttributesWithResponse request returning *GetUserAttributesResponse
 func (c *ClientWithResponses) GetUserAttributesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetUserAttributesResponse, error) {
 	rsp, err := c.GetUserAttributes(ctx, reqEditors...)
@@ -9601,6 +10227,41 @@ func (c *ClientWithResponses) CreateSaasUserWithResponse(ctx context.Context, bo
 		return nil, err
 	}
 	return ParseCreateSaasUserResponse(rsp)
+}
+
+// GetSaasUsersCountWithResponse request returning *GetSaasUsersCountResponse
+func (c *ClientWithResponses) GetSaasUsersCountWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSaasUsersCountResponse, error) {
+	rsp, err := c.GetSaasUsersCount(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetSaasUsersCountResponse(rsp)
+}
+
+// SaveSaasUsersCountWithBodyWithResponse request with arbitrary body returning *SaveSaasUsersCountResponse
+func (c *ClientWithResponses) SaveSaasUsersCountWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SaveSaasUsersCountResponse, error) {
+	rsp, err := c.SaveSaasUsersCountWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSaveSaasUsersCountResponse(rsp)
+}
+
+func (c *ClientWithResponses) SaveSaasUsersCountWithResponse(ctx context.Context, body SaveSaasUsersCountJSONRequestBody, reqEditors ...RequestEditorFn) (*SaveSaasUsersCountResponse, error) {
+	rsp, err := c.SaveSaasUsersCount(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSaveSaasUsersCountResponse(rsp)
+}
+
+// SearchSaasUsersWithResponse request returning *SearchSaasUsersResponse
+func (c *ClientWithResponses) SearchSaasUsersWithResponse(ctx context.Context, params *SearchSaasUsersParams, reqEditors ...RequestEditorFn) (*SearchSaasUsersResponse, error) {
+	rsp, err := c.SearchSaasUsers(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSearchSaasUsersResponse(rsp)
 }
 
 // DeleteSaasUserWithResponse request returning *DeleteSaasUserResponse
@@ -10614,6 +11275,13 @@ func ParseUpdateIdentityProviderResponse(rsp *http.Response) (*UpdateIdentityPro
 	}
 
 	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -11057,6 +11725,13 @@ func ParseUpdateSignInSettingsResponse(rsp *http.Response) (*UpdateSignInSetting
 	}
 
 	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -11504,6 +12179,72 @@ func ParseGetAllTenantUsersResponse(rsp *http.Response) (*GetAllTenantUsersRespo
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetAllTenantUsersCountResponse parses an HTTP response from a GetAllTenantUsersCountWithResponse call
+func ParseGetAllTenantUsersCountResponse(rsp *http.Response) (*GetAllTenantUsersCountResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetAllTenantUsersCountResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TenantUsersCounts
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseSaveTenantUsersCountsResponse parses an HTTP response from a SaveTenantUsersCountsWithResponse call
+func ParseSaveTenantUsersCountsResponse(rsp *http.Response) (*SaveTenantUsersCountsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SaveTenantUsersCountsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
@@ -12245,6 +12986,39 @@ func ParseDeleteTenantUserRoleResponse(rsp *http.Response) (*DeleteTenantUserRol
 	return response, nil
 }
 
+// ParseRevokeTokenResponse parses an HTTP response from a RevokeTokenWithResponse call
+func ParseRevokeTokenResponse(rsp *http.Response) (*RevokeTokenResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RevokeTokenResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetUserAttributesResponse parses an HTTP response from a GetUserAttributesWithResponse call
 func ParseGetUserAttributesResponse(rsp *http.Response) (*GetUserAttributesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -12537,6 +13311,112 @@ func ParseCreateSaasUserResponse(rsp *http.Response) (*CreateSaasUserResponse, e
 	return response, nil
 }
 
+// ParseGetSaasUsersCountResponse parses an HTTP response from a GetSaasUsersCountWithResponse call
+func ParseGetSaasUsersCountResponse(rsp *http.Response) (*GetSaasUsersCountResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetSaasUsersCountResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SaasUsersCount
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseSaveSaasUsersCountResponse parses an HTTP response from a SaveSaasUsersCountWithResponse call
+func ParseSaveSaasUsersCountResponse(rsp *http.Response) (*SaveSaasUsersCountResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SaveSaasUsersCountResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseSearchSaasUsersResponse parses an HTTP response from a SearchSaasUsersWithResponse call
+func ParseSearchSaasUsersResponse(rsp *http.Response) (*SearchSaasUsersResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SearchSaasUsersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SearchSaasUsersResult
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseDeleteSaasUserResponse parses an HTTP response from a DeleteSaasUserWithResponse call
 func ParseDeleteSaasUserResponse(rsp *http.Response) (*DeleteSaasUserResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -12709,6 +13589,13 @@ func ParseRequestEmailUpdateResponse(rsp *http.Response) (*RequestEmailUpdateRes
 	}
 
 	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
