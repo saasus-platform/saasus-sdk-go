@@ -279,22 +279,25 @@ func (s *spec) synth(schema map[string]any) any {
 		}
 		return []any{}
 	default:
-		format, _ := schema["format"].(string)
-		return synthScalar(kind, format)
+		return synthScalar(schema)
 	}
 }
 
-// synthObject fills the required properties only: an optional property left out
-// is still a valid request, and the spec's own examples are used where present.
+// synthObject fills every declared property, not just the required ones: an
+// optional property that is never sent leaves its own serialization, and the
+// required fields nested below it, unverified.
 func (s *spec) synthObject(schema map[string]any) any {
 	out := map[string]any{}
-	props, _ := schema["properties"].(map[string]any)
+	for name, raw := range mapOf(schema["properties"]) {
+		if prop, ok := raw.(map[string]any); ok {
+			out[name] = s.synth(prop)
+		}
+	}
+	// A required name with no declaration still has to be present.
 	required, _ := schema["required"].([]any)
 	for _, raw := range required {
 		name := fmt.Sprint(raw)
-		if prop, ok := props[name].(map[string]any); ok {
-			out[name] = s.synth(prop)
-		} else {
+		if _, ok := out[name]; !ok {
 			out[name] = syntheticValue
 		}
 	}
@@ -345,14 +348,14 @@ func (s *spec) synthVariant(parent map[string]any, member any) any {
 	return object
 }
 
-func synthScalar(kind, format string) any {
-	switch kind {
+func synthScalar(schema map[string]any) any {
+	switch kind, _ := schema["type"].(string); kind {
 	case "integer", "number":
 		return 1
 	case "boolean":
 		return true
 	}
-	switch format {
+	switch format, _ := schema["format"].(string); format {
 	case "date":
 		return "2024-01-01"
 	case "date-time":
@@ -361,9 +364,25 @@ func synthScalar(kind, format string) any {
 		return "synthetic@example.com"
 	case "uuid":
 		return "00000000-0000-0000-0000-000000000000"
-	default:
-		return syntheticValue
 	}
+	// A string with no example still has to clear the declared length floor or
+	// the mock rejects it. Padding with an alphanumeric also satisfies the
+	// character patterns these specs declare.
+	value := syntheticValue
+	for minLen := intOf(schema["minLength"]); len(value) < minLen; {
+		value += "x"
+	}
+	return value
+}
+
+func intOf(v any) int {
+	switch t := v.(type) {
+	case int:
+		return t
+	case float64:
+		return int(t)
+	}
+	return 0
 }
 
 // --- small helpers ----------------------------------------------------------
