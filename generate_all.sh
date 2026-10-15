@@ -6,7 +6,10 @@
 #
 # The generator version is pinned here so that regenerating always produces the
 # same code for the same spec: a version bump would otherwise show up as a diff
-# that looks like a spec change.
+# that looks like a spec change. It is the version the committed code under
+# generated/ was produced with, which is independent of the oapi-codegen
+# version go.mod requires (that one is the runtime package the generated code
+# imports).
 
 set -eu
 

@@ -223,8 +223,8 @@ func (s *spec) paramValue(p map[string]any) any {
 	return s.synth(schema)
 }
 
-// bodyVariants returns the labels of the request body's top-level oneOf/anyOf
-// members, or nil when the body is not a composite. Each member becomes its own
+// bodyVariants returns the labels of the request body's top-level oneOf
+// members, or nil when the body is not a oneOf. Each member becomes its own
 // case so that every variant is actually sent.
 func (s *spec) bodyVariants(op *operation) []string {
 	members := variants(op.bodySchema)
@@ -240,7 +240,7 @@ func (s *spec) bodyVariants(op *operation) []string {
 }
 
 // bodyValue synthesizes the request body, selecting the given top-level
-// oneOf/anyOf member.
+// oneOf member.
 func (s *spec) bodyValue(op *operation, variantIndex int) any {
 	members := variants(op.bodySchema)
 	if variantIndex < len(members) {
@@ -323,9 +323,9 @@ func (s *spec) mergeAllOf(members []any) map[string]any {
 	return map[string]any{"properties": props, "required": required}
 }
 
-// synthVariant synthesizes one oneOf/anyOf member and, when the parent declares
-// a discriminator, sets the discriminator property so that the value resolves
-// to that member.
+// synthVariant synthesizes one oneOf member and, when the parent declares a
+// discriminator, sets the discriminator property so that the value resolves to
+// that member.
 func (s *spec) synthVariant(parent map[string]any, member any) any {
 	schema, ok := member.(map[string]any)
 	if !ok {
@@ -382,16 +382,16 @@ func coerce(value any, kind string) any {
 	return fmt.Sprint(value)
 }
 
+// variants returns the schema's oneOf members, or nil when it is not a oneOf.
 func variants(schema map[string]any) []any {
 	if schema == nil {
 		return nil
 	}
-	for _, key := range []string{"oneOf", "anyOf"} {
-		if members, ok := schema[key].([]any); ok && len(members) > 0 {
-			return members
-		}
+	members, _ := schema["oneOf"].([]any)
+	if len(members) == 0 {
+		return nil
 	}
-	return nil
+	return members
 }
 
 // discriminatorValue returns the value whose mapping points at the given member
