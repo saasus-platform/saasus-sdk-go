@@ -71,7 +71,7 @@ jobs:
         uses: saasus-platform/github-actions/.github/actions/fetch-openapi-spec@3828a6f1321f954cbb32e8cb3bd253593d5fa0c1 # github-actions main
         with:
           token: ${{ steps.api-token.outputs.token }}
-          ref: 6a764c9dacaa6e59b2ecf93b1baf2d13c4cdf826
+          ref: 1e6641819e518f999180e386c285521feba23012
           dest: openapi-spec
 
       # (A) Generate the latest SDK from the fetched spec and build/type-check it.

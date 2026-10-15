@@ -215,11 +215,10 @@ func (s *spec) queryValues(op *operation) map[string]any {
 }
 
 func (s *spec) paramValue(p map[string]any) any {
-	schema, _ := p["schema"].(map[string]any)
 	if example, ok := p["example"]; ok {
-		kind, _ := s.resolve(schema)["type"].(string)
-		return coerce(example, kind)
+		return example
 	}
+	schema, _ := p["schema"].(map[string]any)
 	return s.synth(schema)
 }
 
@@ -254,12 +253,11 @@ func (s *spec) synth(schema map[string]any) any {
 		return nil
 	}
 	schema = s.resolve(schema)
-	kind, _ := schema["type"].(string)
 	if example, ok := schema["example"]; ok {
-		return coerce(example, kind)
+		return example
 	}
 	if enum, ok := schema["enum"].([]any); ok && len(enum) > 0 {
-		return coerce(enum[0], kind)
+		return enum[0]
 	}
 	if members := variants(schema); members != nil {
 		return s.synthVariant(schema, members[0])
@@ -267,6 +265,7 @@ func (s *spec) synth(schema map[string]any) any {
 	if members, ok := schema["allOf"].([]any); ok {
 		return s.synthObject(s.mergeAllOf(members))
 	}
+	kind, _ := schema["type"].(string)
 	if _, hasProps := schema["properties"].(map[string]any); kind == "" && hasProps {
 		kind = "object"
 	}
@@ -368,19 +367,6 @@ func synthScalar(kind, format string) any {
 }
 
 // --- small helpers ----------------------------------------------------------
-
-// coerce makes a spec value match the type the spec declares for it. An
-// unquoted numeric example under `type: string` is an artefact of how YAML
-// types scalars, not part of the contract, so the declared type wins.
-func coerce(value any, kind string) any {
-	if kind != "string" {
-		return value
-	}
-	if _, ok := value.(string); ok {
-		return value
-	}
-	return fmt.Sprint(value)
-}
 
 // variants returns the schema's oneOf members, or nil when it is not a oneOf.
 func variants(schema map[string]any) []any {
