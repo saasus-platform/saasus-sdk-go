@@ -104,14 +104,12 @@ jobs:
           CONTRACT_REQUIRE_COMPLETE: "true"
         run: go test ./contract/ -v
 
-      - name: Resolve previous SDK stable tag
-        id: old-tag
-        uses: saasus-platform/github-actions/.github/actions/resolve-latest-stable-tag@3828a6f1321f954cbb32e8cb3bd253593d5fa0c1 # github-actions main
-
+      # THROWAWAY: stands in for a tag that bundles the suite, to prove (C)
+      # passes once such a tag exists. Not for merging.
       - name: Checkout old SDK
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          ref: ${{ steps.old-tag.outputs.tag }}
+          ref: feature/3348
           path: old-sdk
 
       # (C) Forward compatibility: the previously released SDK must still
