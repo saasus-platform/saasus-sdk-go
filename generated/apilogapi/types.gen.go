@@ -82,11 +82,17 @@ type GetLogsParams struct {
 	// CreatedDate The date, in format of YYYY-MM-DD, to retrieve the log.
 	CreatedDate *openapi_types.Date `form:"created_date,omitempty" json:"created_date,omitempty"`
 
-	// CreatedAt The datetime, in ISO 8601 format, to retrieve the log.
+	// CreatedAt The datetime, in ISO 8601 format, to retrieve the log. Cannot be specified together with start_at/end_at.
 	CreatedAt *time.Time `form:"created_at,omitempty" json:"created_at,omitempty"`
 
 	// Limit Maximum number of logs to retrieve.
 	Limit *int64 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// StartAt The start of the search range as an epoch second timestamp. Used for range search. Cannot be specified together with created_at. When specified, created_date is ignored.
+	StartAt *int64 `form:"start_at,omitempty" json:"start_at,omitempty"`
+
+	// EndAt The end of the search range as an epoch second timestamp. Used for range search. Cannot be specified together with created_at. When specified, created_date is ignored.
+	EndAt *int64 `form:"end_at,omitempty" json:"end_at,omitempty"`
 
 	// Cursor Cursor for cursor pagination.
 	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
