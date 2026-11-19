@@ -34,6 +34,22 @@ const (
 	String AttributeType = "string"
 )
 
+// Defines values for BasicInfoDomainSetupReasonCode.
+const (
+	CERTIFICATECAAERROR           BasicInfoDomainSetupReasonCode = "CERTIFICATE_CAA_ERROR"
+	CERTIFICATEPENDINGVALIDATION  BasicInfoDomainSetupReasonCode = "CERTIFICATE_PENDING_VALIDATION"
+	CERTIFICATEVALIDATIONTIMEDOUT BasicInfoDomainSetupReasonCode = "CERTIFICATE_VALIDATION_TIMED_OUT"
+	CLOUDFRONTDNSNOTCONFIGURED    BasicInfoDomainSetupReasonCode = "CLOUDFRONT_DNS_NOT_CONFIGURED"
+	CNAMEALREADYEXISTS            BasicInfoDomainSetupReasonCode = "CNAME_ALREADY_EXISTS"
+)
+
+// Defines values for BasicInfoDomainSetupStatus.
+const (
+	BasicInfoDomainSetupStatusActionRequired BasicInfoDomainSetupStatus = "action_required"
+	BasicInfoDomainSetupStatusCompleted      BasicInfoDomainSetupStatus = "completed"
+	BasicInfoDomainSetupStatusPending        BasicInfoDomainSetupStatus = "pending"
+)
+
 // Defines values for ChallengeName.
 const (
 	ADMINNOSRPAUTH         ChallengeName = "ADMIN_NO_SRP_AUTH"
@@ -84,9 +100,9 @@ const (
 
 // Defines values for InvitationStatus.
 const (
-	Accepted InvitationStatus = "accepted"
-	Expired  InvitationStatus = "expired"
-	Pending  InvitationStatus = "pending"
+	InvitationStatusAccepted InvitationStatus = "accepted"
+	InvitationStatusExpired  InvitationStatus = "expired"
+	InvitationStatusPending  InvitationStatus = "pending"
 )
 
 // Defines values for InvoiceLanguage.
@@ -213,6 +229,12 @@ type BasicInfo struct {
 	// DomainName Domain Name
 	DomainName string `json:"domain_name"`
 
+	// DomainSetupReasonCode Reason domain setup is incomplete. Omitted when no known reason is available. DNS validation may still be pending while records propagate. Failed or timed-out certificate requests require resubmitting the domain settings after correcting DNS.
+	DomainSetupReasonCode *BasicInfoDomainSetupReasonCode `json:"domain_setup_reason_code,omitempty"`
+
+	// DomainSetupStatus Domain setup status. Pending means validation or configuration is in progress; action_required means user action is needed; completed means configuration has been accepted.
+	DomainSetupStatus *BasicInfoDomainSetupStatus `json:"domain_setup_status,omitempty"`
+
 	// FromEmailAddress Sender Email for Authentication Email
 	FromEmailAddress string `json:"from_email_address"`
 
@@ -225,6 +247,12 @@ type BasicInfo struct {
 	// ReplyEmailAddress Reply-from email address of authentication email
 	ReplyEmailAddress string `json:"reply_email_address"`
 }
+
+// BasicInfoDomainSetupReasonCode Reason domain setup is incomplete. Omitted when no known reason is available. DNS validation may still be pending while records propagate. Failed or timed-out certificate requests require resubmitting the domain settings after correcting DNS.
+type BasicInfoDomainSetupReasonCode string
+
+// BasicInfoDomainSetupStatus Domain setup status. Pending means validation or configuration is in progress; action_required means user action is needed; completed means configuration has been accepted.
+type BasicInfoDomainSetupStatus string
 
 // BillingAddress defines model for BillingAddress.
 type BillingAddress struct {
