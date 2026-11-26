@@ -1,0 +1,23 @@
+name: SDK Version
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Verify SDK version
+        run: |
+          if [ "$GITHUB_REF_TYPE" = tag ]; then
+            sh update-version.sh --check "$GITHUB_REF_NAME"
+          else
+            sh update-version.sh --check
+          fi

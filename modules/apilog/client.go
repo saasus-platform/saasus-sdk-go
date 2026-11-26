@@ -6,6 +6,7 @@ import (
 
 	"github.com/saasus-platform/saasus-sdk-go/client"
 	"github.com/saasus-platform/saasus-sdk-go/generated/apilogapi"
+	"github.com/saasus-platform/saasus-sdk-go/internal/sdkuseragent"
 )
 
 var (
@@ -17,6 +18,7 @@ func withRequestEditorFns(c *apilogapi.Client) error {
 		func(ctx context.Context, req *http.Request) error {
 			client.SetReferer(ctx, req)
 			client.SetTraceID(ctx, req)
+			sdkuseragent.Set(req)
 			return client.SetSigV1(req)
 		},
 	}
